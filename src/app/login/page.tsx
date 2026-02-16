@@ -19,18 +19,16 @@ function LoginForm() {
     setIsLoading(true);
 
     try {
-      const result = await signIn("resend", {
+      const result = await signIn("credentials", {
         email,
         redirect: false,
-        callbackUrl,
       });
 
       if (result?.error) {
-        setError("Failed to send magic link. Please try again.");
+        setError("Authentication failed. Please try again.");
         setIsLoading(false);
       } else {
-        // Redirect to verify page
-        window.location.href = `/login/verify?email=${encodeURIComponent(email)}`;
+        window.location.href = callbackUrl;
       }
     } catch {
       setError("An unexpected error occurred.");
@@ -78,7 +76,7 @@ function LoginForm() {
 
           {/* Description */}
           <p className="text-sm font-light tracking-wide max-w-md leading-relaxed text-gray-300">
-            Passwordless authentication via magic link.
+            Passwordless authentication via email.
             <br />
             No passwords. No friction. Pure access.
           </p>
@@ -142,7 +140,7 @@ function LoginForm() {
             </h2>
             <p className="text-sm text-gray-600 mt-2">
               {mode === "login"
-                ? "Enter your email to receive a login link"
+                ? "Enter your email to access your account"
                 : "Enter your email to get started — no password needed"}
             </p>
           </div>
@@ -182,9 +180,9 @@ function LoginForm() {
               className="w-full border border-black bg-black text-white px-6 py-4 text-sm font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading
-                ? "SENDING MAGIC LINK..."
+                ? "AUTHENTICATING..."
                 : mode === "login"
-                  ? "SEND LOGIN LINK →"
+                  ? "LOG IN →"
                   : "CREATE ACCOUNT →"}
             </button>
           </form>
