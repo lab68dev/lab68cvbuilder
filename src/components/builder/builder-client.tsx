@@ -1,12 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { useResumeStore } from "@/store/resume-store";
 import { updateResume } from "@/actions/resume";
 import { useDebounce } from "@/hooks/use-debounce";
 import type { Resume } from "@/db/schema";
-import Link from "next/link";
 import { BuilderForm } from "./builder-form";
 import { BuilderPreview } from "./builder-preview";
 import { BuilderHeader } from "./builder-header";
@@ -16,7 +14,6 @@ interface BuilderClientProps {
 }
 
 export function BuilderClient({ resume }: BuilderClientProps) {
-  const router = useRouter();
   const { setResume, data, title, templateId, fontFamily, isDirty, setIsSaving, markSaved } =
     useResumeStore();
 
