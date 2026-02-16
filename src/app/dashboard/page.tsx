@@ -3,6 +3,10 @@ import { redirect } from "next/navigation";
 import { getUserResumes } from "@/actions/resume";
 import { CreateResumeButton } from "@/components/dashboard/create-resume-button";
 import { ResumeCard } from "@/components/dashboard/resume-card";
+import { ProductsDropdown } from "@/components/layout/products-dropdown";
+import { Footer } from "@/components/layout/footer";
+import Image from "next/image";
+import Link from "next/link";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -14,15 +18,29 @@ export default async function DashboardPage() {
   const resumes = await getUserResumes();
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white flex flex-col">
       {/* Header */}
       <header className="border-b border-black p-6">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div>
-            <span className="label-mono block mb-1">DASHBOARD</span>
-            <h1 className="text-2xl font-black tracking-tight">
-              lab68dev CV Builder
-            </h1>
+          <div className="flex items-center gap-8">
+            <Link href="/" className="flex items-center gap-3">
+              <Image
+                src="/lab68dev_logo.png"
+                alt="lab68dev"
+                width={28}
+                height={28}
+                className="invert"
+              />
+              <div>
+                <span className="label-mono block mb-0.5">DASHBOARD</span>
+                <span className="text-sm font-black uppercase tracking-wider">
+                  lab68dev CV Builder
+                </span>
+              </div>
+            </Link>
+            <div className="hidden md:block">
+              <ProductsDropdown />
+            </div>
           </div>
           <div className="flex items-center gap-6">
             <div className="text-right hidden md:block">
@@ -47,7 +65,7 @@ export default async function DashboardPage() {
       </header>
 
       {/* Main content */}
-      <main className="max-w-7xl mx-auto p-6">
+      <main className="max-w-7xl mx-auto p-6 flex-1">
         {/* Section header */}
         <div className="mb-8">
           <div className="flex items-end justify-between mb-4">
@@ -88,13 +106,8 @@ export default async function DashboardPage() {
           </div>
         )}
 
-        {/* Footer */}
-        <div className="mt-16 border-t border-gray-200 pt-6">
-          <span className="label-mono text-gray-400">
-            v0.1.0 // PHASE_03
-          </span>
-        </div>
-      </main>
+        </main>
+      <Footer />
     </div>
   );
 }
