@@ -12,7 +12,8 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "db:drop": "drizzle-kit drop",
-    "resend:domains": "tsx scripts/resend-domains.ts"
+    "resend:domains": "tsx scripts/resend-domains.ts",
+    "resend:emails": "tsx scripts/resend-emails.ts"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.11.1",
