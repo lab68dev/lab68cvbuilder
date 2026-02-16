@@ -89,6 +89,29 @@ npm run db:studio     # Open Drizzle Studio (database GUI)
 npm run db:drop       # Drop all tables (destructive)
 ```
 
+## Domain Management
+
+A CLI script is included for managing Resend sending domains. It requires `AUTH_RESEND_KEY` in `.env.local`.
+
+```bash
+npm run resend:domains add example.com          # Add a new domain
+npm run resend:domains list                     # List all domains
+npm run resend:domains get <domain-id>          # Show domain details and DNS records
+npm run resend:domains verify <domain-id>       # Trigger verification
+npm run resend:domains update <id> [flags]      # Update tracking settings
+npm run resend:domains remove <domain-id>       # Delete a domain
+```
+
+Update flags: `--open-tracking`, `--no-open-tracking`, `--click-tracking`, `--no-click-tracking`.
+
+Typical workflow:
+
+1. Add the domain: `npm run resend:domains add yourdomain.com`
+2. Retrieve DNS records: `npm run resend:domains get <id>`
+3. Add the DNS records to your domain provider
+4. Verify: `npm run resend:domains verify <id>`
+5. Update `EMAIL_FROM` in `.env.local` to use the verified domain
+
 ## Project Structure
 
 ```
