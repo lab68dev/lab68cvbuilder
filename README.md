@@ -90,6 +90,41 @@ No smooth gradients. No rounded pills. Pure function.
 
 ---
 
+## Support the Project
+
+If this tool saves you time, a coffee goes a long way. ☕
+
+<table>
+  <tr>
+    <td align="center">
+      <a href="https://ko-fi.com/dongphuduong" target="_blank">
+        <img src="https://img.shields.io/badge/Ko--fi-FF5E5B?style=for-the-badge&logo=ko-fi&logoColor=white" alt="Ko-fi" />
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://buymeacoffee.com/lab68dev" target="_blank">
+        <img src="https://img.shields.io/badge/Buy_Me_A_Coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me A Coffee" />
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://paypal.me/DDuong884" target="_blank">
+        <img src="https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white" alt="PayPal" />
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/sponsors/lab68dev" target="_blank">
+        <img src="https://img.shields.io/badge/GitHub_Sponsors-EA4AAA?style=for-the-badge&logo=github-sponsors&logoColor=white" alt="GitHub Sponsors" />
+      </a>
+    </td>
+  </tr>
+</table>
+
+### Vietnamese Bank Transfer (ACB)
+
+<img src="public/acb_support.png" alt="ACB Bank QR Code" width="220" />
+
+---
+
 ## License
 
 Licensed under the [Apache License 2.0](LICENSE).
