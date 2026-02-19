@@ -12,7 +12,11 @@
   <img src="https://unikorn.vn/api/widgets/badge/lab68dev-cv-builder/rank?theme=light&type=daily" alt="lab68dev CV Builder - Hàng ngày" width="250" height="64" />
 </a>
 
-<br/><br/>
+<br/>
+
+**[→ View on Unikorn.vn](https://unikorn.vn/p/lab68dev-cv-builder)**
+
+<br/>
 
 ---
 
