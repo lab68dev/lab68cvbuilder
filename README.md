@@ -121,7 +121,7 @@ If this tool saves you time, a coffee goes a long way. ☕
 
 ### Vietnamese Bank Transfer (ACB)
 
-<img src="https://raw.githubusercontent.com/DongDuong2001/lab68cvbuilder/main/public/acb_support.png" alt="ACB Bank QR Code" width="220" />
+![ACB Bank QR Code](https://raw.githubusercontent.com/DongDuong2001/lab68cvbuilder/main/public/acb_support.png)
 
 ---
 
