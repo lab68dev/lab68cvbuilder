@@ -3,20 +3,31 @@
 import { useResumeStore } from "@/store/resume-store";
 import type { ResumeData } from "@/db/schema";
 
-interface Check {
+export interface Check {
   label: string;
   passed: boolean;
   weight: number;
 }
 
-function scoreResume(data: ResumeData): { total: number; checks: Check[] } {
+export function scoreResume(data: ResumeData): {
+  total: number;
+  checks: Check[];
+} {
   const p = data.personalInfo;
 
   const checks: Check[] = [
     { label: "Full name", passed: p.fullName.trim().length > 0, weight: 10 },
     { label: "Email address", passed: p.email.trim().length > 0, weight: 10 },
-    { label: "Phone number", passed: (p.phone ?? "").trim().length > 0, weight: 5 },
-    { label: "Location", passed: (p.location ?? "").trim().length > 0, weight: 5 },
+    {
+      label: "Phone number",
+      passed: (p.phone ?? "").trim().length > 0,
+      weight: 5,
+    },
+    {
+      label: "Location",
+      passed: (p.location ?? "").trim().length > 0,
+      weight: 5,
+    },
     {
       label: "Professional summary (50+ chars)",
       passed: (p.summary ?? "").trim().length >= 50,
@@ -62,7 +73,9 @@ function scoreResume(data: ResumeData): { total: number; checks: Check[] } {
       label: "Experience highlights added",
       passed:
         data.experience.length > 0 &&
-        data.experience.some((e) => e.highlights.filter((h) => h.trim()).length > 0),
+        data.experience.some(
+          (e) => e.highlights.filter((h) => h.trim()).length > 0,
+        ),
       weight: 5,
     },
   ];
@@ -80,12 +93,23 @@ function ScoreRing({ score }: { score: number }) {
   const offset = circumference - (score / 100) * circumference;
 
   const color =
-    score >= 80 ? "text-green-600" : score >= 50 ? "text-yellow-500" : "text-red-500";
+    score >= 80
+      ? "text-green-600"
+      : score >= 50
+        ? "text-yellow-500"
+        : "text-red-500";
 
   return (
     <div className="relative w-28 h-28">
       <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
-        <circle cx="50" cy="50" r={r} fill="none" stroke="#e5e7eb" strokeWidth="8" />
+        <circle
+          cx="50"
+          cy="50"
+          r={r}
+          fill="none"
+          stroke="#e5e7eb"
+          strokeWidth="8"
+        />
         <circle
           cx="50"
           cy="50"
@@ -123,7 +147,9 @@ export function ResumeScorePanel() {
     <div className="max-w-3xl space-y-8">
       <div>
         <span className="label-mono block mb-4">ANALYSIS // SCORE</span>
-        <h2 className="text-3xl font-black tracking-tight mb-2">Resume Score</h2>
+        <h2 className="text-3xl font-black tracking-tight mb-2">
+          Resume Score
+        </h2>
         <p className="text-sm text-gray-600">
           How complete and competitive your resume is
         </p>
@@ -137,7 +163,8 @@ export function ResumeScorePanel() {
           </p>
           <p className="text-2xl font-black">{grade}</p>
           <p className="text-sm text-gray-500 mt-1">
-            {checks.filter((c) => c.passed).length} / {checks.length} checks passed
+            {checks.filter((c) => c.passed).length} / {checks.length} checks
+            passed
           </p>
         </div>
       </div>
@@ -149,7 +176,9 @@ export function ResumeScorePanel() {
             className="flex items-center justify-between px-4 py-3"
           >
             <div className="flex items-center gap-3">
-              <span className={`text-lg ${check.passed ? "text-green-600" : "text-gray-300"}`}>
+              <span
+                className={`text-lg ${check.passed ? "text-green-600" : "text-gray-300"}`}
+              >
                 {check.passed ? "✓" : "○"}
               </span>
               <span
