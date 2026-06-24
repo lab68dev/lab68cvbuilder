@@ -44,13 +44,11 @@ export function LanguagesForm() {
 
   const updateLanguage = (
     id: string,
-    updates: Partial<ResumeData["languages"][0]>
+    updates: Partial<ResumeData["languages"][0]>,
   ) => {
     setData({
       ...data,
-      languages: languages.map((l) =>
-        l.id === id ? { ...l, ...updates } : l
-      ),
+      languages: languages.map((l) => (l.id === id ? { ...l, ...updates } : l)),
     });
   };
 
@@ -84,7 +82,7 @@ export function LanguagesForm() {
                     updateLanguage(lang.id, { language: e.target.value })
                   }
                   placeholder="English"
-                  className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black focus:bg-black focus:text-white transition-all duration-150"
+                  className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black transition-all duration-150"
                 />
               </div>
               <div>
@@ -98,7 +96,7 @@ export function LanguagesForm() {
                         .value as ResumeData["languages"][0]["proficiency"],
                     })
                   }
-                  className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black focus:bg-black focus:text-white transition-all duration-150"
+                  className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black transition-all duration-150"
                 >
                   {PROFICIENCY_LEVELS.map((level) => (
                     <option key={level} value={level}>

@@ -45,11 +45,13 @@ export function SkillsForm() {
 
   const updateCategory = (
     id: string,
-    updates: Partial<ResumeData["skills"][0]>
+    updates: Partial<ResumeData["skills"][0]>,
   ) => {
     setData({
       ...data,
-      skills: skills.map((cat) => (cat.id === id ? { ...cat, ...updates } : cat)),
+      skills: skills.map((cat) =>
+        cat.id === id ? { ...cat, ...updates } : cat,
+      ),
     });
   };
 
@@ -73,7 +75,7 @@ export function SkillsForm() {
 
   const handleInputKeyDown = (
     e: React.KeyboardEvent<HTMLInputElement>,
-    categoryId: string
+    categoryId: string,
   ) => {
     if (e.key === "Enter" || e.key === ",") {
       e.preventDefault();
@@ -146,7 +148,7 @@ export function SkillsForm() {
                     updateCategory(category.id, { category: e.target.value })
                   }
                   placeholder="Programming Languages"
-                  className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black focus:bg-black focus:text-white transition-all duration-150"
+                  className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black transition-all duration-150"
                 />
               </div>
 

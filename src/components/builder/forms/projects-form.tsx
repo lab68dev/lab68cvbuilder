@@ -280,7 +280,7 @@ export function ProjectsForm() {
                     updateProject(project.id, { name: e.target.value })
                   }
                   placeholder="E-Commerce Platform"
-                  className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black focus:bg-black focus:text-white transition-all duration-150"
+                  className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black transition-all duration-150"
                 />
               </div>
 
@@ -294,7 +294,7 @@ export function ProjectsForm() {
                       updateProject(project.id, { url: e.target.value })
                     }
                     placeholder="https://myproject.com"
-                    className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black focus:bg-black focus:text-white transition-all duration-150"
+                    className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black transition-all duration-150"
                   />
                 </div>
                 <div>
@@ -306,7 +306,7 @@ export function ProjectsForm() {
                       updateProject(project.id, { githubUrl: e.target.value })
                     }
                     placeholder="https://github.com/you/repo"
-                    className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black focus:bg-black focus:text-white transition-all duration-150"
+                    className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black transition-all duration-150"
                   />
                 </div>
                 <div>
@@ -318,7 +318,7 @@ export function ProjectsForm() {
                       updateProject(project.id, { websiteUrl: e.target.value })
                     }
                     placeholder="https://myproject.vercel.app"
-                    className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black focus:bg-black focus:text-white transition-all duration-150"
+                    className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black transition-all duration-150"
                   />
                 </div>
               </div>
@@ -355,7 +355,7 @@ export function ProjectsForm() {
                   placeholder="A full-stack e-commerce platform built with modern technologies..."
                   rows={3}
                   maxLength={MAX_DESCRIPTION_LENGTH}
-                  className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black focus:bg-black focus:text-white transition-all duration-150 resize-none"
+                  className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black transition-all duration-150 resize-none"
                 />
                 <span className="label-mono text-gray-400 text-[10px] block mt-1 text-right">
                   {project.description.length}/{MAX_DESCRIPTION_LENGTH}
@@ -430,7 +430,7 @@ export function ProjectsForm() {
                                   )
                                 }
                                 placeholder="Built scalable microservices architecture..."
-                                className="flex-1 border border-gray-400 bg-transparent px-3 py-2 focus:border-black focus:bg-black focus:text-white transition-all duration-150"
+                                className="flex-1 border border-gray-400 bg-transparent px-3 py-2 focus:border-black transition-all duration-150"
                               />
                               <button
                                 onClick={() =>
