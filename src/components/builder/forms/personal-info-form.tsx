@@ -10,10 +10,7 @@ import {
   importFromGitHub,
   type SocialImportResult,
 } from "@/actions/import";
-import {
-  getForgProductOptions,
-  importFromForg,
-} from "@/actions/forg";
+import { getForgProductOptions, importFromForg } from "@/actions/forg";
 import type { ForgProductOption } from "@/actions/import";
 import { parseLinkedInZip } from "@/lib/linkedin-zip-parser";
 import type { ResumeData } from "@/db/schema";
@@ -78,10 +75,21 @@ export function PersonalInfoForm() {
   const [forgOptions, setForgOptions] = useState<ForgProductOption[]>([]);
   const [selectedForgProductId, setSelectedForgProductId] = useState("");
   const [importStatus, setImportStatus] = useState<string>("");
-  const [previewDraft, setPreviewDraft] = useState<SocialImportResult | null>(null);
-  const [previewSelection, setPreviewSelection] = useState<ImportSelection>(createEmptySelection());
+  const [previewDraft, setPreviewDraft] = useState<SocialImportResult | null>(
+    null,
+  );
+  const [previewSelection, setPreviewSelection] = useState<ImportSelection>(
+    createEmptySelection(),
+  );
 
-  const trackImport = (eventName: typeof USAGE_EVENTS.IMPORT_STARTED | typeof USAGE_EVENTS.IMPORT_PREVIEW_READY | typeof USAGE_EVENTS.IMPORT_APPLIED, source: string, extra: Record<string, unknown> = {}) => {
+  const trackImport = (
+    eventName:
+      | typeof USAGE_EVENTS.IMPORT_STARTED
+      | typeof USAGE_EVENTS.IMPORT_PREVIEW_READY
+      | typeof USAGE_EVENTS.IMPORT_APPLIED,
+    source: string,
+    extra: Record<string, unknown> = {},
+  ) => {
     void trackUsageEvent(eventName, {
       source,
       resumeId: resumeId ?? "guest",
@@ -91,7 +99,7 @@ export function PersonalInfoForm() {
 
   const mergeImportedSkills = (
     currentSkills: ResumeData["skills"],
-    importedSkills: Array<{ category: string; items: string[] }>
+    importedSkills: Array<{ category: string; items: string[] }>,
   ): ResumeData["skills"] => {
     const next = [...currentSkills];
 
@@ -99,13 +107,19 @@ export function PersonalInfoForm() {
       if (!imported.items.length) continue;
 
       const matchIndex = next.findIndex(
-        (skill) => skill.category.trim().toLowerCase() === imported.category.trim().toLowerCase()
+        (skill) =>
+          skill.category.trim().toLowerCase() ===
+          imported.category.trim().toLowerCase(),
       );
 
       if (matchIndex >= 0) {
         const mergedItems = [...next[matchIndex].items];
         for (const item of imported.items) {
-          if (!mergedItems.some((existing) => existing.toLowerCase() === item.toLowerCase())) {
+          if (
+            !mergedItems.some(
+              (existing) => existing.toLowerCase() === item.toLowerCase(),
+            )
+          ) {
             mergedItems.push(item);
           }
         }
@@ -127,7 +141,7 @@ export function PersonalInfoForm() {
   };
 
   const mapImportedSkills = (
-    importedSkills: Array<{ category: string; items: string[] }>
+    importedSkills: Array<{ category: string; items: string[] }>,
   ): ResumeData["skills"] =>
     importedSkills
       .filter((skill) => skill.items.length > 0)
@@ -147,17 +161,23 @@ export function PersonalInfoForm() {
       websiteUrl: string;
       technologies: string[];
       highlights: string[];
-    }>
+    }>,
   ): ResumeData["projects"] => {
     const existingProjectKeys = new Set(
       currentProjects
-        .map((project) => (project.githubUrl || project.url || project.name).trim().toLowerCase())
-        .filter(Boolean)
+        .map((project) =>
+          (project.githubUrl || project.url || project.name)
+            .trim()
+            .toLowerCase(),
+        )
+        .filter(Boolean),
     );
 
     const newProjects = importedProjects
       .filter((project) => {
-        const key = (project.githubUrl || project.url || project.name).trim().toLowerCase();
+        const key = (project.githubUrl || project.url || project.name)
+          .trim()
+          .toLowerCase();
         return key ? !existingProjectKeys.has(key) : true;
       })
       .map((project) => ({
@@ -183,7 +203,7 @@ export function PersonalInfoForm() {
       websiteUrl: string;
       technologies: string[];
       highlights: string[];
-    }>
+    }>,
   ): ResumeData["projects"] =>
     importedProjects.map((project) => ({
       id: crypto.randomUUID(),
@@ -198,17 +218,20 @@ export function PersonalInfoForm() {
 
   const mergeImportedExperience = (
     currentExperience: ResumeData["experience"],
-    importedExperience: SocialImportResult["experience"]
+    importedExperience: SocialImportResult["experience"],
   ): ResumeData["experience"] => {
     const existingKeys = new Set(
       currentExperience
-        .map((exp) => `${exp.company}|${exp.position}|${exp.startDate}`.toLowerCase())
-        .filter(Boolean)
+        .map((exp) =>
+          `${exp.company}|${exp.position}|${exp.startDate}`.toLowerCase(),
+        )
+        .filter(Boolean),
     );
 
     const next = [...currentExperience];
     for (const exp of importedExperience) {
-      const key = `${exp.company}|${exp.position}|${exp.startDate}`.toLowerCase();
+      const key =
+        `${exp.company}|${exp.position}|${exp.startDate}`.toLowerCase();
       if (existingKeys.has(key)) continue;
       next.push({
         id: crypto.randomUUID(),
@@ -227,7 +250,7 @@ export function PersonalInfoForm() {
   };
 
   const mapImportedExperience = (
-    importedExperience: SocialImportResult["experience"]
+    importedExperience: SocialImportResult["experience"],
   ): ResumeData["experience"] =>
     importedExperience.map((exp) => ({
       id: crypto.randomUUID(),
@@ -243,12 +266,12 @@ export function PersonalInfoForm() {
 
   const mergeImportedCertifications = (
     currentCertifications: ResumeData["certifications"],
-    importedCertifications: SocialImportResult["certifications"]
+    importedCertifications: SocialImportResult["certifications"],
   ): ResumeData["certifications"] => {
     const existingKeys = new Set(
       currentCertifications
         .map((cert) => `${cert.name}|${cert.issuer}|${cert.date}`.toLowerCase())
-        .filter(Boolean)
+        .filter(Boolean),
     );
 
     const next = [...currentCertifications];
@@ -268,7 +291,7 @@ export function PersonalInfoForm() {
   };
 
   const mapImportedCertifications = (
-    importedCertifications: SocialImportResult["certifications"]
+    importedCertifications: SocialImportResult["certifications"],
   ): ResumeData["certifications"] =>
     importedCertifications.map((cert) => ({
       id: crypto.randomUUID(),
@@ -300,11 +323,13 @@ export function PersonalInfoForm() {
     switch (field) {
       case "fullName":
         if (!value.trim()) error = "Name is required";
-        else if (value.length > MAX_NAME_LENGTH) error = `Max ${MAX_NAME_LENGTH} characters`;
+        else if (value.length > MAX_NAME_LENGTH)
+          error = `Max ${MAX_NAME_LENGTH} characters`;
         break;
       case "email":
         if (!value.trim()) error = "Email is required";
-        else if (!EMAIL_REGEX.test(value)) error = "Enter a valid email address";
+        else if (!EMAIL_REGEX.test(value))
+          error = "Enter a valid email address";
         break;
       case "phone":
         if (value && !PHONE_REGEX.test(value))
@@ -355,7 +380,9 @@ export function PersonalInfoForm() {
       const { url } = await res.json();
       updateField("avatarUrl", url);
     } catch (err: unknown) {
-      alert((err as Error).message || "Failed to upload image. Please try again.");
+      alert(
+        (err as Error).message || "Failed to upload image. Please try again.",
+      );
     } finally {
       setIsUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -386,7 +413,9 @@ export function PersonalInfoForm() {
     }
   };
 
-  const buildInitialSelection = (draft: SocialImportResult): ImportSelection => {
+  const buildInitialSelection = (
+    draft: SocialImportResult,
+  ): ImportSelection => {
     const next = createEmptySelection();
 
     const personalKeys = Object.keys(next.personal) as PersonalFieldKey[];
@@ -427,7 +456,9 @@ export function PersonalInfoForm() {
       trackImport(USAGE_EVENTS.IMPORT_PREVIEW_READY, "github", {
         username: imported.username,
       });
-      setImportStatus(t("previewReady", { source: "GitHub", username: imported.username }));
+      setImportStatus(
+        t("previewReady", { source: "GitHub", username: imported.username }),
+      );
     } catch (err: unknown) {
       setImportStatus((err as Error).message || t("githubFailed"));
     } finally {
@@ -435,7 +466,9 @@ export function PersonalInfoForm() {
     }
   };
 
-  const handleLinkedInZipImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleLinkedInZipImport = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -454,7 +487,9 @@ export function PersonalInfoForm() {
       trackImport(USAGE_EVENTS.IMPORT_PREVIEW_READY, "linkedin_zip", {
         username: imported.username,
       });
-      setImportStatus(t("previewReady", { source: "LinkedIn", username: imported.username }));
+      setImportStatus(
+        t("previewReady", { source: "LinkedIn", username: imported.username }),
+      );
     } catch (err: unknown) {
       setImportStatus((err as Error).message || t("linkedinZipFailed"));
     } finally {
@@ -484,7 +519,9 @@ export function PersonalInfoForm() {
       trackImport(USAGE_EVENTS.IMPORT_PREVIEW_READY, "behance", {
         username: imported.username,
       });
-      setImportStatus(t("previewReady", { source: "Behance", username: imported.username }));
+      setImportStatus(
+        t("previewReady", { source: "Behance", username: imported.username }),
+      );
     } catch (err: unknown) {
       setImportStatus((err as Error).message || t("behanceFailed"));
     } finally {
@@ -512,10 +549,15 @@ export function PersonalInfoForm() {
       if (!resOptions.success) throw new Error(resOptions.error);
       const optionsResult = resOptions.data;
 
-      if (optionsResult.target === "profile" && optionsResult.options.length > 1) {
+      if (
+        optionsResult.target === "profile" &&
+        optionsResult.options.length > 1
+      ) {
         setForgOptions(optionsResult.options);
         setSelectedForgProductId(optionsResult.options[0].id);
-        setImportStatus(t("forgMultiFound", { username: optionsResult.username }));
+        setImportStatus(
+          t("forgMultiFound", { username: optionsResult.username }),
+        );
         return;
       }
 
@@ -527,7 +569,9 @@ export function PersonalInfoForm() {
       trackImport(USAGE_EVENTS.IMPORT_PREVIEW_READY, "forg", {
         username: imported.username,
       });
-      setImportStatus(t("previewReady", { source: "Forg", username: imported.username }));
+      setImportStatus(
+        t("previewReady", { source: "Forg", username: imported.username }),
+      );
     } catch (err: unknown) {
       setImportStatus((err as Error).message || t("forgFailed"));
     } finally {
@@ -544,7 +588,10 @@ export function PersonalInfoForm() {
       selectedProductId: selectedForgProductId,
     });
     try {
-      const result = await importFromForg(forgInput.trim(), selectedForgProductId);
+      const result = await importFromForg(
+        forgInput.trim(),
+        selectedForgProductId,
+      );
       if (!result.success) throw new Error(result.error);
       const imported = result.data;
       openPreview(imported);
@@ -552,7 +599,9 @@ export function PersonalInfoForm() {
         username: imported.username,
         selectedProductId: selectedForgProductId,
       });
-      setImportStatus(t("previewReady", { source: "Forg", username: imported.username }));
+      setImportStatus(
+        t("previewReady", { source: "Forg", username: imported.username }),
+      );
       setForgOptions([]);
       setSelectedForgProductId("");
     } catch (err: unknown) {
@@ -571,7 +620,9 @@ export function PersonalInfoForm() {
       ...data.personalInfo,
     };
 
-    const selectedKeys = Object.keys(previewSelection.personal) as PersonalFieldKey[];
+    const selectedKeys = Object.keys(
+      previewSelection.personal,
+    ) as PersonalFieldKey[];
     for (const key of selectedKeys) {
       if (!previewSelection.personal[key]) continue;
       const incoming = (previewDraft.personalInfo[key] ?? "").toString().trim();
@@ -600,7 +651,10 @@ export function PersonalInfoForm() {
     const nextCertifications = previewSelection.certifications
       ? previewSelection.certificationsMode === "replace"
         ? mapImportedCertifications(previewDraft.certifications)
-        : mergeImportedCertifications(data.certifications, previewDraft.certifications)
+        : mergeImportedCertifications(
+            data.certifications,
+            previewDraft.certifications,
+          )
       : data.certifications;
 
     setData({
@@ -612,10 +666,12 @@ export function PersonalInfoForm() {
       certifications: nextCertifications,
     });
 
-    setImportStatus(t("mergedSelected", {
-      source: previewDraft.source.toUpperCase(),
-      username: previewDraft.username,
-    }));
+    setImportStatus(
+      t("mergedSelected", {
+        source: previewDraft.source.toUpperCase(),
+        username: previewDraft.username,
+      }),
+    );
     trackImport(USAGE_EVENTS.IMPORT_APPLIED, previewDraft.source, {
       username: previewDraft.username,
     });
@@ -625,9 +681,10 @@ export function PersonalInfoForm() {
 
   /** Helper: input class with error state */
   const inputClass = (field: string) =>
-    `w-full border bg-transparent px-4 py-3 transition-all duration-150 ${errors[field]
-      ? "border-red-500 focus:bg-red-50 focus:text-red-900"
-      : "border-black focus:bg-black focus:text-white"
+    `w-full border bg-transparent px-4 py-3 transition-all duration-150 ${
+      errors[field]
+        ? "border-red-500 focus:bg-red-50 focus:text-red-900"
+        : "border-black focus:border-black"
     }`;
 
   return (
@@ -643,25 +700,32 @@ export function PersonalInfoForm() {
       </div>
 
       <div className="border-t border-black pt-6 space-y-6">
-
         {/* ── Import Profile ─────────────────────────────── */}
         <div className="border border-dashed border-gray-300 p-4 space-y-4">
           <div>
-            <span className="label-mono block mb-1">{t("importSectionTitle")}</span>
+            <span className="label-mono block mb-1">
+              {t("importSectionTitle")}
+            </span>
             <p className="text-xs text-gray-500">{t("importSectionHint")}</p>
           </div>
 
           {/* LinkedIn ZIP */}
           <div className="flex items-center gap-3">
-            <span className="label-mono w-20 shrink-0 text-[11px]">LINKEDIN</span>
+            <span className="label-mono w-20 shrink-0 text-[11px]">
+              LINKEDIN
+            </span>
             <button
               onClick={() => linkedinZipRef.current?.click()}
               disabled={isParsingLinkedinZip}
               className="border border-gray-400 px-3 py-1.5 text-xs font-bold uppercase tracking-wider hover:border-black hover:bg-black hover:text-white transition-all duration-150 disabled:opacity-40"
             >
-              {isParsingLinkedinZip ? t("linkedinZipParsing") : t("linkedinZipButton")}
+              {isParsingLinkedinZip
+                ? t("linkedinZipParsing")
+                : t("linkedinZipButton")}
             </button>
-            <span className="text-[10px] text-gray-400 hidden sm:block">{t("linkedinZipHint")}</span>
+            <span className="text-[10px] text-gray-400 hidden sm:block">
+              {t("linkedinZipHint")}
+            </span>
           </div>
           <input
             ref={linkedinZipRef}
@@ -680,7 +744,7 @@ export function PersonalInfoForm() {
               value={githubInput}
               onChange={(e) => setGithubInput(e.target.value)}
               placeholder={t("githubPlaceholder")}
-              className="flex-1 min-w-0 border border-black bg-transparent px-3 py-1.5 text-sm focus:bg-black focus:text-white transition-all duration-150"
+              className="flex-1 min-w-0 border border-black bg-transparent px-3 py-1.5 text-sm focus:border-black transition-all duration-150"
             />
             <button
               onClick={handleImportGithub}
@@ -693,13 +757,15 @@ export function PersonalInfoForm() {
 
           {/* Behance */}
           <div className="flex items-center gap-3">
-            <span className="label-mono w-20 shrink-0 text-[11px]">BEHANCE</span>
+            <span className="label-mono w-20 shrink-0 text-[11px]">
+              BEHANCE
+            </span>
             <input
               type="text"
               value={behanceInput}
               onChange={(e) => setBehanceInput(e.target.value)}
               placeholder={t("behancePlaceholder")}
-              className="flex-1 min-w-0 border border-black bg-transparent px-3 py-1.5 text-sm focus:bg-black focus:text-white transition-all duration-150"
+              className="flex-1 min-w-0 border border-black bg-transparent px-3 py-1.5 text-sm focus:border-black transition-all duration-150"
             />
             <button
               onClick={handleImportBehance}
@@ -724,7 +790,7 @@ export function PersonalInfoForm() {
                 }
               }}
               placeholder={t("forgPlaceholder")}
-              className="flex-1 min-w-0 border border-black bg-transparent px-3 py-1.5 text-sm focus:bg-black focus:text-white transition-all duration-150"
+              className="flex-1 min-w-0 border border-black bg-transparent px-3 py-1.5 text-sm focus:border-black transition-all duration-150"
             />
             <button
               onClick={handleImportForg}
@@ -735,9 +801,7 @@ export function PersonalInfoForm() {
             </button>
           </div>
 
-          <p className="text-[11px] text-amber-700">
-            {t("forgDevNotice")}
-          </p>
+          <p className="text-[11px] text-amber-700">{t("forgDevNotice")}</p>
 
           {forgOptions.length > 1 && (
             <div className="flex flex-col gap-2 border border-gray-300 p-3 bg-gray-50">
@@ -765,9 +829,7 @@ export function PersonalInfoForm() {
                   {isImportingForg ? t("importing") : t("forgUseSelected")}
                 </button>
               </div>
-              <p className="text-[11px] text-gray-500">
-                {t("forgPickerHint")}
-              </p>
+              <p className="text-[11px] text-gray-500">{t("forgPickerHint")}</p>
             </div>
           )}
 
@@ -811,12 +873,17 @@ export function PersonalInfoForm() {
               <button
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isUploading}
-                className={`border border-black px-4 py-2 text-xs font-bold uppercase tracking-wider transition-colors duration-150 ${isUploading
-                  ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                  : "hover:bg-black hover:text-white"
-                  }`}
+                className={`border border-black px-4 py-2 text-xs font-bold uppercase tracking-wider transition-colors duration-150 ${
+                  isUploading
+                    ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                    : "hover:bg-black hover:text-white"
+                }`}
               >
-                {isUploading ? "Uploading..." : personalInfo.avatarUrl ? "Change Photo" : "Upload Photo"}
+                {isUploading
+                  ? "Uploading..."
+                  : personalInfo.avatarUrl
+                    ? "Change Photo"
+                    : "Upload Photo"}
               </button>
               <input
                 ref={fileInputRef}
@@ -847,7 +914,9 @@ export function PersonalInfoForm() {
           />
           <div className="flex justify-between mt-1">
             {errors.fullName ? (
-              <span className="text-xs text-red-500 font-medium">{errors.fullName}</span>
+              <span className="text-xs text-red-500 font-medium">
+                {errors.fullName}
+              </span>
             ) : (
               <span />
             )}
@@ -869,7 +938,9 @@ export function PersonalInfoForm() {
             className={inputClass("email")}
           />
           {errors.email && (
-            <span className="text-xs text-red-500 font-medium mt-1 block">{errors.email}</span>
+            <span className="text-xs text-red-500 font-medium mt-1 block">
+              {errors.email}
+            </span>
           )}
         </div>
 
@@ -891,7 +962,9 @@ export function PersonalInfoForm() {
             className={inputClass("phone")}
           />
           {errors.phone ? (
-            <span className="text-xs text-red-500 font-medium mt-1 block">{errors.phone}</span>
+            <span className="text-xs text-red-500 font-medium mt-1 block">
+              {errors.phone}
+            </span>
           ) : (
             <span className="text-[10px] text-gray-400 mt-1 block">
               Digits, spaces, +, -, or parentheses
@@ -908,7 +981,7 @@ export function PersonalInfoForm() {
             onChange={(e) => updateField("location", e.target.value)}
             placeholder="San Francisco, CA"
             maxLength={100}
-            className="w-full border border-black bg-transparent px-4 py-3 focus:bg-black focus:text-white transition-all duration-150"
+            className="w-full border border-black bg-transparent px-4 py-3 focus:border-black transition-all duration-150"
           />
         </div>
 
@@ -920,21 +993,25 @@ export function PersonalInfoForm() {
             value={personalInfo.website || ""}
             onChange={(e) => updateField("website", e.target.value)}
             placeholder="https://example.com"
-            className="w-full border border-black bg-transparent px-4 py-3 focus:bg-black focus:text-white transition-all duration-150"
+            className="w-full border border-black bg-transparent px-4 py-3 focus:border-black transition-all duration-150"
           />
         </div>
 
         {/* LinkedIn */}
         {/* LinkedIn URL — shown in CV header */}
         <div>
-          <label className="label-mono block mb-1">{t("linkedinUrlLabel")}</label>
-          <p className="text-[10px] text-gray-400 mb-2">{t("linkedinUrlHint")}</p>
+          <label className="label-mono block mb-1">
+            {t("linkedinUrlLabel")}
+          </label>
+          <p className="text-[10px] text-gray-400 mb-2">
+            {t("linkedinUrlHint")}
+          </p>
           <input
             type="text"
             value={personalInfo.linkedin || ""}
             onChange={(e) => updateField("linkedin", e.target.value)}
             placeholder={t("linkedinPlaceholder")}
-            className="w-full border border-black bg-transparent px-4 py-3 focus:bg-black focus:text-white transition-all duration-150"
+            className="w-full border border-black bg-transparent px-4 py-3 focus:border-black transition-all duration-150"
           />
         </div>
 
@@ -948,7 +1025,7 @@ export function PersonalInfoForm() {
             value={personalInfo.github || ""}
             onChange={(e) => updateField("github", e.target.value)}
             placeholder={t("githubPlaceholder")}
-            className="w-full border border-black bg-transparent px-4 py-3 focus:bg-black focus:text-white transition-all duration-150"
+            className="w-full border border-black bg-transparent px-4 py-3 focus:border-black transition-all duration-150"
           />
         </div>
 
@@ -974,10 +1051,11 @@ export function PersonalInfoForm() {
             placeholder="A brief professional summary or objective statement..."
             rows={6}
             maxLength={MAX_SUMMARY_LENGTH}
-            className="w-full border border-black bg-transparent px-4 py-3 focus:bg-black focus:text-white transition-all duration-150 resize-none"
+            className="w-full border border-black bg-transparent px-4 py-3 focus:border-black transition-all duration-150 resize-none"
           />
           <span className="label-mono text-gray-500 text-xs block mt-2">
-            {personalInfo.summary?.length || 0} / {MAX_SUMMARY_LENGTH} characters
+            {personalInfo.summary?.length || 0} / {MAX_SUMMARY_LENGTH}{" "}
+            characters
           </span>
         </div>
 
@@ -986,10 +1064,12 @@ export function PersonalInfoForm() {
           <input
             type="text"
             value={personalInfo.bulletSymbol || "•"}
-            onChange={(e) => updateField("bulletSymbol", e.target.value.slice(0, 3))}
+            onChange={(e) =>
+              updateField("bulletSymbol", e.target.value.slice(0, 3))
+            }
             placeholder="•"
             maxLength={3}
-            className="w-full border border-black bg-transparent px-4 py-3 focus:bg-black focus:text-white transition-all duration-150"
+            className="w-full border border-black bg-transparent px-4 py-3 focus:border-black transition-all duration-150"
           />
           <span className="text-[10px] text-gray-500 mt-1 block">
             Use any symbol for CV bullets, for example: •, -, ▪, or →
