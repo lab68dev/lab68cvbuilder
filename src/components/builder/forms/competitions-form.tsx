@@ -10,21 +10,25 @@ export function CompetitionsForm() {
   const { data, setData } = useResumeStore();
   const { competitions = [] } = data; // Default fallback for older resumes
   const [improvingBullet, setImprovingBullet] = useState<string | null>(null);
-  const [improvingDescription, setImprovingDescription] = useState<string | null>(null);
+  const [improvingDescription, setImprovingDescription] = useState<
+    string | null
+  >(null);
 
   const handleImproveBullet = async (
     compId: string,
     idx: number,
     text: string,
     compName: string,
-    role: string
+    role: string,
   ) => {
     if (!text.trim() || improvingBullet) return;
     const key = `${compId}-${idx}`;
     setImprovingBullet(key);
     try {
       const positionContext = role ? `${role} at ${compName}` : compName;
-      const { result } = await improveBullet(text, { position: positionContext });
+      const { result } = await improveBullet(text, {
+        position: positionContext,
+      });
       updateHighlight(compId, idx, result);
     } catch (err: unknown) {
       alert((err as Error).message || "AI improvement failed.");
@@ -37,14 +41,18 @@ export function CompetitionsForm() {
     compId: string,
     text: string,
     compName: string,
-    role: string
+    role: string,
   ) => {
     if (!text.trim() || improvingDescription) return;
     setImprovingDescription(compId);
     try {
       const titleContext = role ? `${role} at ${compName}` : compName;
-      const { result } = await improveDescription(text, { title: titleContext });
-      updateCompetition(compId, { description: result.slice(0, MAX_DESCRIPTION_LENGTH) });
+      const { result } = await improveDescription(text, {
+        title: titleContext,
+      });
+      updateCompetition(compId, {
+        description: result.slice(0, MAX_DESCRIPTION_LENGTH),
+      });
     } catch (err: unknown) {
       alert((err as Error).message || "AI improvement failed.");
     } finally {
@@ -89,12 +97,12 @@ export function CompetitionsForm() {
 
   const updateCompetition = (
     id: string,
-    updates: Partial<ResumeData["competitions"][0]>
+    updates: Partial<ResumeData["competitions"][0]>,
   ) => {
     setData({
       ...data,
       competitions: competitions.map((comp) =>
-        comp.id === id ? { ...comp, ...updates } : comp
+        comp.id === id ? { ...comp, ...updates } : comp,
       ),
     });
   };
@@ -127,8 +135,12 @@ export function CompetitionsForm() {
   return (
     <div className="max-w-3xl space-y-8">
       <div>
-        <span className="label-mono block mb-4">SECTION_OPT // COMPETITIONS</span>
-        <h2 className="text-3xl font-black tracking-tight mb-2">Competitions</h2>
+        <span className="label-mono block mb-4">
+          SECTION_OPT // COMPETITIONS
+        </span>
+        <h2 className="text-3xl font-black tracking-tight mb-2">
+          Competitions
+        </h2>
         <p className="text-sm text-gray-600">
           Hackathons, case studies, academic or professional competitions
         </p>
@@ -170,7 +182,9 @@ export function CompetitionsForm() {
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="label-mono block mb-2">COMPETITION_NAME *</label>
+                  <label className="label-mono block mb-2">
+                    COMPETITION_NAME *
+                  </label>
                   <input
                     type="text"
                     value={comp.name}
@@ -178,7 +192,7 @@ export function CompetitionsForm() {
                       updateCompetition(comp.id, { name: e.target.value })
                     }
                     placeholder="Global AI Hackathon 2026"
-                    className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black focus:bg-black focus:text-white transition-all duration-150"
+                    className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black transition-all duration-150"
                   />
                 </div>
                 <div>
@@ -190,7 +204,7 @@ export function CompetitionsForm() {
                       updateCompetition(comp.id, { role: e.target.value })
                     }
                     placeholder="1st Place, Team Lead"
-                    className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black focus:bg-black focus:text-white transition-all duration-150"
+                    className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black transition-all duration-150"
                   />
                 </div>
               </div>
@@ -205,7 +219,7 @@ export function CompetitionsForm() {
                       updateCompetition(comp.id, { date: newDate });
                     }}
                     required
-                    className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black focus:bg-black focus:text-white transition-all duration-150"
+                    className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black transition-all duration-150"
                   />
                 </div>
                 <div>
@@ -217,7 +231,7 @@ export function CompetitionsForm() {
                       updateCompetition(comp.id, { location: e.target.value })
                     }
                     placeholder="San Francisco, CA"
-                    className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black focus:bg-black focus:text-white transition-all duration-150"
+                    className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black transition-all duration-150"
                   />
                 </div>
                 <div>
@@ -229,7 +243,7 @@ export function CompetitionsForm() {
                       updateCompetition(comp.id, { url: e.target.value })
                     }
                     placeholder="https://devpost.com/..."
-                    className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black focus:bg-black focus:text-white transition-all duration-150"
+                    className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black transition-all duration-150"
                   />
                 </div>
               </div>
@@ -239,8 +253,17 @@ export function CompetitionsForm() {
                   <label className="label-mono">DESCRIPTION *</label>
                   <button
                     type="button"
-                    onClick={() => handleImproveDescription(comp.id, comp.description, comp.name, comp.role || "")}
-                    disabled={!comp.description.trim() || !!improvingDescription}
+                    onClick={() =>
+                      handleImproveDescription(
+                        comp.id,
+                        comp.description,
+                        comp.name,
+                        comp.role || "",
+                      )
+                    }
+                    disabled={
+                      !comp.description.trim() || !!improvingDescription
+                    }
                     className="label-mono text-[10px] border border-black px-2 py-0.5 hover:bg-black hover:text-white transition-colors duration-150 disabled:opacity-30 disabled:cursor-not-allowed"
                   >
                     {improvingDescription === comp.id ? "..." : "✦"}
@@ -250,13 +273,15 @@ export function CompetitionsForm() {
                   value={comp.description}
                   onChange={(e) => {
                     if (e.target.value.length <= MAX_DESCRIPTION_LENGTH) {
-                      updateCompetition(comp.id, { description: e.target.value });
+                      updateCompetition(comp.id, {
+                        description: e.target.value,
+                      });
                     }
                   }}
                   placeholder="Built an AI-powered agent to automate tasks within 48 hours..."
                   rows={3}
                   maxLength={MAX_DESCRIPTION_LENGTH}
-                  className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black focus:bg-black focus:text-white transition-all duration-150 resize-none"
+                  className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black transition-all duration-150 resize-none"
                 />
                 <span className="label-mono text-gray-400 text-[10px] block mt-1 text-right">
                   {comp.description.length}/{MAX_DESCRIPTION_LENGTH}
@@ -278,11 +303,17 @@ export function CompetitionsForm() {
                             updateHighlight(comp.id, idx, e.target.value)
                           }
                           placeholder="Awarded best technical implementation by judges..."
-                          className="flex-1 border border-gray-400 bg-transparent px-3 py-2 focus:border-black focus:bg-black focus:text-white transition-all duration-150"
+                          className="flex-1 border border-gray-400 bg-transparent px-3 py-2 focus:border-black transition-all duration-150"
                         />
                         <button
                           onClick={() =>
-                            handleImproveBullet(comp.id, idx, highlight, comp.name, comp.role || "")
+                            handleImproveBullet(
+                              comp.id,
+                              idx,
+                              highlight,
+                              comp.name,
+                              comp.role || "",
+                            )
                           }
                           disabled={isImproving || !highlight.trim()}
                           title="Improve with AI"

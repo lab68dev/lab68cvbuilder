@@ -8,7 +8,9 @@ import { MonthInput } from "./month-input";
 export function EducationForm() {
   const { data, setData } = useResumeStore();
   const { education } = data;
-  const [courseworkInputs, setCourseworkInputs] = useState<Record<string, string>>({});
+  const [courseworkInputs, setCourseworkInputs] = useState<
+    Record<string, string>
+  >({});
 
   const addEducation = () => {
     const newEducation: ResumeData["education"][0] = {
@@ -54,12 +56,12 @@ export function EducationForm() {
 
   const updateEducation = (
     id: string,
-    updates: Partial<ResumeData["education"][0]>
+    updates: Partial<ResumeData["education"][0]>,
   ) => {
     setData({
       ...data,
       education: education.map((edu) =>
-        edu.id === id ? { ...edu, ...updates } : edu
+        edu.id === id ? { ...edu, ...updates } : edu,
       ),
     });
   };
@@ -85,7 +87,7 @@ export function EducationForm() {
 
   const handleCourseworkKeyDown = (
     e: React.KeyboardEvent<HTMLInputElement>,
-    eduId: string
+    eduId: string,
   ) => {
     if (e.key === "Enter" || e.key === ",") {
       e.preventDefault();
@@ -153,7 +155,7 @@ export function EducationForm() {
                     updateEducation(edu.id, { institution: e.target.value })
                   }
                   placeholder="University of California"
-                  className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black focus:bg-black focus:text-white transition-all duration-150"
+                  className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black transition-all duration-150"
                 />
               </div>
 
@@ -167,7 +169,7 @@ export function EducationForm() {
                       updateEducation(edu.id, { degree: e.target.value })
                     }
                     placeholder="Bachelor of Science"
-                    className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black focus:bg-black focus:text-white transition-all duration-150"
+                    className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black transition-all duration-150"
                   />
                 </div>
                 <div>
@@ -179,7 +181,7 @@ export function EducationForm() {
                       updateEducation(edu.id, { field: e.target.value })
                     }
                     placeholder="Computer Science"
-                    className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black focus:bg-black focus:text-white transition-all duration-150"
+                    className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black transition-all duration-150"
                   />
                 </div>
               </div>
@@ -194,7 +196,7 @@ export function EducationForm() {
                       updateEducation(edu.id, { location: e.target.value })
                     }
                     placeholder="Berkeley, CA"
-                    className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black focus:bg-black focus:text-white transition-all duration-150"
+                    className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black transition-all duration-150"
                   />
                 </div>
                 <div>
@@ -206,7 +208,7 @@ export function EducationForm() {
                       updateEducation(edu.id, { gpa: e.target.value })
                     }
                     placeholder="3.8"
-                    className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black focus:bg-black focus:text-white transition-all duration-150"
+                    className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black transition-all duration-150"
                   />
                 </div>
               </div>
@@ -221,7 +223,7 @@ export function EducationForm() {
                       updateEducation(edu.id, { startDate: value })
                     }
                     required
-                    className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black focus:bg-black focus:text-white transition-all duration-150"
+                    className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black transition-all duration-150"
                   />
                 </div>
                 <div>
@@ -233,7 +235,7 @@ export function EducationForm() {
                       updateEducation(edu.id, { endDate: value })
                     }
                     disabled={edu.current}
-                    className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black focus:bg-black focus:text-white transition-all duration-150 disabled:opacity-50"
+                    className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black transition-all duration-150 disabled:opacity-50"
                   />
                 </div>
               </div>
@@ -260,11 +262,15 @@ export function EducationForm() {
               </div>
 
               <div>
-                <label className="label-mono block mb-2">RELEVANT_COURSEWORK</label>
+                <label className="label-mono block mb-2">
+                  RELEVANT_COURSEWORK
+                </label>
                 <div className="border border-gray-400 bg-transparent p-2 min-h-12">
                   <div className="flex flex-wrap gap-2">
                     {(edu.coursework ?? []).length === 0 && (
-                      <span className="text-xs text-gray-500">No coursework added yet.</span>
+                      <span className="text-xs text-gray-500">
+                        No coursework added yet.
+                      </span>
                     )}
                     {(edu.coursework ?? []).map((course, idx) => (
                       <span
@@ -295,7 +301,7 @@ export function EducationForm() {
                     }
                     onKeyDown={(e) => handleCourseworkKeyDown(e, edu.id)}
                     placeholder="Add a course (e.g. Data Structures)"
-                    className="flex-1 border border-gray-400 bg-transparent px-3 py-2 focus:border-black focus:bg-black focus:text-white transition-all duration-150"
+                    className="flex-1 border border-gray-400 bg-transparent px-3 py-2 focus:border-black transition-all duration-150"
                   />
                   <button
                     type="button"
@@ -303,7 +309,10 @@ export function EducationForm() {
                       const value = courseworkInputs[edu.id] || "";
                       if (!value.trim()) return;
                       addCoursework(edu.id, value);
-                      setCourseworkInputs((prev) => ({ ...prev, [edu.id]: "" }));
+                      setCourseworkInputs((prev) => ({
+                        ...prev,
+                        [edu.id]: "",
+                      }));
                     }}
                     className="border border-black px-3 py-2 text-xs font-bold uppercase tracking-wider hover:bg-black hover:text-white transition-colors duration-150"
                   >

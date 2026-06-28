@@ -5,14 +5,14 @@ import { useResumeStore } from "@/store/resume-store";
 import type { ResumeData } from "@/db/schema";
 import { improveBullet, improveDescription } from "@/actions/ai";
 import { MonthInput } from "./month-input";
-import { 
-  DndContext, 
-  closestCenter, 
-  KeyboardSensor, 
-  PointerSensor, 
-  useSensor, 
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
   useSensors,
-  DragEndEvent
+  DragEndEvent,
 } from "@dnd-kit/core";
 import {
   arrayMove,
@@ -32,7 +32,9 @@ export function ExperienceForm() {
   const { experience } = data;
   const [dateErrors, setDateErrors] = useState<Record<string, string>>({});
   const [improvingBullet, setImprovingBullet] = useState<string | null>(null);
-  const [improvingDescription, setImprovingDescription] = useState<string | null>(null);
+  const [improvingDescription, setImprovingDescription] = useState<
+    string | null
+  >(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -42,7 +44,7 @@ export function ExperienceForm() {
     }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
   );
 
   const handleImproveBullet = async (
@@ -50,7 +52,7 @@ export function ExperienceForm() {
     idx: number,
     text: string,
     position: string,
-    company: string
+    company: string,
   ) => {
     if (!text.trim() || improvingBullet) return;
     const key = `${expId}-${idx}`;
@@ -69,13 +71,18 @@ export function ExperienceForm() {
     expId: string,
     text: string,
     position: string,
-    company: string
+    company: string,
   ) => {
     if (!text.trim() || improvingDescription) return;
     setImprovingDescription(expId);
     try {
-      const { result } = await improveDescription(text, { title: position, company });
-      updateExperience(expId, { description: result.slice(0, MAX_DESCRIPTION_LENGTH) });
+      const { result } = await improveDescription(text, {
+        title: position,
+        company,
+      });
+      updateExperience(expId, {
+        description: result.slice(0, MAX_DESCRIPTION_LENGTH),
+      });
     } catch (err: unknown) {
       alert((err as Error).message || "AI improvement failed.");
     } finally {
@@ -121,12 +128,12 @@ export function ExperienceForm() {
 
   const updateExperience = (
     id: string,
-    updates: Partial<ResumeData["experience"][0]>
+    updates: Partial<ResumeData["experience"][0]>,
   ) => {
     setData({
       ...data,
       experience: experience.map((exp) =>
-        exp.id === id ? { ...exp, ...updates } : exp
+        exp.id === id ? { ...exp, ...updates } : exp,
       ),
     });
   };
@@ -229,7 +236,7 @@ export function ExperienceForm() {
                     updateExperience(exp.id, { position: e.target.value })
                   }
                   placeholder="Senior Software Engineer"
-                  className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black focus:bg-black focus:text-white transition-all duration-150"
+                  className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black transition-all duration-150"
                 />
               </div>
 
@@ -243,7 +250,7 @@ export function ExperienceForm() {
                     updateExperience(exp.id, { company: e.target.value })
                   }
                   placeholder="Tech Corp Inc."
-                  className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black focus:bg-black focus:text-white transition-all duration-150"
+                  className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black transition-all duration-150"
                 />
               </div>
 
@@ -257,7 +264,7 @@ export function ExperienceForm() {
                     updateExperience(exp.id, { location: e.target.value })
                   }
                   placeholder="New York, NY"
-                  className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black focus:bg-black focus:text-white transition-all duration-150"
+                  className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black transition-all duration-150"
                 />
               </div>
 
@@ -275,12 +282,16 @@ export function ExperienceForm() {
                           [exp.id]: "End date cannot be before start date.",
                         }));
                       } else {
-                        setDateErrors((prev) => { const next = { ...prev }; delete next[exp.id]; return next; });
+                        setDateErrors((prev) => {
+                          const next = { ...prev };
+                          delete next[exp.id];
+                          return next;
+                        });
                       }
                       updateExperience(exp.id, { startDate: newStart });
                     }}
                     required
-                    className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black focus:bg-black focus:text-white transition-all duration-150"
+                    className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black transition-all duration-150"
                   />
                 </div>
                 <div>
@@ -296,11 +307,15 @@ export function ExperienceForm() {
                         }));
                         return; // block storing an invalid end date
                       }
-                      setDateErrors((prev) => { const next = { ...prev }; delete next[exp.id]; return next; });
+                      setDateErrors((prev) => {
+                        const next = { ...prev };
+                        delete next[exp.id];
+                        return next;
+                      });
                       updateExperience(exp.id, { endDate: newEnd });
                     }}
                     disabled={exp.current}
-                    className={`w-full border bg-transparent px-3 py-2 focus:border-black focus:bg-black focus:text-white transition-all duration-150 disabled:opacity-50 ${
+                    className={`w-full border bg-transparent px-3 py-2 focus:border-black  transition-all duration-150 disabled:opacity-50 ${
                       dateErrors[exp.id] ? "border-red-500" : "border-gray-400"
                     }`}
                   />
@@ -340,7 +355,14 @@ export function ExperienceForm() {
                   <label className="label-mono">DESCRIPTION</label>
                   <button
                     type="button"
-                    onClick={() => handleImproveDescription(exp.id, exp.description, exp.position, exp.company)}
+                    onClick={() =>
+                      handleImproveDescription(
+                        exp.id,
+                        exp.description,
+                        exp.position,
+                        exp.company,
+                      )
+                    }
                     disabled={!exp.description.trim() || !!improvingDescription}
                     className="label-mono text-[10px] border border-black px-2 py-0.5 hover:bg-black hover:text-white transition-colors duration-150 disabled:opacity-30 disabled:cursor-not-allowed"
                   >
@@ -357,7 +379,7 @@ export function ExperienceForm() {
                   placeholder="Brief description of your role and responsibilities..."
                   rows={3}
                   maxLength={MAX_DESCRIPTION_LENGTH}
-                  className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black focus:bg-black focus:text-white transition-all duration-150 resize-none"
+                  className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black transition-all duration-150 resize-none"
                 />
                 <span className="label-mono text-gray-400 text-[10px] block mt-1 text-right">
                   {exp.description.length}/{MAX_DESCRIPTION_LENGTH}
@@ -392,11 +414,17 @@ export function ExperienceForm() {
                                   updateHighlight(exp.id, idx, e.target.value)
                                 }
                                 placeholder="Increased revenue by 40%..."
-                                className="flex-1 border border-gray-400 bg-transparent px-3 py-2 focus:border-black focus:bg-black focus:text-white transition-all duration-150"
+                                className="flex-1 border border-gray-400 bg-transparent px-3 py-2 focus:border-black transition-all duration-150"
                               />
                               <button
                                 onClick={() =>
-                                  handleImproveBullet(exp.id, idx, highlight, exp.position, exp.company)
+                                  handleImproveBullet(
+                                    exp.id,
+                                    idx,
+                                    highlight,
+                                    exp.position,
+                                    exp.company,
+                                  )
                                 }
                                 disabled={isImproving || !highlight.trim()}
                                 title="Improve with AI"

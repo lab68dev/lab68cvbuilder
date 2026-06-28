@@ -27,12 +27,12 @@ export function CertificationsForm() {
 
   const updateCertification = (
     id: string,
-    updates: Partial<ResumeData["certifications"][0]>
+    updates: Partial<ResumeData["certifications"][0]>,
   ) => {
     setData({
       ...data,
       certifications: certifications.map((c) =>
-        c.id === id ? { ...c, ...updates } : c
+        c.id === id ? { ...c, ...updates } : c,
       ),
     });
   };
@@ -40,8 +40,12 @@ export function CertificationsForm() {
   return (
     <div className="max-w-3xl space-y-8">
       <div>
-        <span className="label-mono block mb-4">SECTION_06 // CERTIFICATIONS</span>
-        <h2 className="text-3xl font-black tracking-tight mb-2">Certifications</h2>
+        <span className="label-mono block mb-4">
+          SECTION_06 // CERTIFICATIONS
+        </span>
+        <h2 className="text-3xl font-black tracking-tight mb-2">
+          Certifications
+        </h2>
         <p className="text-sm text-gray-600">
           Professional certifications, licenses, and credentials
         </p>
@@ -72,7 +76,7 @@ export function CertificationsForm() {
                     updateCertification(cert.id, { name: e.target.value })
                   }
                   placeholder="AWS Solutions Architect Professional"
-                  className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black focus:bg-black focus:text-white transition-all duration-150"
+                  className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black transition-all duration-150"
                 />
               </div>
 
@@ -86,7 +90,7 @@ export function CertificationsForm() {
                       updateCertification(cert.id, { issuer: e.target.value })
                     }
                     placeholder="Amazon Web Services"
-                    className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black focus:bg-black focus:text-white transition-all duration-150"
+                    className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black transition-all duration-150"
                   />
                 </div>
                 <div>
@@ -98,7 +102,7 @@ export function CertificationsForm() {
                       updateCertification(cert.id, { date: value })
                     }
                     title="Certification date"
-                    className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black focus:bg-black focus:text-white transition-all duration-150"
+                    className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black transition-all duration-150"
                   />
                 </div>
               </div>
@@ -112,7 +116,7 @@ export function CertificationsForm() {
                     updateCertification(cert.id, { url: e.target.value })
                   }
                   placeholder="https://www.credly.com/badges/..."
-                  className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black focus:bg-black focus:text-white transition-all duration-150"
+                  className="w-full border border-gray-400 bg-transparent px-3 py-2 focus:border-black transition-all duration-150"
                 />
               </div>
             </div>
