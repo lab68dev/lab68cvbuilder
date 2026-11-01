@@ -3,8 +3,10 @@
 import Groq from "groq-sdk";
 import { auth } from "@/auth";
 import { db } from "@/db";
-import { jobs, resumes, type ResumeData } from "@/db/schema";
+import { jobs, resumes } from "@/db/schema";
 import { and, eq } from "drizzle-orm";
+import { aiRateLimiter, enforceRateLimit } from "@/lib/rate-limit";
+import { mergeAiResume } from "@/lib/ai-resume";
 
 async function getAuthUserId(): Promise<string> {
   const session = await auth();
@@ -23,7 +25,10 @@ function getGroqClient(): Groq {
 function stripCodeFence(text: string): string {
   const trimmed = text.trim();
   if (!trimmed.startsWith("```") || !trimmed.endsWith("```")) return trimmed;
-  return trimmed.replace(/^```[a-zA-Z]*\n?/, "").replace(/```$/, "").trim();
+  return trimmed
+    .replace(/^```[a-zA-Z]*\n?/, "")
+    .replace(/```$/, "")
+    .trim();
 }
 
 export async function tailorResumeForJob(input: {
@@ -31,6 +36,7 @@ export async function tailorResumeForJob(input: {
   jobId: string;
 }) {
   const userId = await getAuthUserId();
+  await enforceRateLimit(aiRateLimiter, userId);
 
   const [resume] = await db
     .select()
@@ -72,9 +78,9 @@ ${JSON.stringify(resume.data)}`;
   const content = completion.choices[0]?.message?.content?.trim();
   if (!content) throw new Error("AI returned empty tailored content");
 
-  let tailoredData: ResumeData;
+  let tailored: unknown;
   try {
-    tailoredData = JSON.parse(stripCodeFence(content)) as ResumeData;
+    tailored = JSON.parse(stripCodeFence(content));
   } catch {
     throw new Error("AI returned invalid JSON for tailored resume");
   }
@@ -86,7 +92,7 @@ ${JSON.stringify(resume.data)}`;
       title: `${resume.title} • ${job.company}`,
       templateId: resume.templateId,
       fontFamily: resume.fontFamily,
-      data: tailoredData,
+      data: mergeAiResume(resume.data, tailored),
     })
     .returning();
 

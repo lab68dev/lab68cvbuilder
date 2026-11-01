@@ -61,6 +61,7 @@ export function BuilderHeader({
       data.personalInfo.fullName.trim() &&
       data.personalInfo.email.trim()
     ) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- clears once the store data is fixed
       setExportError(null);
     }
   }, [

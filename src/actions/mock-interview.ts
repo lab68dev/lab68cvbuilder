@@ -5,6 +5,14 @@ import { auth } from "@/auth";
 import { db } from "@/db";
 import { applications, jobs, resumes, mockInterviews } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
+import { createRateLimiter, enforceRateLimit } from "@/lib/rate-limit";
+
+// One interview is 1 generate call plus 5 answer reviews, so this allows 5 per hour.
+const interviewRateLimiter = createRateLimiter({
+  name: "mock-interview",
+  limit: 30,
+  windowSeconds: 3600,
+});
 
 async function getAuthUserId(): Promise<string> {
   const session = await auth();
@@ -34,6 +42,7 @@ function stripCodeFence(text: string): string {
  */
 export async function generateMockInterviewQuestions(applicationId: string) {
   const userId = await getAuthUserId();
+  await enforceRateLimit(interviewRateLimiter, userId);
 
   // 1. Fetch application, job, and resume data
   const appData = await db
@@ -135,6 +144,7 @@ export async function evaluateMockInterviewAnswer(
   answerText: string,
 ) {
   const userId = await getAuthUserId();
+  await enforceRateLimit(interviewRateLimiter, userId);
 
   // 1. Fetch the mock interview
   const interview = await db

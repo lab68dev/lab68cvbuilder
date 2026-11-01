@@ -1,4 +1,7 @@
 import { NextResponse } from "next/server";
+import { lte, sql } from "drizzle-orm";
+import { db } from "@/db";
+import { rateLimits } from "@/db/schema";
 
 interface RateLimitEntry {
   count: number;
@@ -6,65 +9,67 @@ interface RateLimitEntry {
 }
 
 interface RateLimiterOptions {
+  /** Keeps each feature's counters apart in the shared store */
+  name: string;
   /** Maximum number of requests allowed in the window */
   limit: number;
   /** Time window in seconds */
   windowSeconds: number;
 }
 
+export type RateLimiter = ReturnType<typeof createRateLimiter>;
+
 export interface RateLimitStore {
-  get(key: string): Promise<RateLimitEntry | null> | RateLimitEntry | null;
-  set(
+  /** Atomically count one request and return its window. */
+  increment(
     key: string,
-    entry: RateLimitEntry,
-    ttlMs: number
-  ): Promise<void> | void;
-  delete?(key: string): Promise<void> | void;
-}
-
-export class InMemoryRateLimitStore implements RateLimitStore {
-  private readonly entries = new Map<string, RateLimitEntry>();
-  private readonly expirations = new Map<string, number>();
-
-  get(key: string): RateLimitEntry | null {
-    const expiresAt = this.expirations.get(key);
-    if (expiresAt !== undefined && Date.now() >= expiresAt) {
-      this.entries.delete(key);
-      this.expirations.delete(key);
-      return null;
-    }
-    return this.entries.get(key) ?? null;
-  }
-
-  set(key: string, entry: RateLimitEntry, ttlMs: number): void {
-    this.entries.set(key, entry);
-    this.expirations.set(key, Date.now() + ttlMs);
-  }
-
-  delete(key: string): void {
-    this.entries.delete(key);
-    this.expirations.delete(key);
-  }
-}
-
-function resolveMaybePromise<T>(value: Promise<T> | T): Promise<T> {
-  return Promise.resolve(value);
+    windowMs: number,
+  ): Promise<RateLimitEntry> | RateLimitEntry;
 }
 
 /**
- * Simple in-memory sliding-window rate limiter.
- * Each instance maintains its own counter map keyed by identifier (IP or user ID).
- * Stale entries are lazily cleaned up.
+ * Counters live in Postgres so every server instance shares them.
+ * One upsert does the read and the write, so parallel requests cannot slip past.
  */
-export function createRateLimiter({ limit, windowSeconds }: RateLimiterOptions) {
-  const store = new InMemoryRateLimitStore();
+const postgresRateLimitStore: RateLimitStore = {
+  async increment(key, windowMs) {
+    const newResetAt = sql`now() + ${windowMs} * interval '1 millisecond'`;
+    const isExpired = sql`${rateLimits.resetAt} <= now()`;
 
-  return createRateLimiterWithStore({ limit, windowSeconds }, store);
+    const [row] = await db
+      .insert(rateLimits)
+      .values({ key, count: 1, resetAt: newResetAt })
+      .onConflictDoUpdate({
+        target: rateLimits.key,
+        set: {
+          count: sql`case when ${isExpired} then 1 else ${rateLimits.count} + 1 end`,
+          resetAt: sql`case when ${isExpired} then ${newResetAt} else ${rateLimits.resetAt} end`,
+        },
+      })
+      .returning();
+
+    // Rows are only reused by the same key, so clear out old ones now and then.
+    if (Math.random() < 0.01) {
+      await db
+        .delete(rateLimits)
+        .where(lte(rateLimits.resetAt, sql`now()`))
+        .catch((error) => {
+          // A failed cleanup must not turn a counted request into an allowed one.
+          console.error("[rate-limit] cleanup failed:", error);
+        });
+    }
+
+    return { count: row.count, resetTime: row.resetAt.getTime() };
+  },
+};
+
+export function createRateLimiter(options: RateLimiterOptions) {
+  return createRateLimiterWithStore(options, postgresRateLimitStore);
 }
 
 export function createRateLimiterWithStore(
-  { limit, windowSeconds }: RateLimiterOptions,
-  store: RateLimitStore
+  { name, limit, windowSeconds }: RateLimiterOptions,
+  store: RateLimitStore,
 ) {
   const windowMs = windowSeconds * 1000;
 
@@ -74,34 +79,50 @@ export function createRateLimiterWithStore(
      * Returns { allowed: true } or { allowed: false, retryAfterSeconds }.
      */
     async check(
-      key: string
-    ): Promise<{ allowed: true } | { allowed: false; retryAfterSeconds: number }> {
-      const now = Date.now();
-      const entry = await resolveMaybePromise(store.get(key));
-
-      if (!entry || now >= entry.resetTime) {
-        // First request in a new window
-        await resolveMaybePromise(
-          store.set(key, { count: 1, resetTime: now + windowMs }, windowMs)
-        );
+      key: string,
+    ): Promise<
+      { allowed: true } | { allowed: false; retryAfterSeconds: number }
+    > {
+      let entry: RateLimitEntry;
+      try {
+        entry = await store.increment(`${name}:${key}`, windowMs);
+      } catch (error) {
+        // A limiter outage must not take sign-in and export down with it.
+        console.error("[rate-limit] store failed, allowing request:", error);
         return { allowed: true };
       }
 
-      if (entry.count < limit) {
-        const nextEntry = {
-          count: entry.count + 1,
-          resetTime: entry.resetTime,
-        };
-        await resolveMaybePromise(
-          store.set(key, nextEntry, Math.max(entry.resetTime - now, 0))
-        );
+      if (entry.count <= limit) {
         return { allowed: true };
       }
 
-      const retryAfterSeconds = Math.ceil((entry.resetTime - now) / 1000);
+      const retryAfterSeconds = Math.max(
+        Math.ceil((entry.resetTime - Date.now()) / 1000),
+        1,
+      );
       return { allowed: false, retryAfterSeconds };
     },
   };
+}
+
+/** Shared by the AI writing tools: 10 calls per hour per user. */
+export const aiRateLimiter = createRateLimiter({
+  name: "ai",
+  limit: 10,
+  windowSeconds: 3600,
+});
+
+/** Server-action version of a limit check: throws a message the UI can show. */
+export async function enforceRateLimit(
+  limiter: RateLimiter,
+  key: string,
+): Promise<void> {
+  const result = await limiter.check(key);
+  if (!result.allowed) {
+    throw new Error(
+      `Rate limit exceeded. Try again in ${result.retryAfterSeconds} seconds.`,
+    );
+  }
 }
 
 /**
@@ -127,6 +148,6 @@ export function rateLimitResponse(retryAfterSeconds: number): NextResponse {
     {
       status: 429,
       headers: { "Retry-After": String(retryAfterSeconds) },
-    }
+    },
   );
 }

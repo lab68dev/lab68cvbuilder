@@ -1,14 +1,8 @@
 import NextAuth from "next-auth";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
-import Credentials from "next-auth/providers/credentials";
+import Google from "next-auth/providers/google";
 import { db } from "@/db";
-import { eq } from "drizzle-orm";
-import {
-  users,
-  accounts,
-  sessions,
-  verificationTokens,
-} from "@/db/schema";
+import { users, accounts, sessions, verificationTokens } from "@/db/schema";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   // ── Adapter ──────────────────────────────────────────────
@@ -27,51 +21,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
   // ── Providers ────────────────────────────────────────────
   providers: [
-    Credentials({
-      name: "Email",
-      credentials: {
-        email: { label: "Email", type: "email" },
-      },
-      async authorize(credentials) {
-        const email = credentials?.email as string | undefined;
-        if (!email) return null;
-
-        // RFC 5321: maximum total email address length is 254 characters
-        if (email.length > 254) return null;
-
-        const normalizedEmail = email.toLowerCase().trim();
-
-        // Re-check after normalization (trim could theoretically still exceed limit)
-        if (normalizedEmail.length > 254) return null;
-
-        // Look up existing user
-        const existing = await db
-          .select()
-          .from(users)
-          .where(eq(users.email, normalizedEmail))
-          .limit(1);
-
-        if (existing.length > 0) {
-          return {
-            id: existing[0].id,
-            email: existing[0].email,
-            name: existing[0].name,
-          };
-        }
-
-        // Auto-create new user
-        const [newUser] = await db
-          .insert(users)
-          .values({
-            email: normalizedEmail,
-            emailVerified: new Date(),
-          })
-          .returning();
-
+    // Reads AUTH_GOOGLE_ID and AUTH_GOOGLE_SECRET from the environment.
+    Google({
+      // Older accounts have no Google link yet, so they are matched by email.
+      // This is safe only because the signIn callback requires a verified address.
+      allowDangerousEmailAccountLinking: true,
+      // Older accounts store lowercase emails, so the match must be lowercase too.
+      profile(profile) {
         return {
-          id: newUser.id,
-          email: newUser.email,
-          name: newUser.name,
+          id: profile.sub,
+          name: profile.name,
+          email: profile.email.toLowerCase(),
+          image: profile.picture,
         };
       },
     }),
@@ -80,10 +41,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   // ── Custom Pages ─────────────────────────────────────────
   pages: {
     signIn: "/login",
+    error: "/login",
   },
 
   // ── Callbacks ────────────────────────────────────────────
   callbacks: {
+    /**
+     * Sign-in callback — only accept addresses Google has verified, so
+     * nobody can reach an older account with an unconfirmed email.
+     */
+    signIn({ profile }) {
+      return profile?.email_verified === true;
+    },
+
     /**
      * JWT callback — attach user ID to the token so we can
      * use it in session and Server Actions for RLS checks.
@@ -115,13 +85,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       const isAuthenticated = !!session?.user;
 
       // Support missing locale or explicit locales /en, /vi
-      const isProtected = request.nextUrl.pathname.match(/^(\/(en|vi))?\/dashboard/);
+      const isProtected = request.nextUrl.pathname.match(
+        /^(\/(en|vi))?\/dashboard/,
+      );
 
       if (isProtected && !isAuthenticated) {
         // Extract locale to maintain it during login redirect
         const match = request.nextUrl.pathname.match(/^\/(en|vi)\//);
-        const locale = match ? match[1] : '';
-        const loginPath = locale ? `/${locale}/login` : '/login';
+        const locale = match ? match[1] : "";
+        const loginPath = locale ? `/${locale}/login` : "/login";
 
         const loginUrl = new URL(loginPath, request.nextUrl.origin);
         loginUrl.searchParams.set("callbackUrl", request.nextUrl.pathname);

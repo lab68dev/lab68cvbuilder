@@ -2,11 +2,15 @@
 
 import Groq from "groq-sdk";
 import { auth } from "@/auth";
-import { createRateLimiter } from "@/lib/rate-limit";
+import { createRateLimiter, enforceRateLimit } from "@/lib/rate-limit";
 import type { ResumeData } from "@/db/schema";
 
 // 5 AI calls per hour per user for github sync
-const aiRateLimiter = createRateLimiter({ limit: 5, windowSeconds: 3600 });
+const aiRateLimiter = createRateLimiter({
+  name: "github-ai",
+  limit: 5,
+  windowSeconds: 3600,
+});
 
 async function getAuthUserId(): Promise<string> {
   const session = await auth();
@@ -39,13 +43,7 @@ export async function generateGitHubAchievements(
   username: string,
 ): Promise<{ result: ResumeData["projects"] }> {
   const userId = await getAuthUserId();
-
-  const rateCheck = await aiRateLimiter.check(userId);
-  if (!rateCheck.allowed) {
-    throw new Error(
-      `Rate limit exceeded. Try again in ${rateCheck.retryAfterSeconds} seconds.`,
-    );
-  }
+  await enforceRateLimit(aiRateLimiter, userId);
 
   if (!username.trim()) throw new Error("GitHub username cannot be empty.");
 

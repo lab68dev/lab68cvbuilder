@@ -5,34 +5,66 @@ import { EMPTY_RESUME_DATA } from "../constants";
 import type { ResumeData } from "@/db/schema";
 
 describe("Sanitize Resume Data", () => {
-  it("strips HTML tags from competitions input to prevent XSS", () => {
-    const maliciousData: ResumeData = {
+  it("keeps text with angle brackets exactly as typed", () => {
+    const data: ResumeData = {
       ...EMPTY_RESUME_DATA,
-      competitions: [
-        {
-          id: "1",
-          name: "<script>alert('xss name')</script>Hackathon",
-          role: "Developer <img src=x onerror=alert(1)>",
-          date: "2026-03",
-          location: "<b>San Francisco</b>",
-          url: "https://example.com",
-          description: "Built the app... <iframe src='http://evil.com'></iframe>",
-          highlights: [
-            "Highlight 1 <SVG onload=alert(1)>",
-            "Highlight <a href='javascript:alert(1)'>Click me</a>",
-          ],
-        },
+      personalInfo: {
+        ...EMPTY_RESUME_DATA.personalInfo,
+        summary: "Cut p95 from >800ms to <200ms and raised throughput >3x",
+      },
+      skills: [
+        { id: "1", category: "Java", items: ["List<String>", "Map<K, V>"] },
       ],
     };
 
-    const sanitized = sanitizeResumeData(maliciousData);
-    const comp = sanitized.competitions[0];
+    const sanitized = sanitizeResumeData(data);
 
-    assert.strictEqual(comp.name, "alert('xss name')Hackathon");
-    assert.strictEqual(comp.role, "Developer ");
-    assert.strictEqual(comp.location, "San Francisco");
-    assert.strictEqual(comp.description, "Built the app... ");
-    assert.strictEqual(comp.highlights[0], "Highlight 1 ");
-    assert.strictEqual(comp.highlights[1], "Highlight Click me");
+    assert.strictEqual(
+      sanitized.personalInfo.summary,
+      data.personalInfo.summary,
+    );
+    assert.deepStrictEqual(sanitized.skills[0].items, [
+      "List<String>",
+      "Map<K, V>",
+    ]);
+  });
+
+  it("caps the bullet symbol and keeps share settings explicit", () => {
+    const sanitized = sanitizeResumeData({
+      ...EMPTY_RESUME_DATA,
+      personalInfo: {
+        fullName: "",
+        email: "",
+        bulletSymbol: "-----",
+        sharePhone: false,
+      },
+    });
+
+    assert.strictEqual(sanitized.personalInfo.bulletSymbol, "---");
+    assert.strictEqual(sanitized.personalInfo.sharePhone, false);
+    assert.strictEqual(sanitized.personalInfo.shareEmail, true);
+  });
+
+  it("fills in fields that older resumes lack", () => {
+    const older: Partial<ResumeData> = { ...EMPTY_RESUME_DATA };
+    delete older.competitions;
+
+    const sanitized = sanitizeResumeData({
+      ...older,
+      education: [
+        {
+          id: "1",
+          institution: "",
+          degree: "",
+          field: "",
+          startDate: "",
+          current: false,
+          highlights: [],
+        },
+      ],
+    } as ResumeData);
+
+    assert.deepStrictEqual(sanitized.competitions, []);
+    assert.deepStrictEqual(sanitized.education[0].coursework, []);
   });
 });

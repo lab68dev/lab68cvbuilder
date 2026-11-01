@@ -5,6 +5,7 @@ import { auth } from "@/auth";
 import { db } from "@/db";
 import { applications, coverLetters, jobs, resumes } from "@/db/schema";
 import { and, desc, eq, inArray } from "drizzle-orm";
+import { aiRateLimiter, enforceRateLimit } from "@/lib/rate-limit";
 
 async function getAuthUserId(): Promise<string> {
   const session = await auth();
@@ -25,12 +26,16 @@ export async function generateCoverLetter(input: {
   tone?: "professional" | "confident" | "friendly";
 }) {
   const userId = await getAuthUserId();
+  await enforceRateLimit(aiRateLimiter, userId);
 
   const [application] = await db
     .select()
     .from(applications)
     .where(
-      and(eq(applications.id, input.applicationId), eq(applications.userId, userId))
+      and(
+        eq(applications.id, input.applicationId),
+        eq(applications.userId, userId),
+      ),
     );
 
   if (!application) {
@@ -50,7 +55,9 @@ export async function generateCoverLetter(input: {
     ? await db
         .select()
         .from(resumes)
-        .where(and(eq(resumes.id, application.resumeId), eq(resumes.userId, userId)))
+        .where(
+          and(eq(resumes.id, application.resumeId), eq(resumes.userId, userId)),
+        )
     : [null];
 
   const tone = input.tone ?? "professional";
@@ -94,7 +101,9 @@ Top Skills: ${(resume?.data.skills.flatMap((s) => s.items).slice(0, 12) ?? []).j
   return saved;
 }
 
-export async function getCoverLettersByApplicationIds(applicationIds: string[]) {
+export async function getCoverLettersByApplicationIds(
+  applicationIds: string[],
+) {
   const userId = await getAuthUserId();
   if (applicationIds.length === 0) return [];
 
@@ -104,8 +113,8 @@ export async function getCoverLettersByApplicationIds(applicationIds: string[]) 
     .where(
       and(
         eq(coverLetters.userId, userId),
-        inArray(coverLetters.applicationId, applicationIds)
-      )
+        inArray(coverLetters.applicationId, applicationIds),
+      ),
     )
     .orderBy(desc(coverLetters.updatedAt));
 }
@@ -113,7 +122,7 @@ export async function getCoverLettersByApplicationIds(applicationIds: string[]) 
 export async function updateCoverLetter(
   coverLetterId: string,
   content: string,
-  tone?: "professional" | "confident" | "friendly"
+  tone?: "professional" | "confident" | "friendly",
 ) {
   const userId = await getAuthUserId();
   const trimmed = content.trim();
@@ -128,7 +137,9 @@ export async function updateCoverLetter(
       ...(tone ? { tone } : {}),
       updatedAt: new Date(),
     })
-    .where(and(eq(coverLetters.id, coverLetterId), eq(coverLetters.userId, userId)))
+    .where(
+      and(eq(coverLetters.id, coverLetterId), eq(coverLetters.userId, userId)),
+    )
     .returning();
 
   if (!updated) {
@@ -143,7 +154,9 @@ export async function deleteCoverLetter(coverLetterId: string) {
 
   const [deleted] = await db
     .delete(coverLetters)
-    .where(and(eq(coverLetters.id, coverLetterId), eq(coverLetters.userId, userId)))
+    .where(
+      and(eq(coverLetters.id, coverLetterId), eq(coverLetters.userId, userId)),
+    )
     .returning();
 
   if (!deleted) {

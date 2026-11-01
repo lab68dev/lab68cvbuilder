@@ -4,90 +4,39 @@ import { useState, Suspense } from "react";
 import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { Link } from "@/i18n/routing";
-import { trackUsageEvent } from "@/actions/usage-event";
-import { GUEST_MIGRATION_META_KEY, GUEST_STORAGE_KEY } from "@/lib/constants";
-import { USAGE_EVENTS } from "@/lib/usage-events";
+import { GUEST_MIGRATION_PARAM, GUEST_STORAGE_KEY } from "@/lib/constants";
+import { getSafeCallbackUrl } from "@/lib/url-helpers";
+
+const SIGN_IN_ERROR = "Google sign-in did not work. Please try again.";
 
 function LoginForm() {
-  const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [mode, setMode] = useState<"login" | "register">("login");
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
+  const [error, setError] = useState<string | null>(
+    searchParams.get("error") ? SIGN_IN_ERROR : null,
+  );
+  const callbackUrl = getSafeCallbackUrl(searchParams.get("callbackUrl"));
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleGoogleSignIn = async () => {
     setError(null);
-
-    if (email.length > 254) {
-      setError("Email address must not exceed 254 characters (RFC 5321).");
-      return;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setError("Please enter a valid email address.");
-      return;
-    }
-
     setIsLoading(true);
 
+    let hasGuestDraft = false;
     try {
-      const result = await signIn("credentials", {
-        email,
-        redirect: false,
-      });
-
-      if (result?.error) {
-        setError("Authentication failed. Please try again.");
-        setIsLoading(false);
-      } else {
-        // Migrate guest resume data if the user came from /try
-        try {
-          const stored = localStorage.getItem(GUEST_STORAGE_KEY);
-          if (stored) {
-            const rawMeta = localStorage.getItem(GUEST_MIGRATION_META_KEY);
-            const metadata = rawMeta ? JSON.parse(rawMeta) : null;
-            void trackUsageEvent(USAGE_EVENTS.GUEST_MIGRATION_STARTED, {
-              source: metadata?.source || "unknown",
-            });
-
-            const parsed = JSON.parse(stored);
-            const response = await fetch("/api/resume/guest", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                ...parsed,
-                metadata,
-              }),
-            });
-
-            if (!response.ok) {
-              throw new Error("Failed to migrate guest resume");
-            }
-
-            const resume = await response.json();
-            localStorage.removeItem(GUEST_STORAGE_KEY);
-            localStorage.removeItem(GUEST_MIGRATION_META_KEY);
-            void trackUsageEvent(USAGE_EVENTS.GUEST_MIGRATION_SUCCEEDED, {
-              resumeId: resume.id,
-            });
-            window.location.href = `/builder/${resume.id}`;
-            return;
-          }
-        } catch {
-          // If migration fails, fall through to normal redirect
-          localStorage.removeItem(GUEST_STORAGE_KEY);
-          localStorage.removeItem(GUEST_MIGRATION_META_KEY);
-          void trackUsageEvent(USAGE_EVENTS.GUEST_MIGRATION_FAILED);
-        }
-        window.location.href = callbackUrl;
-      }
+      // The dashboard imports the guest draft when Google sends the user back.
+      hasGuestDraft = Boolean(localStorage.getItem(GUEST_STORAGE_KEY));
     } catch {
-      setError("An unexpected error occurred.");
+      // Blocked browser storage must not stop the sign-in.
+    }
+
+    try {
+      await signIn("google", {
+        redirectTo: hasGuestDraft
+          ? `/dashboard?${GUEST_MIGRATION_PARAM}=1`
+          : callbackUrl,
+      });
+    } catch {
+      setError(SIGN_IN_ERROR);
       setIsLoading(false);
     }
   };
@@ -132,7 +81,7 @@ function LoginForm() {
 
           {/* Description */}
           <p className="text-sm font-light tracking-wide max-w-md leading-relaxed text-gray-300">
-            Passwordless authentication via email.
+            Sign in with your Google account.
             <br />
             No passwords. No friction. Pure access.
           </p>
@@ -146,7 +95,7 @@ function LoginForm() {
       </div>
 
       {/* ═══════════════════════════════════════════════════════ */}
-      {/* RIGHT PANEL — MINIMAL EMAIL FORM */}
+      {/* RIGHT PANEL — GOOGLE SIGN-IN */}
       {/* ═══════════════════════════════════════════════════════ */}
       <div className="w-full lg:w-1/2 bg-white flex items-center justify-center p-8">
         <div className="w-full max-w-md">
@@ -160,42 +109,15 @@ function LoginForm() {
             <div className="w-16 border-t border-black mb-4" />
           </div>
 
-          {/* Mode toggle tabs */}
-          <div className="flex border border-black mb-8">
-            <button
-              type="button"
-              onClick={() => { setMode("login"); setError(null); }}
-              className={`flex-1 py-3 text-sm font-bold uppercase tracking-widest transition-all duration-150 ${mode === "login"
-                  ? "bg-black text-white"
-                  : "bg-white text-black hover:bg-gray-100"
-                }`}
-            >
-              LOG IN
-            </button>
-            <button
-              type="button"
-              onClick={() => { setMode("register"); setError(null); }}
-              className={`flex-1 py-3 text-sm font-bold uppercase tracking-widest border-l border-black transition-all duration-150 ${mode === "register"
-                  ? "bg-black text-white"
-                  : "bg-white text-black hover:bg-gray-100"
-                }`}
-            >
-              SIGN UP
-            </button>
-          </div>
-
           {/* Form header */}
           <div className="mb-8">
             <span className="label-mono block mb-2">
-              {mode === "login" ? "STEP_01 // AUTHENTICATION" : "STEP_01 // REGISTRATION"}
+              STEP_01 // AUTHENTICATION
             </span>
-            <h2 className="text-2xl font-bold tracking-tight">
-              {mode === "login" ? "Welcome Back" : "Create Account"}
-            </h2>
+            <h2 className="text-2xl font-bold tracking-tight">Welcome</h2>
             <p className="text-sm text-gray-600 mt-2">
-              {mode === "login"
-                ? "Enter your email to access your account"
-                : "Enter your email to get started — no password needed"}
+              Log in or create an account with Google. If you already have an
+              account, use the same email address to keep your resumes.
             </p>
           </div>
 
@@ -207,58 +129,14 @@ function LoginForm() {
             </div>
           )}
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label
-                htmlFor="email"
-                className="label-mono block mb-2 text-black"
-              >
-                EMAIL_ADDRESS
-              </label>
-              <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                required
-                disabled={isLoading}
-                className="w-full border border-black bg-transparent px-4 py-3 text-base focus:bg-black focus:text-white transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={isLoading || !email}
-              className="w-full border border-black bg-black text-white px-6 py-4 text-sm font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isLoading
-                ? "AUTHENTICATING..."
-                : mode === "login"
-                  ? "LOG IN →"
-                  : "CREATE ACCOUNT →"}
-            </button>
-          </form>
-
-          {/* Divider */}
-          <div className="my-8 border-t border-gray-200" />
-
-          {/* Mode switcher hint */}
-          <div className="text-center">
-            <p className="text-xs text-gray-500 mb-2">
-              {mode === "login"
-                ? "Don\u2019t have an account?"
-                : "Already have an account?"}
-            </p>
-            <button
-              type="button"
-              onClick={() => { setMode(mode === "login" ? "register" : "login"); setError(null); }}
-              className="label-mono text-black hover:underline"
-            >
-              {mode === "login" ? "SIGN UP →" : "LOG IN →"}
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={handleGoogleSignIn}
+            disabled={isLoading}
+            className="w-full border border-black bg-black text-white px-6 py-4 text-sm font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isLoading ? "OPENING GOOGLE..." : "CONTINUE WITH GOOGLE →"}
+          </button>
 
           <div className="mt-6 text-center">
             <Link
