@@ -183,6 +183,9 @@ export function ModernPDF({
                       </Text>
                     </View>
                     <Text style={s.company}>{exp.company}</Text>
+                    {exp.location ? (
+                      <Text style={s.company}>{exp.location}</Text>
+                    ) : null}
                     {exp.description ? (
                       <Text style={{ ...s.body, marginTop: 2 }}>
                         {exp.description}
@@ -212,6 +215,45 @@ export function ModernPDF({
                     {project.description ? (
                       <Text style={s.body}>{project.description}</Text>
                     ) : null}
+                    {project.technologies.length > 0 ? (
+                      <Text style={s.body}>
+                        {project.technologies.join(", ")}
+                      </Text>
+                    ) : null}
+                    {project.url || project.githubUrl || project.websiteUrl ? (
+                      <View style={s.linkRow}>
+                        {project.url ? (
+                          <Link
+                            src={ensureHref(project.url)}
+                            style={{ ...s.contactItem, ...s.contactLink }}
+                          >
+                            {l.project}
+                          </Link>
+                        ) : null}
+                        {project.githubUrl ? (
+                          <Link
+                            src={ensureHref(project.githubUrl)}
+                            style={{ ...s.contactItem, ...s.contactLink }}
+                          >
+                            GitHub
+                          </Link>
+                        ) : null}
+                        {project.websiteUrl ? (
+                          <Link
+                            src={ensureHref(project.websiteUrl)}
+                            style={{ ...s.contactItem, ...s.contactLink }}
+                          >
+                            {l.website}
+                          </Link>
+                        ) : null}
+                      </View>
+                    ) : null}
+                    {project.highlights.map((h, i) => (
+                      <View key={i} style={s.bulletRow}>
+                        <Text style={s.bulletMark}>{bulletSymbol}</Text>
+                        <Text style={s.bulletText}>{h}</Text>
+                      </View>
+                    ))}
                   </View>
                 ))}
               </View>
@@ -244,6 +286,22 @@ export function ModernPDF({
                       {edu.degree} {edu.field ? `in ${edu.field}` : ""}
                     </Text>
                     <Text style={s.body}>{edu.institution}</Text>
+                    <Text style={s.entryDate}>
+                      {fmtRange(edu.startDate, edu.endDate || "", edu.current)}
+                    </Text>
+                    {edu.location ? (
+                      <Text style={s.body}>{edu.location}</Text>
+                    ) : null}
+                    {edu.gpa ? (
+                      <Text style={s.body}>
+                        {l.gpa}: {edu.gpa}
+                      </Text>
+                    ) : null}
+                    {(edu.coursework ?? []).length > 0 ? (
+                      <Text style={s.body}>
+                        Relevant Coursework: {(edu.coursework ?? []).join(", ")}
+                      </Text>
+                    ) : null}
                   </View>
                 ))}
               </View>
@@ -255,10 +313,23 @@ export function ModernPDF({
                   {l.certifications}
                 </Text>
                 {certifications.map((cert) => (
-                  <Text key={cert.id} style={s.line}>
-                    <Text style={s.bold}>{cert.name}</Text>
-                    {cert.issuer ? ` - ${cert.issuer}` : ""}
-                  </Text>
+                  <View key={cert.id} style={{ marginBottom: 4 }}>
+                    <Text style={s.body}>
+                      <Text style={s.bold}>{cert.name}</Text>
+                      {cert.issuer ? ` - ${cert.issuer}` : ""}
+                    </Text>
+                    {cert.date ? (
+                      <Text style={s.entryDate}>{fmtDate(cert.date)}</Text>
+                    ) : null}
+                    {cert.url ? (
+                      <Link
+                        src={ensureHref(cert.url)}
+                        style={{ ...s.contactLink, fontSize: 8 }}
+                      >
+                        {l.viewCertificate}
+                      </Link>
+                    ) : null}
+                  </View>
                 ))}
               </View>
             ) : null}

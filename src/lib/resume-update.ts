@@ -18,13 +18,24 @@ const LIST_SECTIONS = [
   "languages",
 ] as const;
 
+const SHARE_FLAGS = ["shareEmail", "sharePhone", "shareLocation"] as const;
+
+function isObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
 function isResumeData(value: unknown): value is ResumeData {
-  if (typeof value !== "object" || value === null) return false;
-  const data = value as Record<string, unknown>;
+  if (!isObject(value) || !isObject(value.personalInfo)) return false;
+  const { personalInfo } = value;
+
   return (
-    typeof data.personalInfo === "object" &&
-    data.personalInfo !== null &&
-    LIST_SECTIONS.every((section) => Array.isArray(data[section]))
+    SHARE_FLAGS.every((flag) =>
+      ["undefined", "boolean"].includes(typeof personalInfo[flag]),
+    ) &&
+    LIST_SECTIONS.every((section) => {
+      const list = value[section];
+      return Array.isArray(list) && list.every(isObject);
+    })
   );
 }
 

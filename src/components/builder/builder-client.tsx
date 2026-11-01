@@ -16,6 +16,7 @@ interface BuilderClientProps {
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MAX_SAVE_RETRIES = 3;
+const SAVE_TIMEOUT_MS = 15_000;
 
 export function BuilderClient({ resume }: BuilderClientProps) {
   const {
@@ -88,6 +89,8 @@ export function BuilderClient({ resume }: BuilderClientProps) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(snapshot),
+        // A stalled request must not block every later save.
+        signal: AbortSignal.timeout(SAVE_TIMEOUT_MS),
       });
 
       if (!response.ok) {

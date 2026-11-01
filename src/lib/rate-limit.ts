@@ -50,7 +50,13 @@ const postgresRateLimitStore: RateLimitStore = {
 
     // Rows are only reused by the same key, so clear out old ones now and then.
     if (Math.random() < 0.01) {
-      await db.delete(rateLimits).where(lte(rateLimits.resetAt, sql`now()`));
+      await db
+        .delete(rateLimits)
+        .where(lte(rateLimits.resetAt, sql`now()`))
+        .catch((error) => {
+          // A failed cleanup must not turn a counted request into an allowed one.
+          console.error("[rate-limit] cleanup failed:", error);
+        });
     }
 
     return { count: row.count, resetTime: row.resetAt.getTime() };

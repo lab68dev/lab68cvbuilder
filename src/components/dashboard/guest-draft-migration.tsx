@@ -46,8 +46,11 @@ export function GuestDraftMigration() {
         }
 
         const resume = await response.json();
-        localStorage.removeItem(GUEST_STORAGE_KEY);
-        localStorage.removeItem(GUEST_MIGRATION_META_KEY);
+        // Another guest tab may have saved newer edits during the request.
+        if (localStorage.getItem(GUEST_STORAGE_KEY) === stored) {
+          localStorage.removeItem(GUEST_STORAGE_KEY);
+          localStorage.removeItem(GUEST_MIGRATION_META_KEY);
+        }
         void trackUsageEvent(USAGE_EVENTS.GUEST_MIGRATION_SUCCEEDED, {
           resumeId: resume.id,
         });

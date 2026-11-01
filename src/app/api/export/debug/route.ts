@@ -7,6 +7,8 @@ import { CreativePDF } from "@/components/pdf/creative-pdf";
 import { ExecutivePDF } from "@/components/pdf/executive-pdf";
 import { HarvardPDF } from "@/components/pdf/harvard-pdf";
 import { AtsPDF } from "@/components/pdf/ats-pdf";
+import { MinimalPDF } from "@/components/pdf/minimal-pdf";
+import { ModernPDF } from "@/components/pdf/modern-pdf";
 import type { TemplateId } from "@/lib/constants";
 import { getFontById } from "@/lib/fonts";
 import { registerPDFFont } from "@/lib/pdf-font-loader";
@@ -35,8 +37,8 @@ const PDF_TEMPLATES: Record<TemplateId, PDFComponentType> = {
   executive: ExecutivePDF,
   harvard: HarvardPDF,
   ats: AtsPDF,
-  minimal: HarvardPDF,
-  modern: ExecutivePDF,
+  minimal: MinimalPDF,
+  modern: ModernPDF,
 };
 
 export async function GET(request: NextRequest) {
@@ -58,7 +60,7 @@ export async function GET(request: NextRequest) {
       fontConfig.googleFamily,
     );
 
-    const pdfFontFamily = fontRegistered ? fontConfig.name : "Archivo";
+    const pdfFontFamily = fontRegistered ? fontConfig.name : "Helvetica";
 
     const Component =
       PDF_TEMPLATES[resume.templateId as TemplateId] || HarvardPDF;

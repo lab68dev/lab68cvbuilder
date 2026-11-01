@@ -79,8 +79,8 @@ export async function GET(
       fontConfig.googleFamily,
     );
 
-    // Use the registered font name, or fall back to Archivo (always registered by PDF templates)
-    const pdfFontFamily = fontRegistered ? fontConfig.name : "Archivo";
+    // Use the registered font name, or fall back to Helvetica, which needs no registration
+    const pdfFontFamily = fontRegistered ? fontConfig.name : "Helvetica";
 
     // Render PDF based on template — lookup from map with fallback
     const Component =

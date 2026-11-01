@@ -21,9 +21,15 @@ function LoginForm() {
     setError(null);
     setIsLoading(true);
 
+    let hasGuestDraft = false;
     try {
       // The dashboard imports the guest draft when Google sends the user back.
-      const hasGuestDraft = Boolean(localStorage.getItem(GUEST_STORAGE_KEY));
+      hasGuestDraft = Boolean(localStorage.getItem(GUEST_STORAGE_KEY));
+    } catch {
+      // Blocked browser storage must not stop the sign-in.
+    }
+
+    try {
       await signIn("google", {
         redirectTo: hasGuestDraft
           ? `/dashboard?${GUEST_MIGRATION_PARAM}=1`

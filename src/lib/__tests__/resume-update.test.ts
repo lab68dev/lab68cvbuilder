@@ -47,5 +47,23 @@ describe("pickResumeUpdate", () => {
     assert.throws(() => pickResumeUpdate(null), /Invalid/);
     assert.throws(() => pickResumeUpdate({ title: 42 }), /Invalid/);
     assert.throws(() => pickResumeUpdate({ data: {} }), /Invalid/);
+    assert.throws(
+      () =>
+        pickResumeUpdate({ data: { ...EMPTY_RESUME_DATA, education: [null] } }),
+      /Invalid/,
+    );
+    assert.throws(
+      () =>
+        pickResumeUpdate({
+          data: {
+            ...EMPTY_RESUME_DATA,
+            personalInfo: {
+              ...EMPTY_RESUME_DATA.personalInfo,
+              sharePhone: "false",
+            },
+          },
+        }),
+      /Invalid/,
+    );
   });
 });

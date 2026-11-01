@@ -103,7 +103,28 @@ describe("mergeAiResume", () => {
     assert.strictEqual(merged.personalInfo.location, "");
   });
 
-  it("follows the AI's order without losing entries", () => {
+  it("keeps names, titles and skills even when the AI changes them", () => {
+    const merged = mergeAiResume(
+      {
+        ...original,
+        skills: [{ id: "s1", category: "Languages", items: ["Go", "Rust"] }],
+      },
+      {
+        personalInfo: { fullName: "Someone Else" },
+        experience: [
+          { ...experienceItem, company: "Fake Corp", position: "CEO" },
+        ],
+        skills: [{ id: "s1", category: "Other", items: ["COBOL", "Fortran"] }],
+      },
+    );
+
+    assert.strictEqual(merged.personalInfo.fullName, "Dong");
+    assert.strictEqual(merged.experience[0].company, "Acme");
+    assert.strictEqual(merged.experience[0].position, "Engineer");
+    assert.deepStrictEqual(merged.skills[0].items, ["Go", "Rust"]);
+  });
+
+  it("keeps the original order and every entry", () => {
     const second = { ...experienceItem, id: "exp-2", company: "Beta" };
     const third = { ...experienceItem, id: "exp-3", company: "Gamma" };
     const merged = mergeAiResume(
@@ -113,7 +134,29 @@ describe("mergeAiResume", () => {
 
     assert.deepStrictEqual(
       merged.experience.map((item) => item.id),
-      ["exp-3", "exp-1", "exp-2"],
+      ["exp-1", "exp-2", "exp-3"],
+    );
+  });
+
+  it("keeps entries that share an id", () => {
+    const twin = { ...experienceItem, company: "Beta", description: "Second" };
+    const merged = mergeAiResume(
+      { ...original, experience: [experienceItem, twin] },
+      {
+        personalInfo: {},
+        experience: [
+          { id: "exp-1", description: "First fixed" },
+          { id: "exp-1", description: "Second fixed" },
+        ],
+      },
+    );
+
+    assert.deepStrictEqual(
+      merged.experience.map((item) => [item.company, item.description]),
+      [
+        ["Acme", "First fixed"],
+        ["Beta", "Second fixed"],
+      ],
     );
   });
 

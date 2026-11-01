@@ -41,32 +41,32 @@ function mergeFields<T extends object>(
   return merged;
 }
 
-/** Follow the AI's order, but never add an entry or lose one. */
+/** Keep every original entry in its place; the AI can only reword them. */
 function mergeList<T extends { id: string }>(
   original: T[] | undefined,
   ai: unknown,
   textFields: Array<keyof T & string>,
   listFields?: Array<keyof T & string>,
 ): T[] {
-  const remaining = new Map((original ?? []).map((item) => [item.id, item]));
-  const merged: T[] = [];
+  const aiItems = (Array.isArray(ai) ? (ai as unknown[]) : [])
+    .map(asRecord)
+    .filter((item) => item !== null);
 
-  for (const value of Array.isArray(ai) ? ai : []) {
-    const aiItem = asRecord(value);
-    const item = aiItem && remaining.get(String(aiItem.id));
-    if (!aiItem || !item) continue;
+  return (original ?? []).map((item) => {
+    const index = aiItems.findIndex((aiItem) => String(aiItem.id) === item.id);
+    if (index < 0) return item;
 
-    remaining.delete(item.id);
-    merged.push(mergeFields(item, aiItem, textFields, listFields));
-  }
-
-  return [...merged, ...remaining.values()];
+    // Each AI entry is used once, so entries that share an id stay separate.
+    const [aiItem] = aiItems.splice(index, 1);
+    return mergeFields(item, aiItem, textFields, listFields);
+  });
 }
 
 /**
  * Apply an AI rewrite to a resume. AI output is untrusted: it can drop sections,
- * lose ids or change facts, so it only ever supplies wording. Ids, dates, links,
- * contact details and share settings always come from the original.
+ * lose ids or change facts, so it only supplies sentences: the summary,
+ * descriptions and highlights. Names, job titles, places, skills, dates, links,
+ * contact details and share settings are facts and always come from the original.
  */
 export function mergeAiResume(original: ResumeData, ai: unknown): ResumeData {
   const result = asRecord(ai);
@@ -77,39 +77,29 @@ export function mergeAiResume(original: ResumeData, ai: unknown): ResumeData {
 
   return {
     ...original,
-    personalInfo: mergeFields(original.personalInfo, personalInfo, [
-      "fullName",
-      "location",
-      "summary",
-    ]),
+    personalInfo: mergeFields(original.personalInfo, personalInfo, ["summary"]),
     experience: mergeList(
       original.experience,
       result.experience,
-      ["company", "position", "location", "description"],
+      ["description"],
       ["highlights"],
     ),
     education: mergeList(
       original.education,
       result.education,
-      ["institution", "degree", "field", "location"],
-      ["coursework", "highlights"],
+      [],
+      ["highlights"],
     ),
-    skills: mergeList(original.skills, result.skills, ["category"], ["items"]),
     projects: mergeList(
       original.projects,
       result.projects,
-      ["name", "description"],
-      ["technologies", "highlights"],
+      ["description"],
+      ["highlights"],
     ),
-    certifications: mergeList(original.certifications, result.certifications, [
-      "name",
-      "issuer",
-    ]),
-    languages: mergeList(original.languages, result.languages, ["language"]),
     competitions: mergeList(
       original.competitions,
       result.competitions,
-      ["name", "role", "location", "description"],
+      ["description"],
       ["highlights"],
     ),
   };
