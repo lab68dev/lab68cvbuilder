@@ -68,7 +68,7 @@ export function GuestDraftMigration() {
 
   return (
     <div role="alert" className="mb-8 p-4 border border-red-600 bg-red-50">
-      <span className="label-mono text-red-600">DRAFT_NOT_IMPORTED</span>
+      <span className="label-mono text-red-600">Draft not imported</span>
       <p className="text-sm text-red-800 mt-1">
         We could not import your draft. It is still saved in this browser, so
         reload this page to try again.

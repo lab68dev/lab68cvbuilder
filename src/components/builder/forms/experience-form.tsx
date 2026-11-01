@@ -183,7 +183,7 @@ export function ExperienceForm() {
   return (
     <div className="max-w-3xl space-y-8">
       <div>
-        <span className="label-mono block mb-4">SECTION_02 // EXPERIENCE</span>
+        <span className="label-mono block mb-4">Section 2</span>
         <h2 className="text-3xl font-black tracking-tight mb-2">
           Work Experience
         </h2>
@@ -194,7 +194,7 @@ export function ExperienceForm() {
 
       <div className="space-y-8">
         {experience.map((exp, index) => (
-          <div key={exp.id} className="border border-black p-6">
+          <div key={exp.id} className="sketch-card p-6">
             <div className="flex items-center justify-between mb-6">
               <span className="label-mono">
                 ENTRY_{String(index + 1).padStart(2, "0")}
@@ -203,7 +203,7 @@ export function ExperienceForm() {
                 <button
                   onClick={() => moveExperience(index, "up")}
                   disabled={index === 0}
-                  className="border border-gray-400 px-2 py-1 text-xs font-bold hover:bg-black hover:text-white transition-colors duration-150 disabled:opacity-30"
+                  className="border border-gray-400 px-2 py-1 text-xs font-bold hover:bg-note transition-colors duration-150 disabled:opacity-30"
                   aria-label="Move up"
                 >
                   ↑
@@ -211,14 +211,14 @@ export function ExperienceForm() {
                 <button
                   onClick={() => moveExperience(index, "down")}
                   disabled={index === experience.length - 1}
-                  className="border border-gray-400 px-2 py-1 text-xs font-bold hover:bg-black hover:text-white transition-colors duration-150 disabled:opacity-30"
+                  className="border border-gray-400 px-2 py-1 text-xs font-bold hover:bg-note transition-colors duration-150 disabled:opacity-30"
                   aria-label="Move down"
                 >
                   ↓
                 </button>
                 <button
                   onClick={() => removeExperience(exp.id)}
-                  className="border border-red-600 text-red-600 px-3 py-1 text-xs font-bold uppercase tracking-wider hover:bg-red-600 hover:text-white transition-colors duration-150"
+                  className="border border-red-600 text-red-600 px-3 py-1 text-xs font-bold hover:bg-red-600 hover:text-white transition-colors duration-150"
                 >
                   Remove
                 </button>
@@ -228,7 +228,7 @@ export function ExperienceForm() {
             <div className="space-y-4">
               {/* Position */}
               <div>
-                <label className="label-mono block mb-2">POSITION *</label>
+                <label className="label-mono block mb-2">Position *</label>
                 <input
                   type="text"
                   value={exp.position}
@@ -242,7 +242,7 @@ export function ExperienceForm() {
 
               {/* Company */}
               <div>
-                <label className="label-mono block mb-2">COMPANY *</label>
+                <label className="label-mono block mb-2">Company *</label>
                 <input
                   type="text"
                   value={exp.company}
@@ -256,7 +256,7 @@ export function ExperienceForm() {
 
               {/* Location */}
               <div>
-                <label className="label-mono block mb-2">LOCATION</label>
+                <label className="label-mono block mb-2">Location</label>
                 <input
                   type="text"
                   value={exp.location || ""}
@@ -271,7 +271,7 @@ export function ExperienceForm() {
               {/* Dates */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="label-mono block mb-2">START_DATE *</label>
+                  <label className="label-mono block mb-2">Start date *</label>
                   <MonthInput
                     key={`exp-start-${exp.id}-${exp.startDate || "empty"}`}
                     value={exp.startDate}
@@ -295,7 +295,7 @@ export function ExperienceForm() {
                   />
                 </div>
                 <div>
-                  <label className="label-mono block mb-2">END_DATE</label>
+                  <label className="label-mono block mb-2">End date</label>
                   <MonthInput
                     key={`exp-end-${exp.id}-${exp.endDate || "empty"}-${exp.current ? "current" : "open"}`}
                     value={exp.endDate || ""}
@@ -352,7 +352,7 @@ export function ExperienceForm() {
               {/* Description */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="label-mono">DESCRIPTION</label>
+                  <label className="label-mono">Description</label>
                   <button
                     type="button"
                     onClick={() =>
@@ -364,7 +364,7 @@ export function ExperienceForm() {
                       )
                     }
                     disabled={!exp.description.trim() || !!improvingDescription}
-                    className="label-mono text-[10px] border border-black px-2 py-0.5 hover:bg-black hover:text-white transition-colors duration-150 disabled:opacity-30 disabled:cursor-not-allowed"
+                    className="label-mono text-[10px] border border-black px-2 py-0.5 hover:bg-note transition-colors duration-150 disabled:opacity-30 disabled:cursor-not-allowed"
                   >
                     {improvingDescription === exp.id ? "..." : "✦"}
                   </button>
@@ -389,7 +389,7 @@ export function ExperienceForm() {
               {/* Highlights */}
               <div>
                 <label className="label-mono block mb-2">
-                  KEY_ACHIEVEMENTS
+                  Key achievements
                 </label>
                 <DndContext
                   sensors={sensors}
@@ -428,7 +428,7 @@ export function ExperienceForm() {
                                 }
                                 disabled={isImproving || !highlight.trim()}
                                 title="Improve with AI"
-                                className="border border-gray-400 px-3 py-2 text-xs font-bold hover:border-black hover:bg-black hover:text-white transition-all duration-150 disabled:opacity-30"
+                                className="border border-gray-400 px-3 py-2 text-xs font-bold hover:border-black hover:bg-note transition-all duration-150 disabled:opacity-30"
                               >
                                 {isImproving ? "..." : "✦"}
                               </button>
@@ -447,7 +447,7 @@ export function ExperienceForm() {
                 </DndContext>
                 <button
                   onClick={() => addHighlight(exp.id)}
-                  className="border border-gray-400 px-4 py-2 text-xs font-bold uppercase tracking-wider hover:border-black hover:bg-black hover:text-white transition-all duration-150"
+                  className="border border-gray-400 px-4 py-2 text-xs font-bold hover:border-black hover:bg-note transition-all duration-150"
                 >
                   + Add Achievement
                 </button>
@@ -459,7 +459,7 @@ export function ExperienceForm() {
         {/* Add new button */}
         <button
           onClick={addExperience}
-          className="w-full border-2 border-dashed border-gray-400 px-6 py-4 text-sm font-bold uppercase tracking-wider hover:border-black hover:bg-black hover:text-white transition-all duration-150"
+          className="w-full border-2 border-dashed border-gray-400 px-6 py-4 text-sm font-bold hover:border-black hover:bg-note transition-all duration-150"
         >
           + Add Work Experience
         </button>

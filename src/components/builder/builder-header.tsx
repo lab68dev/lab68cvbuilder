@@ -193,12 +193,12 @@ export function BuilderHeader({
             <div className="flex items-center gap-4">
               <Link
                 href={isGuest ? "/" : "/dashboard"}
-                className="border border-black px-3 py-2 text-xs font-bold uppercase tracking-wider hover:bg-black hover:text-white transition-colors duration-150"
+                className="border border-black px-3 py-2 text-xs font-bold hover:bg-note transition-colors duration-150"
               >
                 ← {isGuest ? "Home" : "Back"}
               </Link>
               <span className="label-mono">
-                {isGuest ? "GUEST_MODE" : "BUILDER_MODE"}
+                {isGuest ? "Guest mode" : "Builder"}
               </span>
             </div>
 
@@ -209,7 +209,7 @@ export function BuilderHeader({
                   <>
                     <span className="inline-block w-2 h-2 rounded-full bg-gray-400" />
                     <span className="label-mono text-gray-500">
-                      NOT SAVED · GUEST
+                      Not saved (guest)
                     </span>
                   </>
                 ) : saveValidationError ? (
@@ -223,13 +223,13 @@ export function BuilderHeader({
                   <>
                     <span className="inline-block w-2 h-2 rounded-full bg-yellow-500 animate-pulse" />
                     <span className="label-mono text-yellow-600">
-                      SAVING...
+                      Saving...
                     </span>
                   </>
                 ) : isDirty ? (
                   <>
                     <span className="inline-block w-2 h-2 rounded-full bg-orange-400" />
-                    <span className="label-mono text-orange-500">UNSAVED</span>
+                    <span className="label-mono text-orange-500">Unsaved</span>
                   </>
                 ) : lastSavedAt ? (
                   <>
@@ -244,7 +244,7 @@ export function BuilderHeader({
               {/* Mobile preview toggle */}
               <button
                 onClick={onToggleMobilePreview}
-                className="lg:hidden border border-black px-3 py-2 text-xs font-bold uppercase tracking-wider hover:bg-black hover:text-white transition-colors duration-150"
+                className="lg:hidden border border-black px-3 py-2 text-xs font-bold hover:bg-note transition-colors duration-150"
               >
                 {isMobilePreview ? "Edit" : "Preview"}
               </button>
@@ -255,45 +255,45 @@ export function BuilderHeader({
                   <div className="flex flex-wrap justify-end items-center gap-2">
                     <TutorialPopup
                       isGuest
-                      triggerClassName="border border-gray-400 px-4 py-2 text-xs font-bold uppercase tracking-wider hover:border-black hover:bg-black hover:text-white transition-colors duration-150"
+                      triggerClassName="border border-gray-400 px-4 py-2 text-xs font-bold hover:border-black hover:bg-note transition-colors duration-150"
                     />
                     <Link
                       href="/login"
-                      className="border border-black px-4 py-2 text-xs font-bold uppercase tracking-wider bg-black text-white hover:bg-white hover:text-black transition-colors duration-150"
+                      className="border border-black px-4 py-2 text-xs font-bold bg-black text-white hover:bg-white hover:text-black transition-colors duration-150"
                     >
-                      SIGN IN TO EXPORT
+                      Sign in to export
                     </Link>
                   </div>
                 ) : (
                   <>
                     <div className="flex flex-wrap justify-end items-center gap-2">
-                      <TutorialPopup triggerClassName="border border-gray-400 px-4 py-2 text-xs font-bold uppercase tracking-wider hover:border-black hover:bg-black hover:text-white transition-colors duration-150" />
+                      <TutorialPopup triggerClassName="border border-gray-400 px-4 py-2 text-xs font-bold hover:border-black hover:bg-note transition-colors duration-150" />
                       <button
                         onClick={handleCheckWriting}
                         disabled={isCheckingWriting}
-                        className={`border border-gray-400 px-4 py-2 text-xs font-bold uppercase tracking-wider transition-colors duration-150 ${
+                        className={`border border-gray-400 px-4 py-2 text-xs font-bold transition-colors duration-150 ${
                           isCheckingWriting
                             ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                            : "hover:border-black hover:bg-black hover:text-white"
+                            : "hover:border-black hover:bg-note"
                         }`}
                       >
-                        {isCheckingWriting ? "CHECKING..." : "CHECK GRAMMAR"}
+                        {isCheckingWriting ? "Checking..." : "Check grammar"}
                       </button>
                       <button
                         onClick={handlePreviewPdf}
                         disabled={isExporting}
-                        className={`border border-black px-4 py-2 text-xs font-bold uppercase tracking-wider transition-colors duration-150 ${
+                        className={`border border-black px-4 py-2 text-xs font-bold transition-colors duration-150 ${
                           isExporting
                             ? "bg-gray-200 text-gray-500 cursor-not-allowed"
                             : "bg-black text-white hover:bg-white hover:text-black"
                         }`}
                       >
-                        {isExporting ? "GENERATING..." : "EXPORT PDF"}
+                        {isExporting ? "Generating..." : "Export PDF"}
                       </button>
                     </div>
                     {writingStatus && (
                       <p
-                        className={`text-[10px] font-bold uppercase tracking-wider max-w-64 text-right ${
+                        className={`text-[10px] font-bold max-w-64 text-right ${
                           writingStatus.type === "success"
                             ? "text-green-600"
                             : "text-red-600"
@@ -303,7 +303,7 @@ export function BuilderHeader({
                       </p>
                     )}
                     {exportError && (
-                      <p className="text-[10px] font-bold text-red-600 uppercase tracking-wider max-w-48 text-right">
+                      <p className="text-[10px] font-bold text-red-600 max-w-48 text-right">
                         {exportError}
                       </p>
                     )}
@@ -331,12 +331,12 @@ export function BuilderHeader({
 
             {/* Font selector */}
             <div className="flex items-center gap-2">
-              <span className="label-mono">FONT:</span>
+              <span className="label-mono">Font:</span>
               <select
                 title="Font family"
                 value={fontFamily}
                 onChange={(e) => setFontFamily(e.target.value)}
-                className="border border-black bg-transparent px-3 py-2 text-xs font-bold tracking-wider transition-all duration-150"
+                className="border border-black bg-transparent px-3 py-2 text-xs font-bold transition-all duration-150"
               >
                 {CV_FONTS.map((font) => (
                   <option key={font.id} value={font.id}>
@@ -348,12 +348,12 @@ export function BuilderHeader({
 
             {/* PDF Language selector */}
             <div className="flex items-center gap-2">
-              <span className="label-mono">LANG:</span>
+              <span className="label-mono">Lang:</span>
               <select
                 title="PDF language"
                 value={pdfLocale}
                 onChange={(e) => setPdfLocale(e.target.value)}
-                className="border border-black bg-transparent px-3 py-2 text-xs font-bold tracking-wider transition-all duration-150"
+                className="border border-black bg-transparent px-3 py-2 text-xs font-bold transition-all duration-150"
               >
                 {PDF_LOCALES.map((loc) => (
                   <option key={loc.code} value={loc.code}>
@@ -366,8 +366,8 @@ export function BuilderHeader({
 
           <div className="mt-4 border-t border-black pt-3">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="label-mono text-gray-500">QUICK_ACCESS</span>
-              <span className="text-[10px] text-gray-500 uppercase tracking-wider">
+              <span className="label-mono text-gray-500">Quick access</span>
+              <span className="text-[10px] text-gray-500 ">
                 Jump straight to key tools
               </span>
             </div>
@@ -376,33 +376,33 @@ export function BuilderHeader({
               <button
                 type="button"
                 onClick={() => jumpToSection("personal")}
-                className="border border-black bg-white px-3 py-1 text-[10px] font-bold uppercase tracking-wider hover:bg-black hover:text-white transition-colors duration-150"
+                className="border border-black bg-white px-3 py-1 text-[10px] font-bold hover:bg-note transition-colors duration-150"
               >
                 Profile Import
               </button>
               <button
                 type="button"
                 onClick={() => jumpToSection("versions")}
-                className="border border-black bg-white px-3 py-1 text-[10px] font-bold uppercase tracking-wider hover:bg-black hover:text-white transition-colors duration-150"
+                className="border border-black bg-white px-3 py-1 text-[10px] font-bold hover:bg-note transition-colors duration-150"
               >
                 Version History
               </button>
               <button
                 type="button"
                 onClick={() => jumpToSection("score")}
-                className="border border-black bg-white px-3 py-1 text-[10px] font-bold uppercase tracking-wider hover:bg-black hover:text-white transition-colors duration-150"
+                className="border border-black bg-white px-3 py-1 text-[10px] font-bold hover:bg-note transition-colors duration-150"
               >
                 Resume Score
               </button>
               <Link
                 href={isGuest ? "/login" : "/applications"}
-                className="border border-black bg-white px-3 py-1 text-[10px] font-bold uppercase tracking-wider hover:bg-black hover:text-white transition-colors duration-150"
+                className="border border-black bg-white px-3 py-1 text-[10px] font-bold hover:bg-note transition-colors duration-150"
               >
                 Applications Tracker
               </Link>
 
               <div className="ml-0 sm:ml-2 flex items-center gap-2 border border-gray-300 bg-white px-2 py-1">
-                <span className="label-mono text-gray-500">BULLET</span>
+                <span className="label-mono text-gray-500">Bullet</span>
                 <input
                   type="text"
                   value={activeBulletSymbol}
@@ -414,28 +414,28 @@ export function BuilderHeader({
                 <button
                   type="button"
                   onClick={() => setBulletSymbol("•")}
-                  className="border border-gray-300 px-2 py-0.5 text-[10px] font-bold hover:border-black hover:bg-black hover:text-white transition-colors duration-150"
+                  className="border border-gray-300 px-2 py-0.5 text-[10px] font-bold hover:border-black hover:bg-note transition-colors duration-150"
                 >
                   •
                 </button>
                 <button
                   type="button"
                   onClick={() => setBulletSymbol("-")}
-                  className="border border-gray-300 px-2 py-0.5 text-[10px] font-bold hover:border-black hover:bg-black hover:text-white transition-colors duration-150"
+                  className="border border-gray-300 px-2 py-0.5 text-[10px] font-bold hover:border-black hover:bg-note transition-colors duration-150"
                 >
                   -
                 </button>
                 <button
                   type="button"
                   onClick={() => setBulletSymbol("→")}
-                  className="border border-gray-300 px-2 py-0.5 text-[10px] font-bold hover:border-black hover:bg-black hover:text-white transition-colors duration-150"
+                  className="border border-gray-300 px-2 py-0.5 text-[10px] font-bold hover:border-black hover:bg-note transition-colors duration-150"
                 >
                   →
                 </button>
               </div>
 
-              <div className="flex items-center gap-2 border border-emerald-300 bg-emerald-50 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-800">
-                <span className="label-mono text-emerald-700">LIVE</span>
+              <div className="flex items-center gap-2 border border-emerald-300 bg-emerald-50 px-2 py-1 text-[10px] font-bold text-emerald-800">
+                <span className="label-mono text-emerald-700">Live</span>
                 <span className="normal-case font-semibold">
                   {activeBulletSymbol} Built scalable checkout flow
                 </span>

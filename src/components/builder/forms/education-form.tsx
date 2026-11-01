@@ -107,14 +107,14 @@ export function EducationForm() {
   return (
     <div className="max-w-3xl space-y-8">
       <div>
-        <span className="label-mono block mb-4">SECTION_03 // EDUCATION</span>
+        <span className="label-mono block mb-4">Section 3</span>
         <h2 className="text-3xl font-black tracking-tight mb-2">Education</h2>
         <p className="text-sm text-gray-600">Academic background and degrees</p>
       </div>
 
       <div className="space-y-8">
         {education.map((edu, index) => (
-          <div key={edu.id} className="border border-black p-6">
+          <div key={edu.id} className="sketch-card p-6">
             <div className="flex items-center justify-between mb-6">
               <span className="label-mono">
                 ENTRY_{String(index + 1).padStart(2, "0")}
@@ -123,7 +123,7 @@ export function EducationForm() {
                 <button
                   onClick={() => moveEducation(index, "up")}
                   disabled={index === 0}
-                  className="border border-gray-400 px-2 py-1 text-xs font-bold hover:bg-black hover:text-white transition-colors duration-150 disabled:opacity-30"
+                  className="border border-gray-400 px-2 py-1 text-xs font-bold hover:bg-note transition-colors duration-150 disabled:opacity-30"
                   aria-label="Move up"
                 >
                   ↑
@@ -131,14 +131,14 @@ export function EducationForm() {
                 <button
                   onClick={() => moveEducation(index, "down")}
                   disabled={index === education.length - 1}
-                  className="border border-gray-400 px-2 py-1 text-xs font-bold hover:bg-black hover:text-white transition-colors duration-150 disabled:opacity-30"
+                  className="border border-gray-400 px-2 py-1 text-xs font-bold hover:bg-note transition-colors duration-150 disabled:opacity-30"
                   aria-label="Move down"
                 >
                   ↓
                 </button>
                 <button
                   onClick={() => removeEducation(edu.id)}
-                  className="border border-red-600 text-red-600 px-3 py-1 text-xs font-bold uppercase tracking-wider hover:bg-red-600 hover:text-white transition-colors duration-150"
+                  className="border border-red-600 text-red-600 px-3 py-1 text-xs font-bold hover:bg-red-600 hover:text-white transition-colors duration-150"
                 >
                   Remove
                 </button>
@@ -147,7 +147,7 @@ export function EducationForm() {
 
             <div className="space-y-4">
               <div>
-                <label className="label-mono block mb-2">INSTITUTION *</label>
+                <label className="label-mono block mb-2">Institution *</label>
                 <input
                   type="text"
                   value={edu.institution}
@@ -161,7 +161,7 @@ export function EducationForm() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="label-mono block mb-2">DEGREE *</label>
+                  <label className="label-mono block mb-2">Degree *</label>
                   <input
                     type="text"
                     value={edu.degree}
@@ -173,7 +173,7 @@ export function EducationForm() {
                   />
                 </div>
                 <div>
-                  <label className="label-mono block mb-2">FIELD *</label>
+                  <label className="label-mono block mb-2">Field *</label>
                   <input
                     type="text"
                     value={edu.field}
@@ -188,7 +188,7 @@ export function EducationForm() {
 
               <div className="grid grid-cols-3 gap-4">
                 <div className="col-span-2">
-                  <label className="label-mono block mb-2">LOCATION</label>
+                  <label className="label-mono block mb-2">Location</label>
                   <input
                     type="text"
                     value={edu.location || ""}
@@ -200,7 +200,7 @@ export function EducationForm() {
                   />
                 </div>
                 <div>
-                  <label className="label-mono block mb-2">GPA</label>
+                  <label className="label-mono block mb-2">Gpa</label>
                   <input
                     type="text"
                     value={edu.gpa || ""}
@@ -215,7 +215,7 @@ export function EducationForm() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="label-mono block mb-2">START_DATE *</label>
+                  <label className="label-mono block mb-2">Start date *</label>
                   <MonthInput
                     key={`edu-start-${edu.id}-${edu.startDate || "empty"}`}
                     value={edu.startDate}
@@ -227,7 +227,7 @@ export function EducationForm() {
                   />
                 </div>
                 <div>
-                  <label className="label-mono block mb-2">END_DATE</label>
+                  <label className="label-mono block mb-2">End date</label>
                   <MonthInput
                     key={`edu-end-${edu.id}-${edu.endDate || "empty"}-${edu.current ? "current" : "open"}`}
                     value={edu.endDate || ""}
@@ -263,7 +263,7 @@ export function EducationForm() {
 
               <div>
                 <label className="label-mono block mb-2">
-                  RELEVANT_COURSEWORK
+                  Relevant coursework
                 </label>
                 <div className="border border-gray-400 bg-transparent p-2 min-h-12">
                   <div className="flex flex-wrap gap-2">
@@ -314,13 +314,13 @@ export function EducationForm() {
                         [edu.id]: "",
                       }));
                     }}
-                    className="border border-black px-3 py-2 text-xs font-bold uppercase tracking-wider hover:bg-black hover:text-white transition-colors duration-150"
+                    className="border border-black px-3 py-2 text-xs font-bold hover:bg-note transition-colors duration-150"
                   >
                     Add
                   </button>
                 </div>
                 <span className="label-mono text-gray-500 text-xs block mt-2">
-                  Optional • Press ENTER or comma to add
+                  Optional • Press Enter or comma to add
                 </span>
               </div>
             </div>
@@ -329,7 +329,7 @@ export function EducationForm() {
 
         <button
           onClick={addEducation}
-          className="w-full border-2 border-dashed border-gray-400 px-6 py-4 text-sm font-bold uppercase tracking-wider hover:border-black hover:bg-black hover:text-white transition-all duration-150"
+          className="w-full border-2 border-dashed border-gray-400 px-6 py-4 text-sm font-bold hover:border-black hover:bg-note transition-all duration-150"
         >
           + Add Education
         </button>

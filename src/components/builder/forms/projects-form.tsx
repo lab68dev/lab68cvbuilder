@@ -217,10 +217,10 @@ export function ProjectsForm() {
     <div className="max-w-3xl space-y-8">
       <div>
         <div className="flex items-center justify-between mb-4">
-          <span className="label-mono block">SECTION_05 // PROJECTS</span>
+          <span className="label-mono block">Section 5</span>
           <button
             onClick={() => setIsGithubModalOpen(true)}
-            className="flex items-center gap-2 border border-black px-3 py-1.5 text-xs font-bold uppercase tracking-wider hover:bg-black hover:text-white transition-colors duration-150"
+            className="flex items-center gap-2 border border-black px-3 py-1.5 text-xs font-bold hover:bg-note transition-colors duration-150"
           >
             <Github className="w-4 h-4" />
             Auto-Sync GitHub
@@ -239,7 +239,7 @@ export function ProjectsForm() {
 
       <div className="space-y-8">
         {projects.map((project, index) => (
-          <div key={project.id} className="border border-black p-6">
+          <div key={project.id} className="sketch-card p-6">
             <div className="flex items-center justify-between mb-6">
               <span className="label-mono">
                 PROJECT_{String(index + 1).padStart(2, "0")}
@@ -248,7 +248,7 @@ export function ProjectsForm() {
                 <button
                   onClick={() => moveProject(index, "up")}
                   disabled={index === 0}
-                  className="border border-gray-400 px-2 py-1 text-xs font-bold hover:bg-black hover:text-white transition-colors duration-150 disabled:opacity-30"
+                  className="border border-gray-400 px-2 py-1 text-xs font-bold hover:bg-note transition-colors duration-150 disabled:opacity-30"
                   aria-label="Move up"
                 >
                   ↑
@@ -256,14 +256,14 @@ export function ProjectsForm() {
                 <button
                   onClick={() => moveProject(index, "down")}
                   disabled={index === projects.length - 1}
-                  className="border border-gray-400 px-2 py-1 text-xs font-bold hover:bg-black hover:text-white transition-colors duration-150 disabled:opacity-30"
+                  className="border border-gray-400 px-2 py-1 text-xs font-bold hover:bg-note transition-colors duration-150 disabled:opacity-30"
                   aria-label="Move down"
                 >
                   ↓
                 </button>
                 <button
                   onClick={() => removeProject(project.id)}
-                  className="border border-red-600 text-red-600 px-3 py-1 text-xs font-bold uppercase tracking-wider hover:bg-red-600 hover:text-white transition-colors duration-150"
+                  className="border border-red-600 text-red-600 px-3 py-1 text-xs font-bold hover:bg-red-600 hover:text-white transition-colors duration-150"
                 >
                   Remove
                 </button>
@@ -272,7 +272,7 @@ export function ProjectsForm() {
 
             <div className="space-y-4">
               <div>
-                <label className="label-mono block mb-2">PROJECT_NAME *</label>
+                <label className="label-mono block mb-2">Project name *</label>
                 <input
                   type="text"
                   value={project.name}
@@ -286,7 +286,7 @@ export function ProjectsForm() {
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label className="label-mono block mb-2">PROJECT_URL</label>
+                  <label className="label-mono block mb-2">Project URL</label>
                   <input
                     type="url"
                     value={project.url || ""}
@@ -298,7 +298,7 @@ export function ProjectsForm() {
                   />
                 </div>
                 <div>
-                  <label className="label-mono block mb-2">GITHUB_URL</label>
+                  <label className="label-mono block mb-2">GitHub URL</label>
                   <input
                     type="url"
                     value={project.githubUrl || ""}
@@ -310,7 +310,7 @@ export function ProjectsForm() {
                   />
                 </div>
                 <div>
-                  <label className="label-mono block mb-2">WEBSITE_URL</label>
+                  <label className="label-mono block mb-2">Website URL</label>
                   <input
                     type="url"
                     value={project.websiteUrl || ""}
@@ -325,7 +325,7 @@ export function ProjectsForm() {
 
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="label-mono">DESCRIPTION *</label>
+                  <label className="label-mono">Description *</label>
                   <button
                     type="button"
                     onClick={() =>
@@ -338,7 +338,7 @@ export function ProjectsForm() {
                     disabled={
                       !project.description.trim() || !!improvingDescription
                     }
-                    className="label-mono text-[10px] border border-black px-2 py-0.5 hover:bg-black hover:text-white transition-colors duration-150 disabled:opacity-30 disabled:cursor-not-allowed"
+                    className="label-mono text-[10px] border border-black px-2 py-0.5 hover:bg-note transition-colors duration-150 disabled:opacity-30 disabled:cursor-not-allowed"
                   >
                     {improvingDescription === project.id ? "..." : "✦"}
                   </button>
@@ -363,7 +363,7 @@ export function ProjectsForm() {
               </div>
 
               <div>
-                <label className="label-mono block mb-2">TECHNOLOGIES</label>
+                <label className="label-mono block mb-2">Technologies</label>
                 <div className="border border-gray-400 bg-transparent focus-within:border-black transition-all duration-150">
                   <div className="flex flex-wrap gap-2 p-2">
                     {project.technologies.map((tech, idx) => (
@@ -397,12 +397,12 @@ export function ProjectsForm() {
                   </div>
                 </div>
                 <span className="label-mono text-gray-500 text-xs block mt-2">
-                  Press ENTER or comma to add • Backspace to remove
+                  Press Enter or comma to add • Backspace to remove
                 </span>
               </div>
 
               <div>
-                <label className="label-mono block mb-2">KEY_FEATURES</label>
+                <label className="label-mono block mb-2">Key features</label>
                 <DndContext
                   sensors={sensors}
                   collisionDetection={closestCenter}
@@ -443,7 +443,7 @@ export function ProjectsForm() {
                                 }
                                 disabled={isImproving || !highlight.trim()}
                                 title="Improve with AI"
-                                className="border border-gray-400 px-3 py-2 text-xs font-bold hover:border-black hover:bg-black hover:text-white transition-all duration-150 disabled:opacity-30"
+                                className="border border-gray-400 px-3 py-2 text-xs font-bold hover:border-black hover:bg-note transition-all duration-150 disabled:opacity-30"
                               >
                                 {isImproving ? "..." : "✦"}
                               </button>
@@ -462,7 +462,7 @@ export function ProjectsForm() {
                 </DndContext>
                 <button
                   onClick={() => addHighlight(project.id)}
-                  className="border border-gray-400 px-4 py-2 text-xs font-bold uppercase tracking-wider hover:border-black hover:bg-black hover:text-white transition-all duration-150"
+                  className="border border-gray-400 px-4 py-2 text-xs font-bold hover:border-black hover:bg-note transition-all duration-150"
                 >
                   + Add Feature
                 </button>
@@ -473,7 +473,7 @@ export function ProjectsForm() {
 
         <button
           onClick={addProject}
-          className="w-full border-2 border-dashed border-gray-400 px-6 py-4 text-sm font-bold uppercase tracking-wider hover:border-black hover:bg-black hover:text-white transition-all duration-150"
+          className="w-full border-2 border-dashed border-gray-400 px-6 py-4 text-sm font-bold hover:border-black hover:bg-note transition-all duration-150"
         >
           + Add Project
         </button>

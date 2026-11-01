@@ -136,17 +136,17 @@ export function ResumeScorePanel() {
 
   const grade =
     total >= 90
-      ? "EXCELLENT"
+      ? "Excellent"
       : total >= 75
-        ? "GOOD"
+        ? "Good"
         : total >= 50
-          ? "NEEDS WORK"
-          : "INCOMPLETE";
+          ? "Needs work"
+          : "Incomplete";
 
   return (
     <div className="max-w-3xl space-y-8">
       <div>
-        <span className="label-mono block mb-4">ANALYSIS // SCORE</span>
+        <span className="label-mono block mb-4">Score</span>
         <h2 className="text-3xl font-black tracking-tight mb-2">
           Resume Score
         </h2>
@@ -155,12 +155,10 @@ export function ResumeScorePanel() {
         </p>
       </div>
 
-      <div className="border border-black p-6 flex items-center gap-8">
+      <div className="sketch-card p-6 flex items-center gap-8">
         <ScoreRing score={total} />
         <div>
-          <p className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
-            Overall Grade
-          </p>
+          <p className="text-xs font-bold text-gray-500 mb-1">Overall Grade</p>
           <p className="text-2xl font-black">{grade}</p>
           <p className="text-sm text-gray-500 mt-1">
             {checks.filter((c) => c.passed).length} / {checks.length} checks

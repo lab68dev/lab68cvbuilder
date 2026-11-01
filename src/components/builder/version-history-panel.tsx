@@ -44,11 +44,11 @@ function formatDate(value: Date | string) {
 function sourceLabel(source: string) {
   switch (source) {
     case "autosave":
-      return "AUTO";
+      return "Auto";
     case "manual":
-      return "MANUAL";
+      return "Manual";
     case "ai-tailor":
-      return "AI TAILOR";
+      return "AI tailor";
     default:
       return source.toUpperCase();
   }
@@ -433,7 +433,7 @@ export function VersionHistoryPanel() {
   return (
     <div className="max-w-4xl space-y-6">
       <div>
-        <span className="label-mono block mb-4">VERSIONING // HISTORY</span>
+        <span className="label-mono block mb-4">Version history</span>
         <h2 className="text-3xl font-black tracking-tight mb-2">
           Version History
         </h2>
@@ -442,12 +442,12 @@ export function VersionHistoryPanel() {
         </p>
       </div>
 
-      <div className="border border-black p-4 flex flex-wrap items-center gap-2">
+      <div className="sketch-card p-4 flex flex-wrap items-center gap-2">
         <button
           type="button"
           onClick={handleCreateSnapshot}
           disabled={!resumeId || isSavingSnapshot}
-          className="border border-black bg-black text-white px-4 py-2 text-xs font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-colors duration-150 disabled:opacity-50"
+          className="border border-black bg-black text-white px-4 py-2 text-xs font-bold hover:bg-white hover:text-black transition-colors duration-150 disabled:opacity-50"
         >
           {isSavingSnapshot ? "Saving Snapshot..." : "Save Snapshot"}
         </button>
@@ -456,20 +456,20 @@ export function VersionHistoryPanel() {
           type="button"
           onClick={loadVersions}
           disabled={!resumeId || isLoading}
-          className="border border-black px-4 py-2 text-xs font-bold uppercase tracking-wider hover:bg-black hover:text-white transition-colors duration-150 disabled:opacity-50"
+          className="border border-black px-4 py-2 text-xs font-bold hover:bg-note transition-colors duration-150 disabled:opacity-50"
         >
           {isLoading ? "Refreshing..." : "Refresh"}
         </button>
 
         {isDirty && (
           <span className="label-mono text-orange-600">
-            UNSAVED EDITS PRESENT
+            Unsaved edits present
           </span>
         )}
       </div>
 
-      <div className="border border-black p-4 flex flex-wrap items-center gap-2">
-        <span className="label-mono text-gray-500">FILTER SOURCE:</span>
+      <div className="sketch-card p-4 flex flex-wrap items-center gap-2">
+        <span className="label-mono text-gray-500">Filter source:</span>
         {(
           [
             ["all", "All"],
@@ -482,10 +482,10 @@ export function VersionHistoryPanel() {
             key={value}
             type="button"
             onClick={() => setActiveFilter(value)}
-            className={`border px-3 py-1 text-[11px] font-bold uppercase tracking-wider transition-colors duration-150 ${
+            className={`border px-3 py-1 text-[11px] font-bold transition-colors duration-150 ${
               activeFilter === value
                 ? "border-black bg-black text-white"
-                : "border-gray-400 text-gray-700 hover:border-black hover:bg-black hover:text-white"
+                : "border-gray-400 text-gray-700 hover:border-black hover:bg-note"
             }`}
           >
             {label}
@@ -493,18 +493,14 @@ export function VersionHistoryPanel() {
         ))}
       </div>
 
-      {message && (
-        <p className="text-xs font-bold uppercase tracking-wider text-gray-600">
-          {message}
-        </p>
-      )}
+      {message && <p className="text-xs font-bold text-gray-600">{message}</p>}
 
       {isLoading ? (
-        <div className="border border-black p-6 text-sm text-gray-600">
+        <div className="sketch-card p-6 text-sm text-gray-600">
           Loading versions...
         </div>
       ) : filteredVersions.length === 0 ? (
-        <div className="border border-black p-6 text-sm text-gray-600">
+        <div className="sketch-card p-6 text-sm text-gray-600">
           No snapshots match this filter.
         </div>
       ) : (
@@ -523,9 +519,7 @@ export function VersionHistoryPanel() {
                     {formatDate(version.createdAt)}
                   </span>
                 </div>
-                <p className="text-sm font-bold uppercase tracking-wide">
-                  {version.title}
-                </p>
+                <p className="text-sm font-bold ">{version.title}</p>
                 <p className="text-xs text-gray-500">
                   Template: {version.templateId} | Font: {version.fontFamily}
                 </p>
@@ -540,10 +534,10 @@ export function VersionHistoryPanel() {
                 <button
                   type="button"
                   onClick={() => setPreviewVersionId(version.id)}
-                  className={`border px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors duration-150 ${
+                  className={`border px-3 py-2 text-xs font-bold transition-colors duration-150 ${
                     previewVersionId === version.id
                       ? "border-black bg-black text-white"
-                      : "border-gray-400 hover:border-black hover:bg-black hover:text-white"
+                      : "border-gray-400 hover:border-black hover:bg-note"
                   }`}
                 >
                   Diff
@@ -553,7 +547,7 @@ export function VersionHistoryPanel() {
                   type="button"
                   onClick={() => handleLabel(version)}
                   disabled={labelingId !== null}
-                  className="border border-gray-400 px-3 py-2 text-xs font-bold uppercase tracking-wider hover:border-black hover:bg-black hover:text-white transition-colors duration-150 disabled:opacity-50"
+                  className="border border-gray-400 px-3 py-2 text-xs font-bold hover:border-black hover:bg-note transition-colors duration-150 disabled:opacity-50"
                 >
                   {labelingId === version.id ? "Saving..." : "Label"}
                 </button>
@@ -562,7 +556,7 @@ export function VersionHistoryPanel() {
                   type="button"
                   onClick={() => handleRestore(version)}
                   disabled={restoringId !== null}
-                  className="border border-black px-3 py-2 text-xs font-bold uppercase tracking-wider hover:bg-black hover:text-white transition-colors duration-150 disabled:opacity-50"
+                  className="border border-black px-3 py-2 text-xs font-bold hover:bg-note transition-colors duration-150 disabled:opacity-50"
                 >
                   {restoringId === version.id ? "Restoring..." : "Restore"}
                 </button>
@@ -577,9 +571,7 @@ export function VersionHistoryPanel() {
           <div className="border border-black">
             <div className="px-4 py-3 border-b border-black flex items-center justify-between gap-3">
               <div>
-                <p className="text-xs font-bold uppercase tracking-wider">
-                  Side-by-Side Diff Preview
-                </p>
+                <p className="text-xs font-bold ">Side-by-Side Diff Preview</p>
                 <p className="text-xs text-gray-500">
                   Snapshot: {formatDate(previewVersion.createdAt)} |{" "}
                   {sourceLabel(previewVersion.source)}
@@ -588,20 +580,20 @@ export function VersionHistoryPanel() {
               <button
                 type="button"
                 onClick={() => setPreviewVersionId(null)}
-                className="border border-black px-3 py-1 text-xs font-bold uppercase tracking-wider hover:bg-black hover:text-white transition-colors duration-150"
+                className="border border-black px-3 py-1 text-xs font-bold hover:bg-note transition-colors duration-150"
               >
                 Close
               </button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 border-b border-black bg-gray-50">
-              <p className="px-4 py-2 text-[11px] font-bold uppercase tracking-wider border-b md:border-b-0 md:border-r border-gray-200">
+              <p className="px-4 py-2 text-[11px] font-bold border-b md:border-b-0 md:border-r border-gray-200">
                 Field
               </p>
-              <p className="px-4 py-2 text-[11px] font-bold uppercase tracking-wider border-b md:border-b-0 md:border-r border-gray-200">
+              <p className="px-4 py-2 text-[11px] font-bold border-b md:border-b-0 md:border-r border-gray-200">
                 Current Draft
               </p>
-              <p className="px-4 py-2 text-[11px] font-bold uppercase tracking-wider">
+              <p className="px-4 py-2 text-[11px] font-bold ">
                 Selected Snapshot
               </p>
             </div>
@@ -612,7 +604,7 @@ export function VersionHistoryPanel() {
                   key={row.label}
                   className={`grid grid-cols-1 md:grid-cols-3 ${row.changed ? "bg-yellow-50" : "bg-white"}`}
                 >
-                  <p className="px-4 py-3 text-xs font-bold uppercase tracking-wide md:border-r border-gray-200">
+                  <p className="px-4 py-3 text-xs font-bold md:border-r border-gray-200">
                     {row.label}
                   </p>
                   <p className="px-4 py-3 text-sm md:border-r border-gray-200 wrap-break-word">
@@ -628,9 +620,7 @@ export function VersionHistoryPanel() {
 
           <div className="border border-black">
             <div className="px-4 py-3 border-b border-black bg-gray-50">
-              <p className="text-xs font-bold uppercase tracking-wider">
-                Visual Text Diff Mode
-              </p>
+              <p className="text-xs font-bold ">Visual Text Diff Mode</p>
               <p className="text-xs text-gray-500">
                 Inline additions are green, removals are red + struck through.
               </p>
@@ -644,7 +634,7 @@ export function VersionHistoryPanel() {
               <div className="divide-y divide-gray-200">
                 {longFieldDiffs.map((item) => (
                   <div key={item.label} className="p-4 space-y-2">
-                    <p className="text-xs font-bold uppercase tracking-wider text-gray-600">
+                    <p className="text-xs font-bold text-gray-600">
                       {item.label}
                     </p>
                     <div className="border border-gray-200 p-3 bg-white">

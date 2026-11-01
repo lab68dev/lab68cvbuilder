@@ -32,7 +32,9 @@ const SOCIAL_LINKS = [
     name: "Unikorn",
     url: "https://unikorn.vn/u/duong-phu-dong",
     icon: (
-      <span className="text-xl font-black leading-none inline-flex items-center justify-center w-5 h-5">U</span>
+      <span className="text-xl font-black leading-none inline-flex items-center justify-center w-5 h-5">
+        U
+      </span>
     ),
   },
 ];
@@ -69,7 +71,16 @@ const SUPPORT_LINKS = [
     name: "Ko-fi",
     url: "https://ko-fi.com/dongphuduong",
     icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
         <path d="M18 8h1a4 4 0 0 1 0 8h-1" />
         <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" />
         <line x1="6" y1="1" x2="6" y2="4" />
@@ -82,7 +93,16 @@ const SUPPORT_LINKS = [
     name: "Buy Me a Coffee",
     url: "https://buymeacoffee.com/lab68dev",
     icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
         <path d="M18 8h1a4 4 0 0 1 0 8h-1" />
         <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" />
       </svg>
@@ -92,7 +112,16 @@ const SUPPORT_LINKS = [
     name: "GitHub Sponsors",
     url: "https://github.com/sponsors/lab68dev",
     icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
       </svg>
     ),
@@ -101,7 +130,16 @@ const SUPPORT_LINKS = [
     name: "PayPal",
     url: "https://www.paypal.com/paypalme/DDuong884",
     icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
         <line x1="12" y1="1" x2="12" y2="23" />
         <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
       </svg>
@@ -118,9 +156,7 @@ export function Footer() {
           {/* Brand */}
           <div className="md:col-span-1">
             <div className="flex items-center gap-3 mb-4">
-              <span className="text-sm font-black uppercase tracking-wider">
-                lab68cv.builder
-              </span>
+              <span className="text-sm font-black ">lab68cv.builder</span>
             </div>
             <p className="text-xs text-gray-500 leading-relaxed max-w-xs">
               Unlock Your Potential. Build Your Future.
@@ -139,7 +175,7 @@ export function Footer() {
                       className="text-xs font-medium hover:text-gray-500 transition-colors duration-150 flex items-center gap-1.5"
                     >
                       {product.name}
-                      <span className="text-[0.5625rem] border border-black px-1 py-0.5 font-bold uppercase leading-none">
+                      <span className="text-[0.5625rem] border border-black px-1 py-0.5 font-bold leading-none">
                         Current
                       </span>
                     </Link>
@@ -155,7 +191,7 @@ export function Footer() {
                       {product.name}
                     </a>
                   </li>
-                )
+                ),
               )}
             </ul>
           </div>
@@ -197,7 +233,14 @@ export function Footer() {
                   href="mailto:dongduong840@gmail.com"
                   className="text-xs font-medium hover:text-gray-500 transition-colors duration-150 flex items-center gap-2"
                 >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
                     <rect x="2" y="4" width="20" height="16" />
                     <path d="M22 4L12 13L2 4" />
                   </svg>
@@ -223,7 +266,7 @@ export function Footer() {
           {/* Social Icons */}
           <div>
             <span className="label-mono block mb-4">Follow</span>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3">
               {SOCIAL_LINKS.map((link) => (
                 <a
                   key={link.name}
@@ -231,7 +274,7 @@ export function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={link.name}
-                  className="border border-black p-2.5 hover:bg-black hover:text-white transition-colors duration-150"
+                  className="border border-black p-2.5 hover:bg-note transition-colors duration-150"
                 >
                   {link.icon}
                 </a>
@@ -239,9 +282,16 @@ export function Footer() {
               <a
                 href="mailto:lab68dev@gmail.com"
                 aria-label="Email"
-                className="border border-black p-2.5 hover:bg-black hover:text-white transition-colors duration-150"
+                className="border border-black p-2.5 hover:bg-note transition-colors duration-150"
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
                   <rect x="2" y="4" width="20" height="16" />
                   <path d="M22 4L12 13L2 4" />
                 </svg>
@@ -260,19 +310,28 @@ export function Footer() {
                 href={link.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs font-medium border border-black px-3 py-2 hover:bg-black hover:text-white transition-colors duration-150 flex items-center gap-2"
+                className="text-xs font-medium border border-black px-3 py-2 hover:bg-note transition-colors duration-150 flex items-center gap-2"
               >
                 {link.icon}
                 {link.name}
               </a>
             ))}
             <div className="text-xs font-medium border border-dashed border-black px-3 py-2 flex items-center gap-2">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <rect x="2" y="7" width="20" height="14" />
                 <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
               </svg>
               <span className="text-gray-500">ACB Vietnam:</span>
-              <span className="font-mono font-bold tracking-wider">2004200168</span>
+              <span className="font-mono font-bold ">2004200168</span>
             </div>
           </div>
         </div>
@@ -282,9 +341,7 @@ export function Footer() {
           <span className="label-mono">
             {new Date().getFullYear()} lab68cv.builder. All rights reserved.
           </span>
-          <span className="label-mono">
-            Apache License 2.0
-          </span>
+          <span className="label-mono">Apache License 2.0</span>
         </div>
       </div>
     </footer>

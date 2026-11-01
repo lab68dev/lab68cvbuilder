@@ -125,15 +125,15 @@ export function TemplatePicker({ value, onChange }: TemplatePickerProps) {
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 border border-black px-3 py-2 text-xs font-bold uppercase tracking-wider hover:bg-black hover:text-white transition-colors duration-150"
+        className="flex items-center gap-2 border border-black px-3 py-2 text-xs font-bold hover:bg-note transition-colors duration-150"
       >
-        <span className="label-mono">TEMPLATE:</span>
+        <span className="label-mono">Template:</span>
         {current?.name ?? "Select"}
         <span className="text-[10px]">{open ? "▲" : "▼"}</span>
       </button>
 
       {open && (
-        <div className="absolute top-full mt-1 right-0 z-50 border border-black bg-white shadow-lg p-3 grid grid-cols-2 gap-3 w-72">
+        <div className="absolute top-full mt-1 right-0 z-50 sketch-card bg-white shadow-lg p-3 grid grid-cols-2 gap-3 w-72">
           {TEMPLATES.map((t) => {
             const active = t.id === value;
             return (
@@ -151,7 +151,7 @@ export function TemplatePicker({ value, onChange }: TemplatePickerProps) {
                 }`}
               >
                 <MiniPreview id={t.id} active={active} />
-                <span className="text-[10px] font-bold uppercase tracking-wider leading-tight text-center">
+                <span className="text-[10px] font-bold leading-tight text-center">
                   {t.name}
                 </span>
               </button>

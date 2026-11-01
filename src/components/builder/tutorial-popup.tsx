@@ -9,7 +9,10 @@ interface TutorialPopupProps {
   triggerClassName?: string;
 }
 
-export function TutorialPopup({ isGuest = false, triggerClassName }: TutorialPopupProps) {
+export function TutorialPopup({
+  isGuest = false,
+  triggerClassName,
+}: TutorialPopupProps) {
   const steps = useMemo(
     () => [
       {
@@ -44,7 +47,7 @@ export function TutorialPopup({ isGuest = false, triggerClassName }: TutorialPop
           : "Changes save automatically. You can also press Ctrl+S (or Cmd+S on Mac) for an immediate save.",
       },
     ],
-    [isGuest]
+    [isGuest],
   );
 
   const [isOpen, setIsOpen] = useState(false);
@@ -86,7 +89,7 @@ export function TutorialPopup({ isGuest = false, triggerClassName }: TutorialPop
         onClick={openTutorial}
         className={
           triggerClassName ||
-          "border border-gray-400 px-4 py-2 text-xs font-bold uppercase tracking-wider hover:border-black hover:bg-black hover:text-white transition-colors duration-150"
+          "border border-gray-400 px-4 py-2 text-xs font-bold hover:border-black hover:bg-note transition-colors duration-150"
         }
       >
         Guide
@@ -96,10 +99,12 @@ export function TutorialPopup({ isGuest = false, triggerClassName }: TutorialPop
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-6 sm:p-8">
           <div className="w-full max-w-2xl max-h-[calc(100dvh-4rem)] overflow-y-auto border border-black bg-white shadow-xl">
             <div className="border-b border-gray-200 px-6 py-5 sm:px-8 sm:py-6">
-              <p className="label-mono">CV BUILDER TUTORIAL</p>
+              <p className="label-mono">CV builder tutorial</p>
               <div className="mt-2 flex items-center justify-between gap-3">
-                <h2 className="text-xl font-bold tracking-tight">{steps[index].title}</h2>
-                <span className="text-xs font-bold uppercase tracking-wider text-gray-500">
+                <h2 className="text-xl font-bold tracking-tight">
+                  {steps[index].title}
+                </h2>
+                <span className="text-xs font-bold text-gray-500">
                   Step {index + 1}/{steps.length}
                 </span>
               </div>
@@ -116,7 +121,7 @@ export function TutorialPopup({ isGuest = false, triggerClassName }: TutorialPop
                 type="button"
                 onClick={() => setIndex((prev) => Math.max(0, prev - 1))}
                 disabled={index === 0}
-                className="border border-gray-400 px-3 py-2 text-[10px] font-bold uppercase tracking-wider hover:bg-black hover:text-white transition-colors duration-150 disabled:opacity-30"
+                className="border border-gray-400 px-3 py-2 text-[10px] font-bold hover:bg-note transition-colors duration-150 disabled:opacity-30"
               >
                 Previous
               </button>
@@ -125,7 +130,7 @@ export function TutorialPopup({ isGuest = false, triggerClassName }: TutorialPop
                 <button
                   type="button"
                   onClick={closeTutorial}
-                  className="border border-gray-400 px-3 py-2 text-[10px] font-bold uppercase tracking-wider hover:bg-gray-100 transition-colors duration-150"
+                  className="border border-gray-400 px-3 py-2 text-[10px] font-bold hover:bg-gray-100 transition-colors duration-150"
                 >
                   Skip
                 </button>
@@ -134,15 +139,17 @@ export function TutorialPopup({ isGuest = false, triggerClassName }: TutorialPop
                   <button
                     type="button"
                     onClick={closeTutorial}
-                    className="border border-black bg-black text-white px-3 py-2 text-[10px] font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-colors duration-150"
+                    className="border border-black bg-black text-white px-3 py-2 text-[10px] font-bold hover:bg-white hover:text-black transition-colors duration-150"
                   >
                     Done
                   </button>
                 ) : (
                   <button
                     type="button"
-                    onClick={() => setIndex((prev) => Math.min(steps.length - 1, prev + 1))}
-                    className="border border-black bg-black text-white px-3 py-2 text-[10px] font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-colors duration-150"
+                    onClick={() =>
+                      setIndex((prev) => Math.min(steps.length - 1, prev + 1))
+                    }
+                    className="border border-black bg-black text-white px-3 py-2 text-[10px] font-bold hover:bg-white hover:text-black transition-colors duration-150"
                   >
                     Next
                   </button>

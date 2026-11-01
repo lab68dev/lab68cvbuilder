@@ -42,7 +42,7 @@ export default async function PublicResumePage({
     HarvardTemplate;
 
   return (
-    <div className="min-h-screen bg-gray-100 print:bg-white pt-14 print:pt-0">
+    <div className="cv-sheet min-h-screen bg-gray-100 print:bg-white pt-14 print:pt-0">
       <ResumeAnalyticsTracker resumeId={resume.id} />
       <PublicActionBar resumeTitle={resume.title} />
       <div className="py-8 px-4 print:py-0 print:px-0">

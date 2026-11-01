@@ -47,7 +47,7 @@ export function GithubSyncModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <div className="bg-white max-w-md w-full border border-black p-6 relative shadow-2xl">
+      <div className="bg-white max-w-md w-full sketch-card p-6 relative shadow-2xl">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 bg-gray-100 hover:bg-gray-200 text-black p-1 rounded-full"
@@ -59,9 +59,7 @@ export function GithubSyncModal({
           <div className="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center mx-auto mb-4">
             <Github className="w-6 h-6" />
           </div>
-          <h2 className="text-2xl font-black uppercase tracking-tight">
-            Sync GitHub
-          </h2>
+          <h2 className="text-2xl font-black tracking-tight">Sync GitHub</h2>
           <p className="text-sm text-gray-600 mt-2">
             Enter your GitHub username. We&apos;ll analyze your top repositories
             and AI will automatically write STAR-method achievements.
@@ -76,7 +74,7 @@ export function GithubSyncModal({
           )}
 
           <div>
-            <label className="label-mono block mb-2">GITHUB_USERNAME *</label>
+            <label className="label-mono block mb-2">GitHub username *</label>
             <input
               type="text"
               required
@@ -90,17 +88,17 @@ export function GithubSyncModal({
           <button
             type="submit"
             disabled={isLoading || !username}
-            className="w-full border border-black bg-black text-white p-3 font-bold uppercase tracking-wider hover:bg-gray-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+            className="w-full border border-black bg-black text-white p-3 font-bold hover:bg-gray-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
           >
             {isLoading ? (
               <>
                 <Loader2 className="w-5 h-5 mr-4 animate-spin" />
-                ANALYZING REPOS...
+                Analyzing repos...
               </>
             ) : (
               <>
                 <Plus className="w-5 h-5 mr-3" />
-                GENERATE ACHIEVEMENTS
+                Generate achievements
               </>
             )}
           </button>

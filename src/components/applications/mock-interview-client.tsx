@@ -210,7 +210,7 @@ export default function MockInterviewClient({
           </h3>
           {currentA && (
             <div className="mt-6">
-              <h4 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-2">
+              <h4 className="text-sm font-medium text-gray-500 mb-2">
                 Your Answer
               </h4>
               <p className="text-gray-900 bg-gray-50 p-4 rounded-lg border border-gray-100">
@@ -242,7 +242,7 @@ export default function MockInterviewClient({
 
           {!currentA && !isCompleted && (
             <div className="mt-6">
-              <h4 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-2">
+              <h4 className="text-sm font-medium text-gray-500 mb-2">
                 Your Answer
               </h4>
               <div className="relative">

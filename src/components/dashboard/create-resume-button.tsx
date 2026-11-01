@@ -8,7 +8,9 @@ interface CreateResumeButtonProps {
   variant?: "default" | "large";
 }
 
-export function CreateResumeButton({ variant = "default" }: CreateResumeButtonProps) {
+export function CreateResumeButton({
+  variant = "default",
+}: CreateResumeButtonProps) {
   const [isCreating, setIsCreating] = useState(false);
   const router = useRouter();
 
@@ -28,9 +30,9 @@ export function CreateResumeButton({ variant = "default" }: CreateResumeButtonPr
       <button
         onClick={handleCreate}
         disabled={isCreating}
-        className="border-2 border-black bg-black text-white px-8 py-4 text-sm font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="border-2 border-black bg-black text-white px-8 py-4 text-sm font-bold hover:bg-white hover:text-black transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {isCreating ? "CREATING..." : "+ NEW RESUME"}
+        {isCreating ? "Creating..." : "+ New resume"}
       </button>
     );
   }
@@ -39,9 +41,9 @@ export function CreateResumeButton({ variant = "default" }: CreateResumeButtonPr
     <button
       onClick={handleCreate}
       disabled={isCreating}
-      className="border border-black px-6 py-3 text-xs font-bold uppercase tracking-widest hover:bg-black hover:text-white transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+      className="border border-black px-6 py-3 text-xs font-bold hover:bg-note transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
     >
-      {isCreating ? "CREATING..." : "+ NEW RESUME"}
+      {isCreating ? "Creating..." : "+ New resume"}
     </button>
   );
 }

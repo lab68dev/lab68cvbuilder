@@ -230,7 +230,7 @@ export function BuilderClient({ resume }: BuilderClientProps) {
             : "opacity-0 translate-y-2"
         }`}
       >
-        <div className="bg-black text-white border border-black px-4 py-2 text-xs font-bold uppercase tracking-wider flex items-center gap-2 shadow-lg">
+        <div className="bg-black text-white border border-black px-4 py-2 text-xs font-bold flex items-center gap-2 shadow-lg">
           <span className="inline-block w-2 h-2 rounded-full bg-green-400" />
           All changes saved
         </div>
