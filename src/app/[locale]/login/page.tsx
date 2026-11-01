@@ -4,17 +4,21 @@ import { useState, Suspense } from "react";
 import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { Link } from "@/i18n/routing";
-import { trackUsageEvent } from "@/actions/usage-event";
-import { GUEST_MIGRATION_META_KEY, GUEST_STORAGE_KEY } from "@/lib/constants";
-import { USAGE_EVENTS } from "@/lib/usage-events";
+import { GUEST_MIGRATION_PARAM, GUEST_STORAGE_KEY } from "@/lib/constants";
+import { getSafeCallbackUrl } from "@/lib/url-helpers";
 
 function LoginForm() {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [mode, setMode] = useState<"login" | "register">("login");
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
+  const [error, setError] = useState<string | null>(
+    searchParams.get("error") === "Verification"
+      ? "That sign-in link has expired or was already used. Please request a new one."
+      : null,
+  );
+  const [mode, setMode] = useState<"login" | "register">("login");
+  const [sentTo, setSentTo] = useState<string | null>(null);
+  const callbackUrl = getSafeCallbackUrl(searchParams.get("callbackUrl"));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,60 +38,28 @@ function LoginForm() {
     setIsLoading(true);
 
     try {
-      const result = await signIn("credentials", {
-        email,
+      // The dashboard imports the guest draft once the emailed link is opened.
+      const hasGuestDraft = Boolean(localStorage.getItem(GUEST_STORAGE_KEY));
+      const result = await signIn("resend", {
+        email: email.trim(),
         redirect: false,
+        redirectTo: hasGuestDraft
+          ? `/dashboard?${GUEST_MIGRATION_PARAM}=1`
+          : callbackUrl,
       });
 
       if (result?.error) {
-        setError("Authentication failed. Please try again.");
-        setIsLoading(false);
+        setError(
+          result.error === "RateLimited"
+            ? "Too many sign-in emails. Please try again in a few minutes."
+            : "We could not send your sign-in email. Please try again.",
+        );
       } else {
-        // Migrate guest resume data if the user came from /try
-        try {
-          const stored = localStorage.getItem(GUEST_STORAGE_KEY);
-          if (stored) {
-            const rawMeta = localStorage.getItem(GUEST_MIGRATION_META_KEY);
-            const metadata = rawMeta ? JSON.parse(rawMeta) : null;
-            void trackUsageEvent(USAGE_EVENTS.GUEST_MIGRATION_STARTED, {
-              source: metadata?.source || "unknown",
-            });
-
-            const parsed = JSON.parse(stored);
-            const response = await fetch("/api/resume/guest", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                ...parsed,
-                metadata,
-              }),
-            });
-
-            if (!response.ok) {
-              throw new Error("Failed to migrate guest resume");
-            }
-
-            const resume = await response.json();
-            localStorage.removeItem(GUEST_STORAGE_KEY);
-            localStorage.removeItem(GUEST_MIGRATION_META_KEY);
-            void trackUsageEvent(USAGE_EVENTS.GUEST_MIGRATION_SUCCEEDED, {
-              resumeId: resume.id,
-            });
-            window.location.href = `/builder/${resume.id}`;
-            return;
-          }
-        } catch {
-          // If migration fails, fall through to normal redirect
-          localStorage.removeItem(GUEST_STORAGE_KEY);
-          localStorage.removeItem(GUEST_MIGRATION_META_KEY);
-          void trackUsageEvent(USAGE_EVENTS.GUEST_MIGRATION_FAILED);
-        }
-        window.location.href = callbackUrl;
+        setSentTo(email.trim());
       }
     } catch {
       setError("An unexpected error occurred.");
+    } finally {
       setIsLoading(false);
     }
   };
@@ -160,105 +132,143 @@ function LoginForm() {
             <div className="w-16 border-t border-black mb-4" />
           </div>
 
-          {/* Mode toggle tabs */}
-          <div className="flex border border-black mb-8">
-            <button
-              type="button"
-              onClick={() => { setMode("login"); setError(null); }}
-              className={`flex-1 py-3 text-sm font-bold uppercase tracking-widest transition-all duration-150 ${mode === "login"
-                  ? "bg-black text-white"
-                  : "bg-white text-black hover:bg-gray-100"
-                }`}
-            >
-              LOG IN
-            </button>
-            <button
-              type="button"
-              onClick={() => { setMode("register"); setError(null); }}
-              className={`flex-1 py-3 text-sm font-bold uppercase tracking-widest border-l border-black transition-all duration-150 ${mode === "register"
-                  ? "bg-black text-white"
-                  : "bg-white text-black hover:bg-gray-100"
-                }`}
-            >
-              SIGN UP
-            </button>
-          </div>
-
-          {/* Form header */}
-          <div className="mb-8">
-            <span className="label-mono block mb-2">
-              {mode === "login" ? "STEP_01 // AUTHENTICATION" : "STEP_01 // REGISTRATION"}
-            </span>
-            <h2 className="text-2xl font-bold tracking-tight">
-              {mode === "login" ? "Welcome Back" : "Create Account"}
-            </h2>
-            <p className="text-sm text-gray-600 mt-2">
-              {mode === "login"
-                ? "Enter your email to access your account"
-                : "Enter your email to get started — no password needed"}
-            </p>
-          </div>
-
-          {/* Error message */}
-          {error && (
-            <div className="mb-6 p-4 border border-red-600 bg-red-50">
-              <span className="label-mono text-red-600">ERROR</span>
-              <p className="text-sm text-red-800 mt-1">{error}</p>
-            </div>
-          )}
-
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
+          {sentTo ? (
             <div>
-              <label
-                htmlFor="email"
-                className="label-mono block mb-2 text-black"
+              <span className="label-mono block mb-2">
+                STEP_02 // CHECK_INBOX
+              </span>
+              <h2 className="text-2xl font-bold tracking-tight">
+                Check your email
+              </h2>
+              <p className="text-sm text-gray-600 mt-2">
+                We sent a sign-in link to <strong>{sentTo}</strong>. Open it on
+                this device to finish. The link works once and expires in 24
+                hours.
+              </p>
+              <button
+                type="button"
+                onClick={() => setSentTo(null)}
+                className="label-mono text-black hover:underline mt-8"
               >
-                EMAIL_ADDRESS
-              </label>
-              <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                required
-                disabled={isLoading}
-                className="w-full border border-black bg-transparent px-4 py-3 text-base focus:bg-black focus:text-white transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
-              />
+                USE_A_DIFFERENT_EMAIL →
+              </button>
             </div>
+          ) : (
+            <>
+              {/* Mode toggle tabs */}
+              <div className="flex border border-black mb-8">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMode("login");
+                    setError(null);
+                  }}
+                  className={`flex-1 py-3 text-sm font-bold uppercase tracking-widest transition-all duration-150 ${
+                    mode === "login"
+                      ? "bg-black text-white"
+                      : "bg-white text-black hover:bg-gray-100"
+                  }`}
+                >
+                  LOG IN
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMode("register");
+                    setError(null);
+                  }}
+                  className={`flex-1 py-3 text-sm font-bold uppercase tracking-widest border-l border-black transition-all duration-150 ${
+                    mode === "register"
+                      ? "bg-black text-white"
+                      : "bg-white text-black hover:bg-gray-100"
+                  }`}
+                >
+                  SIGN UP
+                </button>
+              </div>
 
-            <button
-              type="submit"
-              disabled={isLoading || !email}
-              className="w-full border border-black bg-black text-white px-6 py-4 text-sm font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isLoading
-                ? "AUTHENTICATING..."
-                : mode === "login"
-                  ? "LOG IN →"
-                  : "CREATE ACCOUNT →"}
-            </button>
-          </form>
+              {/* Form header */}
+              <div className="mb-8">
+                <span className="label-mono block mb-2">
+                  {mode === "login"
+                    ? "STEP_01 // AUTHENTICATION"
+                    : "STEP_01 // REGISTRATION"}
+                </span>
+                <h2 className="text-2xl font-bold tracking-tight">
+                  {mode === "login" ? "Welcome Back" : "Create Account"}
+                </h2>
+                <p className="text-sm text-gray-600 mt-2">
+                  {mode === "login"
+                    ? "Enter your email to access your account"
+                    : "Enter your email to get started — no password needed"}
+                </p>
+              </div>
 
-          {/* Divider */}
-          <div className="my-8 border-t border-gray-200" />
+              {/* Error message */}
+              {error && (
+                <div className="mb-6 p-4 border border-red-600 bg-red-50">
+                  <span className="label-mono text-red-600">ERROR</span>
+                  <p className="text-sm text-red-800 mt-1">{error}</p>
+                </div>
+              )}
 
-          {/* Mode switcher hint */}
-          <div className="text-center">
-            <p className="text-xs text-gray-500 mb-2">
-              {mode === "login"
-                ? "Don\u2019t have an account?"
-                : "Already have an account?"}
-            </p>
-            <button
-              type="button"
-              onClick={() => { setMode(mode === "login" ? "register" : "login"); setError(null); }}
-              className="label-mono text-black hover:underline"
-            >
-              {mode === "login" ? "SIGN UP →" : "LOG IN →"}
-            </button>
-          </div>
+              {/* Form */}
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div>
+                  <label
+                    htmlFor="email"
+                    className="label-mono block mb-2 text-black"
+                  >
+                    EMAIL_ADDRESS
+                  </label>
+                  <input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="you@example.com"
+                    required
+                    disabled={isLoading}
+                    className="w-full border border-black bg-transparent px-4 py-3 text-base focus:bg-black focus:text-white transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isLoading || !email}
+                  className="w-full border border-black bg-black text-white px-6 py-4 text-sm font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isLoading
+                    ? "SENDING LINK..."
+                    : mode === "login"
+                      ? "LOG IN →"
+                      : "CREATE ACCOUNT →"}
+                </button>
+              </form>
+
+              {/* Divider */}
+              <div className="my-8 border-t border-gray-200" />
+
+              {/* Mode switcher hint */}
+              <div className="text-center">
+                <p className="text-xs text-gray-500 mb-2">
+                  {mode === "login"
+                    ? "Don\u2019t have an account?"
+                    : "Already have an account?"}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMode(mode === "login" ? "register" : "login");
+                    setError(null);
+                  }}
+                  className="label-mono text-black hover:underline"
+                >
+                  {mode === "login" ? "SIGN UP →" : "LOG IN →"}
+                </button>
+              </div>
+            </>
+          )}
 
           <div className="mt-6 text-center">
             <Link

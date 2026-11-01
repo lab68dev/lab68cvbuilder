@@ -8,35 +8,46 @@ import { CreativePDF } from "@/components/pdf/creative-pdf";
 import { ExecutivePDF } from "@/components/pdf/executive-pdf";
 import { HarvardPDF } from "@/components/pdf/harvard-pdf";
 import { AtsPDF } from "@/components/pdf/ats-pdf";
+import { MinimalPDF } from "@/components/pdf/minimal-pdf";
+import { ModernPDF } from "@/components/pdf/modern-pdf";
 import type { TemplateId } from "@/lib/constants";
 import { getFontById } from "@/lib/fonts";
 import { registerPDFFont } from "@/lib/pdf-font-loader";
 import React from "react";
 import type { ResumeData } from "@/db/schema";
 import { type PdfLabels, getPdfLabels, getDateLocale } from "@/lib/pdf-labels";
-import { createRateLimiter, getClientIp, rateLimitResponse } from "@/lib/rate-limit";
 import {
-  mapErrorToApiResponse,
-  notFound,
-  unauthorized,
-} from "@/lib/api-error";
+  createRateLimiter,
+  getClientIp,
+  rateLimitResponse,
+} from "@/lib/rate-limit";
+import { mapErrorToApiResponse, notFound, unauthorized } from "@/lib/api-error";
 
-const limiter = createRateLimiter({ limit: 10, windowSeconds: 60 });
+const limiter = createRateLimiter({
+  name: "export",
+  limit: 10,
+  windowSeconds: 60,
+});
 
-type PDFComponentType = React.ComponentType<{ data: ResumeData; fontFamily?: string; labels?: PdfLabels; dateLocale?: string }>;
+type PDFComponentType = React.ComponentType<{
+  data: ResumeData;
+  fontFamily?: string;
+  labels?: PdfLabels;
+  dateLocale?: string;
+}>;
 
 const PDF_TEMPLATES: Record<TemplateId, PDFComponentType> = {
-  "creative": CreativePDF,
-  "executive": ExecutivePDF,
-  "harvard": HarvardPDF,
-  "ats": AtsPDF,
-  "minimal": HarvardPDF,
-  "modern": ExecutivePDF,
+  creative: CreativePDF,
+  executive: ExecutivePDF,
+  harvard: HarvardPDF,
+  ats: AtsPDF,
+  minimal: MinimalPDF,
+  modern: ModernPDF,
 };
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -65,14 +76,15 @@ export async function GET(
     const fontConfig = getFontById(resume.fontFamily ?? "inter");
     const fontRegistered = await registerPDFFont(
       fontConfig.name,
-      fontConfig.googleFamily
+      fontConfig.googleFamily,
     );
 
     // Use the registered font name, or fall back to Archivo (always registered by PDF templates)
     const pdfFontFamily = fontRegistered ? fontConfig.name : "Archivo";
 
     // Render PDF based on template — lookup from map with fallback
-    const Component = PDF_TEMPLATES[resume.templateId as TemplateId] || HarvardPDF;
+    const Component =
+      PDF_TEMPLATES[resume.templateId as TemplateId] || HarvardPDF;
     const PDFElement = React.createElement(Component, {
       data: resume.data,
       fontFamily: pdfFontFamily,

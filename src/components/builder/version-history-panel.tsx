@@ -65,19 +65,25 @@ function totalSkillItems(data: ResumeData) {
   return data.skills.reduce((sum, group) => sum + group.items.length, 0);
 }
 
-function buildDiffRows(currentData: ResumeData, snapshotData: ResumeData): DiffRow[] {
+function buildDiffRows(
+  currentData: ResumeData,
+  snapshotData: ResumeData,
+): DiffRow[] {
   const rows: DiffRow[] = [
     {
       label: "Full Name",
       current: toDisplay(currentData.personalInfo.fullName),
       snapshot: toDisplay(snapshotData.personalInfo.fullName),
-      changed: currentData.personalInfo.fullName !== snapshotData.personalInfo.fullName,
+      changed:
+        currentData.personalInfo.fullName !==
+        snapshotData.personalInfo.fullName,
     },
     {
       label: "Email",
       current: toDisplay(currentData.personalInfo.email),
       snapshot: toDisplay(snapshotData.personalInfo.email),
-      changed: currentData.personalInfo.email !== snapshotData.personalInfo.email,
+      changed:
+        currentData.personalInfo.email !== snapshotData.personalInfo.email,
     },
     {
       label: "Summary",
@@ -115,7 +121,9 @@ function buildDiffRows(currentData: ResumeData, snapshotData: ResumeData): DiffR
       label: "Certifications",
       current: toDisplay(currentData.certifications.length),
       snapshot: toDisplay(snapshotData.certifications.length),
-      changed: currentData.certifications.length !== snapshotData.certifications.length,
+      changed:
+        currentData.certifications.length !==
+        snapshotData.certifications.length,
     },
     {
       label: "Languages",
@@ -143,7 +151,7 @@ function buildWordDiff(fromText: string, toText: string): TextDiffPart[] {
   const b = tokenizeWords(toText);
 
   const dp: number[][] = Array.from({ length: a.length + 1 }, () =>
-    Array(b.length + 1).fill(0)
+    Array(b.length + 1).fill(0),
   );
 
   for (let i = a.length - 1; i >= 0; i--) {
@@ -199,7 +207,10 @@ function buildWordDiff(fromText: string, toText: string): TextDiffPart[] {
   return parts;
 }
 
-function buildLongFieldDiffs(currentData: ResumeData, snapshotData: ResumeData): LongFieldDiff[] {
+function buildLongFieldDiffs(
+  currentData: ResumeData,
+  snapshotData: ResumeData,
+): LongFieldDiff[] {
   const rows: LongFieldDiff[] = [];
 
   const currentSummary = (currentData.personalInfo.summary ?? "").trim();
@@ -212,7 +223,10 @@ function buildLongFieldDiffs(currentData: ResumeData, snapshotData: ResumeData):
     });
   }
 
-  const maxExperience = Math.max(currentData.experience.length, snapshotData.experience.length);
+  const maxExperience = Math.max(
+    currentData.experience.length,
+    snapshotData.experience.length,
+  );
   for (let idx = 0; idx < Math.min(maxExperience, 2); idx++) {
     const currentExp = currentData.experience[idx];
     const snapshotExp = snapshotData.experience[idx];
@@ -226,7 +240,10 @@ function buildLongFieldDiffs(currentData: ResumeData, snapshotData: ResumeData):
     });
   }
 
-  const maxProjects = Math.max(currentData.projects.length, snapshotData.projects.length);
+  const maxProjects = Math.max(
+    currentData.projects.length,
+    snapshotData.projects.length,
+  );
   for (let idx = 0; idx < Math.min(maxProjects, 2); idx++) {
     const currentProject = currentData.projects[idx];
     const snapshotProject = snapshotData.projects[idx];
@@ -243,7 +260,13 @@ function buildLongFieldDiffs(currentData: ResumeData, snapshotData: ResumeData):
   return rows;
 }
 
-function InlineTextDiff({ snapshotText, currentText }: { snapshotText: string; currentText: string }) {
+function InlineTextDiff({
+  snapshotText,
+  currentText,
+}: {
+  snapshotText: string;
+  currentText: string;
+}) {
   const parts = buildWordDiff(snapshotText, currentText);
 
   if (parts.length === 0) {
@@ -297,12 +320,17 @@ export function VersionHistoryPanel() {
   const [message, setMessage] = useState<string | null>(null);
 
   const filteredVersions = versions.filter((version) =>
-    matchesFilter(version.source, activeFilter)
+    matchesFilter(version.source, activeFilter),
   );
 
-  const previewVersion = versions.find((version) => version.id === previewVersionId) ?? null;
-  const diffRows = previewVersion ? buildDiffRows(data, previewVersion.data) : [];
-  const longFieldDiffs = previewVersion ? buildLongFieldDiffs(data, previewVersion.data) : [];
+  const previewVersion =
+    versions.find((version) => version.id === previewVersionId) ?? null;
+  const diffRows = previewVersion
+    ? buildDiffRows(data, previewVersion.data)
+    : [];
+  const longFieldDiffs = previewVersion
+    ? buildLongFieldDiffs(data, previewVersion.data)
+    : [];
 
   const loadVersions = useCallback(async () => {
     if (!resumeId) return;
@@ -319,6 +347,7 @@ export function VersionHistoryPanel() {
   }, [resumeId]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- loading state for this fetch
     loadVersions();
   }, [loadVersions]);
 
@@ -351,7 +380,7 @@ export function VersionHistoryPanel() {
 
     if (isDirty) {
       const shouldContinue = window.confirm(
-        "You have unsaved changes. Restore this version anyway?"
+        "You have unsaved changes. Restore this version anyway?",
       );
       if (!shouldContinue) return;
     }
@@ -366,7 +395,7 @@ export function VersionHistoryPanel() {
         restored.title,
         restored.templateId,
         restored.fontFamily,
-        restored.data
+        restored.data,
       );
       markSaved();
       setMessage("Version restored to editor.");
@@ -383,7 +412,7 @@ export function VersionHistoryPanel() {
 
     const nextLabel = window.prompt(
       "Label this snapshot (empty clears label):",
-      version.changeSummary ?? ""
+      version.changeSummary ?? "",
     );
 
     if (nextLabel === null) return;
@@ -405,7 +434,9 @@ export function VersionHistoryPanel() {
     <div className="max-w-4xl space-y-6">
       <div>
         <span className="label-mono block mb-4">VERSIONING // HISTORY</span>
-        <h2 className="text-3xl font-black tracking-tight mb-2">Version History</h2>
+        <h2 className="text-3xl font-black tracking-tight mb-2">
+          Version History
+        </h2>
         <p className="text-sm text-gray-600">
           Review snapshots and restore previous resume states.
         </p>
@@ -431,18 +462,22 @@ export function VersionHistoryPanel() {
         </button>
 
         {isDirty && (
-          <span className="label-mono text-orange-600">UNSAVED EDITS PRESENT</span>
+          <span className="label-mono text-orange-600">
+            UNSAVED EDITS PRESENT
+          </span>
         )}
       </div>
 
       <div className="border border-black p-4 flex flex-wrap items-center gap-2">
         <span className="label-mono text-gray-500">FILTER SOURCE:</span>
-        {([
-          ["all", "All"],
-          ["autosave", "Auto"],
-          ["manual", "Manual"],
-          ["ai", "AI"],
-        ] as const).map(([value, label]) => (
+        {(
+          [
+            ["all", "All"],
+            ["autosave", "Auto"],
+            ["manual", "Manual"],
+            ["ai", "AI"],
+          ] as const
+        ).map(([value, label]) => (
           <button
             key={value}
             type="button"
@@ -459,11 +494,15 @@ export function VersionHistoryPanel() {
       </div>
 
       {message && (
-        <p className="text-xs font-bold uppercase tracking-wider text-gray-600">{message}</p>
+        <p className="text-xs font-bold uppercase tracking-wider text-gray-600">
+          {message}
+        </p>
       )}
 
       {isLoading ? (
-        <div className="border border-black p-6 text-sm text-gray-600">Loading versions...</div>
+        <div className="border border-black p-6 text-sm text-gray-600">
+          Loading versions...
+        </div>
       ) : filteredVersions.length === 0 ? (
         <div className="border border-black p-6 text-sm text-gray-600">
           No snapshots match this filter.
@@ -471,18 +510,29 @@ export function VersionHistoryPanel() {
       ) : (
         <div className="border border-black divide-y divide-gray-200">
           {filteredVersions.map((version) => (
-            <div key={version.id} className="p-4 flex flex-col md:flex-row md:items-start md:justify-between gap-3">
+            <div
+              key={version.id}
+              className="p-4 flex flex-col md:flex-row md:items-start md:justify-between gap-3"
+            >
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <span className="label-mono text-gray-500">{sourceLabel(version.source)}</span>
-                  <span className="text-xs text-gray-500">{formatDate(version.createdAt)}</span>
+                  <span className="label-mono text-gray-500">
+                    {sourceLabel(version.source)}
+                  </span>
+                  <span className="text-xs text-gray-500">
+                    {formatDate(version.createdAt)}
+                  </span>
                 </div>
-                <p className="text-sm font-bold uppercase tracking-wide">{version.title}</p>
+                <p className="text-sm font-bold uppercase tracking-wide">
+                  {version.title}
+                </p>
                 <p className="text-xs text-gray-500">
                   Template: {version.templateId} | Font: {version.fontFamily}
                 </p>
                 {version.changeSummary ? (
-                  <p className="text-xs text-gray-600">{version.changeSummary}</p>
+                  <p className="text-xs text-gray-600">
+                    {version.changeSummary}
+                  </p>
                 ) : null}
               </div>
 
@@ -524,67 +574,90 @@ export function VersionHistoryPanel() {
 
       {previewVersion && (
         <div className="space-y-4">
-        <div className="border border-black">
-          <div className="px-4 py-3 border-b border-black flex items-center justify-between gap-3">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-wider">Side-by-Side Diff Preview</p>
-              <p className="text-xs text-gray-500">
-                Snapshot: {formatDate(previewVersion.createdAt)} | {sourceLabel(previewVersion.source)}
+          <div className="border border-black">
+            <div className="px-4 py-3 border-b border-black flex items-center justify-between gap-3">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wider">
+                  Side-by-Side Diff Preview
+                </p>
+                <p className="text-xs text-gray-500">
+                  Snapshot: {formatDate(previewVersion.createdAt)} |{" "}
+                  {sourceLabel(previewVersion.source)}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setPreviewVersionId(null)}
+                className="border border-black px-3 py-1 text-xs font-bold uppercase tracking-wider hover:bg-black hover:text-white transition-colors duration-150"
+              >
+                Close
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 border-b border-black bg-gray-50">
+              <p className="px-4 py-2 text-[11px] font-bold uppercase tracking-wider border-b md:border-b-0 md:border-r border-gray-200">
+                Field
+              </p>
+              <p className="px-4 py-2 text-[11px] font-bold uppercase tracking-wider border-b md:border-b-0 md:border-r border-gray-200">
+                Current Draft
+              </p>
+              <p className="px-4 py-2 text-[11px] font-bold uppercase tracking-wider">
+                Selected Snapshot
               </p>
             </div>
-            <button
-              type="button"
-              onClick={() => setPreviewVersionId(null)}
-              className="border border-black px-3 py-1 text-xs font-bold uppercase tracking-wider hover:bg-black hover:text-white transition-colors duration-150"
-            >
-              Close
-            </button>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 border-b border-black bg-gray-50">
-            <p className="px-4 py-2 text-[11px] font-bold uppercase tracking-wider border-b md:border-b-0 md:border-r border-gray-200">Field</p>
-            <p className="px-4 py-2 text-[11px] font-bold uppercase tracking-wider border-b md:border-b-0 md:border-r border-gray-200">Current Draft</p>
-            <p className="px-4 py-2 text-[11px] font-bold uppercase tracking-wider">Selected Snapshot</p>
-          </div>
-
-          <div className="divide-y divide-gray-200">
-            {diffRows.map((row) => (
-              <div
-                key={row.label}
-                className={`grid grid-cols-1 md:grid-cols-3 ${row.changed ? "bg-yellow-50" : "bg-white"}`}
-              >
-                <p className="px-4 py-3 text-xs font-bold uppercase tracking-wide md:border-r border-gray-200">{row.label}</p>
-                <p className="px-4 py-3 text-sm md:border-r border-gray-200 wrap-break-word">{row.current}</p>
-                <p className="px-4 py-3 text-sm wrap-break-word">{row.snapshot}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="border border-black">
-          <div className="px-4 py-3 border-b border-black bg-gray-50">
-            <p className="text-xs font-bold uppercase tracking-wider">Visual Text Diff Mode</p>
-            <p className="text-xs text-gray-500">Inline additions are green, removals are red + struck through.</p>
-          </div>
-
-          {longFieldDiffs.length === 0 ? (
-            <div className="p-4 text-sm text-gray-500">No long-text fields found to compare.</div>
-          ) : (
             <div className="divide-y divide-gray-200">
-              {longFieldDiffs.map((item) => (
-                <div key={item.label} className="p-4 space-y-2">
-                  <p className="text-xs font-bold uppercase tracking-wider text-gray-600">{item.label}</p>
-                  <div className="border border-gray-200 p-3 bg-white">
-                    <InlineTextDiff
-                      snapshotText={item.snapshotText}
-                      currentText={item.currentText}
-                    />
-                  </div>
+              {diffRows.map((row) => (
+                <div
+                  key={row.label}
+                  className={`grid grid-cols-1 md:grid-cols-3 ${row.changed ? "bg-yellow-50" : "bg-white"}`}
+                >
+                  <p className="px-4 py-3 text-xs font-bold uppercase tracking-wide md:border-r border-gray-200">
+                    {row.label}
+                  </p>
+                  <p className="px-4 py-3 text-sm md:border-r border-gray-200 wrap-break-word">
+                    {row.current}
+                  </p>
+                  <p className="px-4 py-3 text-sm wrap-break-word">
+                    {row.snapshot}
+                  </p>
                 </div>
               ))}
             </div>
-          )}
-        </div>
+          </div>
+
+          <div className="border border-black">
+            <div className="px-4 py-3 border-b border-black bg-gray-50">
+              <p className="text-xs font-bold uppercase tracking-wider">
+                Visual Text Diff Mode
+              </p>
+              <p className="text-xs text-gray-500">
+                Inline additions are green, removals are red + struck through.
+              </p>
+            </div>
+
+            {longFieldDiffs.length === 0 ? (
+              <div className="p-4 text-sm text-gray-500">
+                No long-text fields found to compare.
+              </div>
+            ) : (
+              <div className="divide-y divide-gray-200">
+                {longFieldDiffs.map((item) => (
+                  <div key={item.label} className="p-4 space-y-2">
+                    <p className="text-xs font-bold uppercase tracking-wider text-gray-600">
+                      {item.label}
+                    </p>
+                    <div className="border border-gray-200 p-3 bg-white">
+                      <InlineTextDiff
+                        snapshotText={item.snapshotText}
+                        currentText={item.currentText}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>

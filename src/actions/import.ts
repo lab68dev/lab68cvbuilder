@@ -1,5 +1,22 @@
 "use server";
 
+import { headers } from "next/headers";
+import {
+  createRateLimiter,
+  enforceRateLimit,
+  getClientIp,
+} from "@/lib/rate-limit";
+
+// Guests can import, so these are limited by IP rather than by user.
+const importRateLimiter = createRateLimiter({
+  name: "import",
+  limit: 20,
+  windowSeconds: 3600,
+});
+
+async function enforceImportLimit(): Promise<void> {
+  await enforceRateLimit(importRateLimiter, getClientIp(await headers()));
+}
 
 type GitHubUser = {
   login: string;
@@ -108,7 +125,9 @@ function parseGitHubUsername(input: string): string {
 
   let parsed: URL;
   try {
-    parsed = new URL(cleaned.startsWith("http") ? cleaned : `https://${cleaned}`);
+    parsed = new URL(
+      cleaned.startsWith("http") ? cleaned : `https://${cleaned}`,
+    );
   } catch {
     throw new Error("Invalid GitHub URL");
   }
@@ -141,7 +160,9 @@ function parseLinkedInHandle(input: string): string {
 
   let parsed: URL;
   try {
-    parsed = new URL(cleaned.startsWith("http") ? cleaned : `https://${cleaned}`);
+    parsed = new URL(
+      cleaned.startsWith("http") ? cleaned : `https://${cleaned}`,
+    );
   } catch {
     throw new Error("Invalid LinkedIn URL");
   }
@@ -174,7 +195,9 @@ function parseBehanceHandle(input: string): string {
 
   let parsed: URL;
   try {
-    parsed = new URL(cleaned.startsWith("http") ? cleaned : `https://${cleaned}`);
+    parsed = new URL(
+      cleaned.startsWith("http") ? cleaned : `https://${cleaned}`,
+    );
   } catch {
     throw new Error("Invalid Behance URL");
   }
@@ -317,7 +340,9 @@ async function doGetForgProductOptions(forgInput: string): Promise<{
     }
   }
 
-  const data = await fetchForgAPI<ForgProfileResponse>(`/users/${target.handle}`);
+  const data = await fetchForgAPI<ForgProfileResponse>(
+    `/users/${target.handle}`,
+  );
   const products = data.products ?? [];
 
   const options = products
@@ -382,7 +407,10 @@ function parseForgTarget(input: string): ForgTarget {
     }
   });
 
-  if (decodedParts.length >= 2 && decodedParts[0].toLowerCase() === "products") {
+  if (
+    decodedParts.length >= 2 &&
+    decodedParts[0].toLowerCase() === "products"
+  ) {
     const id = decodedParts[1];
     if (!id || !/^[a-zA-Z0-9-]{2,120}$/.test(id)) {
       throw new Error("Could not extract a valid forg.to product ID");
@@ -447,11 +475,14 @@ async function fetchHtml(url: string): Promise<string> {
   return res.text();
 }
 
-function extractMetaContent(html: string, propertyOrName: string): string | undefined {
+function extractMetaContent(
+  html: string,
+  propertyOrName: string,
+): string | undefined {
   const escaped = propertyOrName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const regex = new RegExp(
     `<meta[^>]+(?:property|name)=["']${escaped}["'][^>]+content=["']([^"']+)["'][^>]*>`,
-    "i"
+    "i",
   );
   const match = html.match(regex);
   return match?.[1]?.trim();
@@ -484,12 +515,16 @@ function uniqueStrings(values: Array<string | null | undefined>): string[] {
   return output;
 }
 
-async function doImportFromGitHub(githubInput: string): Promise<SocialImportResult> {
+async function doImportFromGitHub(
+  githubInput: string,
+): Promise<SocialImportResult> {
   const username = parseGitHubUsername(githubInput);
 
   const [user, repos] = await Promise.all([
     fetchGitHub<GitHubUser>(`/users/${username}`),
-    fetchGitHub<GitHubRepo[]>(`/users/${username}/repos?sort=updated&per_page=12`),
+    fetchGitHub<GitHubRepo[]>(
+      `/users/${username}/repos?sort=updated&per_page=12`,
+    ),
   ]);
 
   const topRepos = repos
@@ -498,11 +533,15 @@ async function doImportFromGitHub(githubInput: string): Promise<SocialImportResu
     .slice(0, 4);
 
   const projects: ImportedProjectDraft[] = topRepos.map((repo) => {
-    const technologies = uniqueStrings([repo.language, ...(repo.topics ?? [])]).slice(0, 8);
+    const technologies = uniqueStrings([
+      repo.language,
+      ...(repo.topics ?? []),
+    ]).slice(0, 8);
 
     return {
       name: repo.name,
-      description: repo.description?.trim() || "Open-source project from GitHub profile",
+      description:
+        repo.description?.trim() || "Open-source project from GitHub profile",
       url: repo.homepage?.trim() || repo.html_url,
       githubUrl: repo.html_url,
       websiteUrl: repo.homepage?.trim() || "",
@@ -569,7 +608,9 @@ async function doImportFromGitHub(githubInput: string): Promise<SocialImportResu
   };
 }
 
-async function doImportFromLinkedIn(linkedinInput: string): Promise<SocialImportResult> {
+async function doImportFromLinkedIn(
+  linkedinInput: string,
+): Promise<SocialImportResult> {
   const handle = parseLinkedInHandle(linkedinInput);
   const profileUrl = `https://www.linkedin.com/in/${handle}`;
 
@@ -621,7 +662,9 @@ async function doImportFromLinkedIn(linkedinInput: string): Promise<SocialImport
   };
 }
 
-async function doImportFromBehance(behanceInput: string): Promise<SocialImportResult> {
+async function doImportFromBehance(
+  behanceInput: string,
+): Promise<SocialImportResult> {
   const handle = parseBehanceHandle(behanceInput);
   const profileUrl = `https://www.behance.net/${handle}`;
 
@@ -641,12 +684,16 @@ async function doImportFromBehance(behanceInput: string): Promise<SocialImportRe
       summary = ogDescription;
     }
 
-    const galleryMatches = [...html.matchAll(/\/gallery\/(\d+)\/([A-Za-z0-9_%.-]+)/g)]
+    const galleryMatches = [
+      ...html.matchAll(/\/gallery\/(\d+)\/([A-Za-z0-9_%.-]+)/g),
+    ]
       .map((m) => ({
         id: m[1],
         slug: decodeURIComponent(m[2].replace(/-/g, " ")),
       }))
-      .filter((item, index, arr) => arr.findIndex((a) => a.id === item.id) === index)
+      .filter(
+        (item, index, arr) => arr.findIndex((a) => a.id === item.id) === index,
+      )
       .slice(0, 4);
 
     for (const item of galleryMatches) {
@@ -696,7 +743,7 @@ async function doImportFromBehance(behanceInput: string): Promise<SocialImportRe
 
 async function doImportFromForg(
   forgInput: string,
-  preferredProductId?: string
+  preferredProductId?: string,
 ): Promise<SocialImportResult> {
   const target = parseForgTarget(forgInput);
 
@@ -707,7 +754,9 @@ async function doImportFromForg(
   let profileData: ForgProfileResponse | null = null;
 
   if (target.kind === "profile") {
-    profileData = await fetchForgAPI<ForgProfileResponse>(`/users/${target.handle}`);
+    profileData = await fetchForgAPI<ForgProfileResponse>(
+      `/users/${target.handle}`,
+    );
     userData = profileData.user;
     if (preferredProductId) {
       const normalizedPreferred = preferredProductId.trim();
@@ -716,10 +765,15 @@ async function doImportFromForg(
       }
       productData =
         (profileData.products || []).find(
-          (p) => p.slug === normalizedPreferred || p._id === normalizedPreferred
-        ) || profileData.products?.[0] || null;
+          (p) =>
+            p.slug === normalizedPreferred || p._id === normalizedPreferred,
+        ) ||
+        profileData.products?.[0] ||
+        null;
       if (!productData) {
-        productData = await fetchForgAPI<ForgProduct>(`/products/${normalizedPreferred}`);
+        productData = await fetchForgAPI<ForgProduct>(
+          `/products/${normalizedPreferred}`,
+        );
       }
     } else {
       productData = profileData.products?.[0] || null;
@@ -747,7 +801,9 @@ async function doImportFromForg(
   if (profileData) {
     if (profileData.products && profileData.products.length > 0) {
       for (const p of profileData.products) {
-        const pWebsite = p.website ? `https://${p.website.replace(/^https?:\/\//, "")}` : `https://forg.to/products/${p.slug || p._id}`;
+        const pWebsite = p.website
+          ? `https://${p.website.replace(/^https?:\/\//, "")}`
+          : `https://forg.to/products/${p.slug || p._id}`;
         projects.push({
           name: p.name || "",
           description: p.tagline || p.description || "Product from forg.to",
@@ -755,7 +811,9 @@ async function doImportFromForg(
           githubUrl: "",
           websiteUrl: pWebsite,
           technologies: ["Product", "Web"],
-          highlights: p.stats?.upvotes ? [`Received ${p.stats.upvotes} upvotes on forg.to`] : [`Published on forg.to`],
+          highlights: p.stats?.upvotes
+            ? [`Received ${p.stats.upvotes} upvotes on forg.to`]
+            : [`Published on forg.to`],
         });
       }
     }
@@ -766,8 +824,12 @@ async function doImportFromForg(
           company: exp.company || "",
           position: exp.role || exp.primaryRole || "",
           location: exp.location || undefined,
-          startDate: exp.startDate ? new Date(exp.startDate).toISOString().substring(0, 7) : "",
-          endDate: exp.endDate ? new Date(exp.endDate).toISOString().substring(0, 7) : undefined,
+          startDate: exp.startDate
+            ? new Date(exp.startDate).toISOString().substring(0, 7)
+            : "",
+          endDate: exp.endDate
+            ? new Date(exp.endDate).toISOString().substring(0, 7)
+            : undefined,
           current: exp.isCurrent || false,
           description: exp.description || "",
           highlights: [],
@@ -780,7 +842,9 @@ async function doImportFromForg(
         certifications.push({
           name: cert.name || "",
           issuer: cert.issuedBy || "",
-          date: cert.issuedDate ? new Date(cert.issuedDate).toISOString().substring(0, 7) : "",
+          date: cert.issuedDate
+            ? new Date(cert.issuedDate).toISOString().substring(0, 7)
+            : "",
           url: cert.certificateUrl || undefined,
         });
       }
@@ -805,7 +869,9 @@ async function doImportFromForg(
       githubUrl: "",
       websiteUrl: website,
       technologies: ["Product", "Web"],
-      highlights: productData.stats?.upvotes ? [`Received ${productData.stats.upvotes} upvotes on forg.to`] : [`Published on forg.to`],
+      highlights: productData.stats?.upvotes
+        ? [`Received ${productData.stats.upvotes} upvotes on forg.to`]
+        : [`Published on forg.to`],
     });
   }
 
@@ -827,8 +893,13 @@ async function doImportFromForg(
       linkedin:
         userData?.socialLinks?.find((l) => l.platform === "linkedin")?.url ||
         undefined,
-      github: userData?.socialLinks?.find((l) => l.platform === "github")?.url || "",
-      summary: userData?.bio || userData?.tagline || prodSummary || `Built and launched ${displayName} on forg.to`,
+      github:
+        userData?.socialLinks?.find((l) => l.platform === "github")?.url || "",
+      summary:
+        userData?.bio ||
+        userData?.tagline ||
+        prodSummary ||
+        `Built and launched ${displayName} on forg.to`,
     },
     projects,
     skills,
@@ -851,49 +922,89 @@ async function doImportFromForg(
   };
 }
 
-export type ActionResponse<T> = { success: true; data: T } | { success: false; error: string };
+export type ActionResponse<T> =
+  | { success: true; data: T }
+  | { success: false; error: string };
 
-export async function importFromGitHub(input: string): Promise<ActionResponse<SocialImportResult>> {
+export async function importFromGitHub(
+  input: string,
+): Promise<ActionResponse<SocialImportResult>> {
   try {
+    await enforceImportLimit();
     const data = await doImportFromGitHub(input);
     return { success: true, data };
   } catch (err: unknown) {
-    return { success: false, error: err instanceof Error ? err.message : "GitHub import failed." };
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : "GitHub import failed.",
+    };
   }
 }
 
-export async function importFromLinkedIn(input: string): Promise<ActionResponse<SocialImportResult>> {
+export async function importFromLinkedIn(
+  input: string,
+): Promise<ActionResponse<SocialImportResult>> {
   try {
+    await enforceImportLimit();
     const data = await doImportFromLinkedIn(input);
     return { success: true, data };
   } catch (err: unknown) {
-    return { success: false, error: err instanceof Error ? err.message : "LinkedIn import failed." };
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : "LinkedIn import failed.",
+    };
   }
 }
 
-export async function importFromBehance(input: string): Promise<ActionResponse<SocialImportResult>> {
+export async function importFromBehance(
+  input: string,
+): Promise<ActionResponse<SocialImportResult>> {
   try {
+    await enforceImportLimit();
     const data = await doImportFromBehance(input);
     return { success: true, data };
   } catch (err: unknown) {
-    return { success: false, error: err instanceof Error ? err.message : "Behance import failed." };
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : "Behance import failed.",
+    };
   }
 }
 
-export async function importFromForg(input: string, preferredProductId?: string): Promise<ActionResponse<SocialImportResult>> {
+export async function importFromForg(
+  input: string,
+  preferredProductId?: string,
+): Promise<ActionResponse<SocialImportResult>> {
   try {
+    await enforceImportLimit();
     const data = await doImportFromForg(input, preferredProductId);
     return { success: true, data };
   } catch (err: unknown) {
-    return { success: false, error: err instanceof Error ? err.message : "Forg import failed." };
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : "Forg import failed.",
+    };
   }
 }
 
-export async function getForgProductOptions(input: string): Promise<ActionResponse<{ target: "profile" | "product"; username: string; options: ForgProductOption[]; }>> {
+export async function getForgProductOptions(
+  input: string,
+): Promise<
+  ActionResponse<{
+    target: "profile" | "product";
+    username: string;
+    options: ForgProductOption[];
+  }>
+> {
   try {
+    await enforceImportLimit();
     const data = await doGetForgProductOptions(input);
     return { success: true, data };
   } catch (err: unknown) {
-    return { success: false, error: err instanceof Error ? err.message : "Failed to load Forg products." };
+    return {
+      success: false,
+      error:
+        err instanceof Error ? err.message : "Failed to load Forg products.",
+    };
   }
 }

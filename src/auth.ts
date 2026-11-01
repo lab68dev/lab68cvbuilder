@@ -1,14 +1,8 @@
 import NextAuth from "next-auth";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
-import Credentials from "next-auth/providers/credentials";
+import Resend from "next-auth/providers/resend";
 import { db } from "@/db";
-import { eq } from "drizzle-orm";
-import {
-  users,
-  accounts,
-  sessions,
-  verificationTokens,
-} from "@/db/schema";
+import { users, accounts, sessions, verificationTokens } from "@/db/schema";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   // ── Adapter ──────────────────────────────────────────────
@@ -27,59 +21,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
   // ── Providers ────────────────────────────────────────────
   providers: [
-    Credentials({
-      name: "Email",
-      credentials: {
-        email: { label: "Email", type: "email" },
-      },
-      async authorize(credentials) {
-        const email = credentials?.email as string | undefined;
-        if (!email) return null;
-
-        // RFC 5321: maximum total email address length is 254 characters
-        if (email.length > 254) return null;
-
-        const normalizedEmail = email.toLowerCase().trim();
-
-        // Re-check after normalization (trim could theoretically still exceed limit)
-        if (normalizedEmail.length > 254) return null;
-
-        // Look up existing user
-        const existing = await db
-          .select()
-          .from(users)
-          .where(eq(users.email, normalizedEmail))
-          .limit(1);
-
-        if (existing.length > 0) {
-          return {
-            id: existing[0].id,
-            email: existing[0].email,
-            name: existing[0].name,
-          };
-        }
-
-        // Auto-create new user
-        const [newUser] = await db
-          .insert(users)
-          .values({
-            email: normalizedEmail,
-            emailVerified: new Date(),
-          })
-          .returning();
-
-        return {
-          id: newUser.id,
-          email: newUser.email,
-          name: newUser.name,
-        };
-      },
+    // Magic link: the emailed link is what proves the user owns the address.
+    Resend({
+      apiKey: process.env.RESEND_API_KEY,
+      from: process.env.AUTH_EMAIL_FROM,
     }),
   ],
 
   // ── Custom Pages ─────────────────────────────────────────
   pages: {
     signIn: "/login",
+    error: "/login",
   },
 
   // ── Callbacks ────────────────────────────────────────────
@@ -115,13 +67,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       const isAuthenticated = !!session?.user;
 
       // Support missing locale or explicit locales /en, /vi
-      const isProtected = request.nextUrl.pathname.match(/^(\/(en|vi))?\/dashboard/);
+      const isProtected = request.nextUrl.pathname.match(
+        /^(\/(en|vi))?\/dashboard/,
+      );
 
       if (isProtected && !isAuthenticated) {
         // Extract locale to maintain it during login redirect
         const match = request.nextUrl.pathname.match(/^\/(en|vi)\//);
-        const locale = match ? match[1] : '';
-        const loginPath = locale ? `/${locale}/login` : '/login';
+        const locale = match ? match[1] : "";
+        const loginPath = locale ? `/${locale}/login` : "/login";
 
         const loginUrl = new URL(loginPath, request.nextUrl.origin);
         loginUrl.searchParams.set("callbackUrl", request.nextUrl.pathname);

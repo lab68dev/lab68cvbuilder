@@ -81,3 +81,7 @@ export const GUEST_STORAGE_KEY = "lab68_guest_resume";
  */
 export const GUEST_MIGRATION_META_KEY = "lab68_guest_migration_meta";
 
+/**
+ * Query param on the dashboard that tells it to import the guest draft.
+ */
+export const GUEST_MIGRATION_PARAM = "migrateGuest";

@@ -23,7 +23,7 @@
 
 ### Authentication
 
-- Email-only sign-in with auto-registration — no password required
+- Passwordless sign-in — a one-time link sent by email, with auto-registration
 - JWT-based sessions with protected routes via middleware
 
 ### Resume Builder
@@ -39,12 +39,12 @@
 
 ### Templates
 
-| Template | Style |
-|----------|-------|
-| **Harvard Style** | Classic academic — left date column with structured content blocks |
-| **Creative / Portfolio** | Brutalist sidebar — black 2.5-inch sidebar with optional avatar photo |
-| **ATS-Optimized** | Two-column clean layout optimized for Applicant Tracking Systems |
-| **Executive / Leadership** | Traditional top-down with professional summary header |
+| Template                   | Style                                                                 |
+| -------------------------- | --------------------------------------------------------------------- |
+| **Harvard Style**          | Classic academic — left date column with structured content blocks    |
+| **Creative / Portfolio**   | Brutalist sidebar — black 2.5-inch sidebar with optional avatar photo |
+| **ATS-Optimized**          | Two-column clean layout optimized for Applicant Tracking Systems      |
+| **Executive / Leadership** | Traditional top-down with professional summary header                 |
 
 ### PDF Export
 
@@ -77,19 +77,19 @@ No smooth gradients. No rounded pills. Pure function.
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
-| Framework | Next.js 16 (App Router, React 19, Turbopack) |
-| Language | TypeScript (strict) |
-| Database | Neon (Serverless Postgres) |
-| ORM | Drizzle ORM |
-| Auth | Auth.js v5 — Credentials provider |
-| Styling | Tailwind CSS 4 |
-| State | Zustand |
-| PDF | @react-pdf/renderer |
-| Image Upload | Cloudinary |
-| i18n | next-intl (EN / VI) |
-| Font | IBM Plex Sans (UI) + 11 Google Fonts (CV) |
+| Layer        | Technology                                   |
+| ------------ | -------------------------------------------- |
+| Framework    | Next.js 16 (App Router, React 19, Turbopack) |
+| Language     | TypeScript (strict)                          |
+| Database     | Neon (Serverless Postgres)                   |
+| ORM          | Drizzle ORM                                  |
+| Auth         | Auth.js v5 — Resend magic link               |
+| Styling      | Tailwind CSS 4                               |
+| State        | Zustand                                      |
+| PDF          | @react-pdf/renderer                          |
+| Image Upload | Cloudinary                                   |
+| i18n         | next-intl (EN / VI)                          |
+| Font         | IBM Plex Sans (UI) + 11 Google Fonts (CV)    |
 
 ---
 

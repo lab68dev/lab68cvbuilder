@@ -1,15 +1,35 @@
 import assert from "node:assert";
 import { describe, it } from "node:test";
 import {
-  createRateLimiter,
   createRateLimiterWithStore,
+  enforceRateLimit,
   type RateLimitStore,
   rateLimitResponse,
 } from "../rate-limit";
 
+function createMemoryStore(): RateLimitStore {
+  const entries = new Map<string, { count: number; resetTime: number }>();
+
+  return {
+    increment(key, windowMs) {
+      const now = Date.now();
+      const existing = entries.get(key);
+      const entry =
+        existing && now < existing.resetTime
+          ? { ...existing, count: existing.count + 1 }
+          : { count: 1, resetTime: now + windowMs };
+      entries.set(key, entry);
+      return entry;
+    },
+  };
+}
+
 describe("security-rate-limit", () => {
   it("blocks requests after limit is exceeded", async () => {
-    const limiter = createRateLimiter({ limit: 2, windowSeconds: 60 });
+    const limiter = createRateLimiterWithStore(
+      { name: "test", limit: 2, windowSeconds: 60 },
+      createMemoryStore(),
+    );
 
     const first = await limiter.check("ip:127.0.0.1");
     const second = await limiter.check("ip:127.0.0.1");
@@ -23,40 +43,45 @@ describe("security-rate-limit", () => {
     }
   });
 
-  it("supports custom store adapters for distributed backends", async () => {
-    const sharedState = new Map<string, { count: number; resetTime: number; expiresAt: number }>();
-
-    const distributedStore: RateLimitStore = {
-      get(key) {
-        const entry = sharedState.get(key);
-        if (!entry || Date.now() >= entry.expiresAt) {
-          sharedState.delete(key);
-          return null;
-        }
-        return { count: entry.count, resetTime: entry.resetTime };
-      },
-      set(key, entry, ttlMs) {
-        sharedState.set(key, {
-          count: entry.count,
-          resetTime: entry.resetTime,
-          expiresAt: Date.now() + ttlMs,
-        });
-      },
-      delete(key) {
-        sharedState.delete(key);
-      },
-    };
-
-    const limiter = createRateLimiterWithStore(
-      { limit: 1, windowSeconds: 60 },
-      distributedStore
+  it("keeps counters for different features apart in a shared store", async () => {
+    const store = createMemoryStore();
+    const ai = createRateLimiterWithStore(
+      { name: "ai", limit: 1, windowSeconds: 60 },
+      store,
+    );
+    const upload = createRateLimiterWithStore(
+      { name: "upload", limit: 1, windowSeconds: 60 },
+      store,
     );
 
-    const first = await limiter.check("ip:10.0.0.2");
-    const second = await limiter.check("ip:10.0.0.2");
+    assert.strictEqual((await ai.check("user-1")).allowed, true);
+    assert.strictEqual((await upload.check("user-1")).allowed, true);
+    assert.strictEqual((await ai.check("user-1")).allowed, false);
+  });
 
-    assert.strictEqual(first.allowed, true);
-    assert.strictEqual(second.allowed, false);
+  it("allows the request when the store is down", async () => {
+    const limiter = createRateLimiterWithStore(
+      { name: "test", limit: 1, windowSeconds: 60 },
+      {
+        increment() {
+          throw new Error("database unavailable");
+        },
+      },
+    );
+
+    assert.strictEqual((await limiter.check("user-1")).allowed, true);
+  });
+
+  it("throws a readable message from server actions", async () => {
+    const limiter = createRateLimiterWithStore(
+      { name: "test", limit: 0, windowSeconds: 60 },
+      createMemoryStore(),
+    );
+
+    await assert.rejects(
+      () => enforceRateLimit(limiter, "user-1"),
+      /Rate limit exceeded/,
+    );
   });
 
   it("returns standardized rate limit response payload", async () => {

@@ -2,11 +2,9 @@
 
 import Groq from "groq-sdk";
 import { auth } from "@/auth";
-import { createRateLimiter } from "@/lib/rate-limit";
+import { aiRateLimiter, enforceRateLimit } from "@/lib/rate-limit";
+import { mergeAiResume } from "@/lib/ai-resume";
 import type { ResumeData } from "@/db/schema";
-
-// 10 AI calls per hour per user
-const aiRateLimiter = createRateLimiter({ limit: 10, windowSeconds: 3600 });
 
 async function getAuthUserId(): Promise<string> {
   const session = await auth();
@@ -30,16 +28,10 @@ function getGroqClient(): Groq {
  */
 export async function improveBullet(
   bullet: string,
-  context: { position?: string; company?: string }
+  context: { position?: string; company?: string },
 ): Promise<{ result: string }> {
   const userId = await getAuthUserId();
-
-  const rateCheck = await aiRateLimiter.check(userId);
-  if (!rateCheck.allowed) {
-    throw new Error(
-      `Rate limit exceeded. Try again in ${rateCheck.retryAfterSeconds} seconds.`
-    );
-  }
+  await enforceRateLimit(aiRateLimiter, userId);
 
   if (!bullet.trim()) throw new Error("Bullet text cannot be empty");
 
@@ -82,18 +74,14 @@ export async function generateSummary(input: {
   yearsOfExperience?: string;
 }): Promise<{ result: string }> {
   const userId = await getAuthUserId();
-
-  const rateCheck = await aiRateLimiter.check(userId);
-  if (!rateCheck.allowed) {
-    throw new Error(
-      `Rate limit exceeded. Try again in ${rateCheck.retryAfterSeconds} seconds.`
-    );
-  }
+  await enforceRateLimit(aiRateLimiter, userId);
 
   const groq = getGroqClient();
 
   const skillsLine =
-    input.skills.length > 0 ? input.skills.slice(0, 10).join(", ") : "not specified";
+    input.skills.length > 0
+      ? input.skills.slice(0, 10).join(", ")
+      : "not specified";
 
   const prompt = `You are a professional resume writer. Write a compelling 2-3 sentence professional summary for a resume. Make it specific, impactful, and ATS-friendly. Return ONLY the summary text — no explanation, no heading, no quotes.
 
@@ -123,16 +111,10 @@ ${input.yearsOfExperience ? `Experience: ${input.yearsOfExperience}` : ""}`;
  */
 export async function improveDescription(
   description: string,
-  context: { title?: string; company?: string }
+  context: { title?: string; company?: string },
 ): Promise<{ result: string }> {
   const userId = await getAuthUserId();
-
-  const rateCheck = await aiRateLimiter.check(userId);
-  if (!rateCheck.allowed) {
-    throw new Error(
-      `Rate limit exceeded. Try again in ${rateCheck.retryAfterSeconds} seconds.`
-    );
-  }
+  await enforceRateLimit(aiRateLimiter, userId);
 
   if (!description.trim()) throw new Error("Description cannot be empty");
 
@@ -167,7 +149,10 @@ ${description}`;
 function stripCodeFence(text: string): string {
   const trimmed = text.trim();
   if (!trimmed.startsWith("```") || !trimmed.endsWith("```")) return trimmed;
-  return trimmed.replace(/^```[a-zA-Z]*\n?/, "").replace(/```$/, "").trim();
+  return trimmed
+    .replace(/^```[a-zA-Z]*\n?/, "")
+    .replace(/```$/, "")
+    .trim();
 }
 
 /**
@@ -175,16 +160,10 @@ function stripCodeFence(text: string): string {
  * Keeps meaning/structure intact and only fixes writing quality.
  */
 export async function checkResumeGrammarAndSpelling(
-  resumeData: ResumeData
+  resumeData: ResumeData,
 ): Promise<{ result: ResumeData }> {
   const userId = await getAuthUserId();
-
-  const rateCheck = await aiRateLimiter.check(userId);
-  if (!rateCheck.allowed) {
-    throw new Error(
-      `Rate limit exceeded. Try again in ${rateCheck.retryAfterSeconds} seconds.`
-    );
-  }
+  await enforceRateLimit(aiRateLimiter, userId);
 
   const groq = getGroqClient();
 
@@ -204,7 +183,8 @@ Return ONLY valid JSON (no markdown, no explanations) matching this shape exactl
   "skills": [{"id":"","category":"","items":[""]}],
   "projects": [{"id":"","name":"","description":"","url":"","githubUrl":"","websiteUrl":"","technologies":[""],"highlights":[""]}],
   "certifications": [{"id":"","name":"","issuer":"","date":"","url":""}],
-  "languages": [{"id":"","language":"","proficiency":"native"}]
+  "languages": [{"id":"","language":"","proficiency":"native"}],
+  "competitions": [{"id":"","name":"","role":"","date":"","location":"","url":"","description":"","highlights":[""]}]
 }
 
 Input JSON:
@@ -220,10 +200,12 @@ ${JSON.stringify(resumeData)}`;
   const content = completion.choices[0]?.message?.content?.trim();
   if (!content) throw new Error("AI returned an empty response");
 
+  let parsed: unknown;
   try {
-    const parsed = JSON.parse(stripCodeFence(content)) as ResumeData;
-    return { result: parsed };
+    parsed = JSON.parse(stripCodeFence(content));
   } catch {
     throw new Error("AI returned invalid JSON. Please try again.");
   }
+
+  return { result: mergeAiResume(resumeData, parsed) };
 }

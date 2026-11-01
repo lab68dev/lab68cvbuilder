@@ -297,6 +297,15 @@ export const resumeViews = pgTable("resume_views", {
   updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
 });
 
+export const rateLimits = pgTable("rate_limits", {
+  key: text("key").primaryKey(), // "<feature>:<user id or ip>"
+  count: integer("count").notNull(),
+  resetAt: timestamp("reset_at", {
+    mode: "date",
+    withTimezone: true,
+  }).notNull(),
+});
+
 // ============================================================
 // RELATIONS
 // ============================================================

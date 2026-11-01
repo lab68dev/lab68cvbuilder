@@ -14,6 +14,12 @@ export function ensureHref(url: string): string {
   return `https://${url}`;
 }
 
+/** Only same-site paths are allowed, so a crafted link cannot send users elsewhere */
+export function getSafeCallbackUrl(value: string | null): string {
+  if (value && /^\/(?!\/)[^\s\\]*$/.test(value)) return value;
+  return "/dashboard";
+}
+
 /** Clean display label for a website URL → "Portfolio" */
 export function websiteLabel(): string {
   return "Portfolio";

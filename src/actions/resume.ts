@@ -5,6 +5,7 @@ import { resumes, resumeVersions } from "@/db/schema";
 import { auth } from "@/auth";
 import { eq, and, desc } from "drizzle-orm";
 import type { ResumeData } from "@/db/schema";
+import { pickResumeUpdate } from "@/lib/resume-update";
 import { sanitizeResumeData } from "@/lib/sanitize-resume";
 import { revalidatePath } from "next/cache";
 
@@ -22,7 +23,10 @@ async function getAuthUserId(): Promise<string> {
 
 // ── CREATE ──────────────────────────────────────────────────
 
-export async function createResume(title: string, templateId: string = "harvard") {
+export async function createResume(
+  title: string,
+  templateId: string = "harvard",
+) {
   const userId = await getAuthUserId();
 
   const defaultData: ResumeData = {
@@ -63,7 +67,11 @@ export async function createResume(title: string, templateId: string = "harvard"
 
 export async function getUserResumes() {
   const userId = await getAuthUserId();
-  return db.select().from(resumes).where(eq(resumes.userId, userId)).orderBy(resumes.updatedAt);
+  return db
+    .select()
+    .from(resumes)
+    .where(eq(resumes.userId, userId))
+    .orderBy(resumes.updatedAt);
 }
 
 // ── READ (SINGLE) ───────────────────────────────────────────
@@ -94,7 +102,7 @@ export async function updateResumeShareSettings(
     shareEmail: boolean;
     sharePhone: boolean;
     shareLocation: boolean;
-  }
+  },
 ) {
   const userId = await getAuthUserId();
 
@@ -134,17 +142,9 @@ export async function updateResumeShareSettings(
 
 // ── UPDATE ──────────────────────────────────────────────────
 
-export async function updateResume(
-  resumeId: string,
-  data: Partial<{
-    title: string;
-    data: ResumeData;
-    templateId: string;
-    fontFamily: string;
-    isPublic: boolean;
-  }>
-) {
+export async function updateResume(resumeId: string, input: unknown) {
   const userId = await getAuthUserId();
+  const update = pickResumeUpdate(input);
 
   const [existing] = await db
     .select()
@@ -156,22 +156,28 @@ export async function updateResume(
   }
 
   const hasContentChange =
-    data.data !== undefined &&
-    JSON.stringify(existing.data) !== JSON.stringify(data.data);
+    update.data !== undefined &&
+    JSON.stringify(existing.data) !== JSON.stringify(update.data);
 
   if (hasContentChange) {
     try {
       const [lastVersion] = await db
         .select({ createdAt: resumeVersions.createdAt })
         .from(resumeVersions)
-        .where(and(eq(resumeVersions.resumeId, resumeId), eq(resumeVersions.userId, userId)))
+        .where(
+          and(
+            eq(resumeVersions.resumeId, resumeId),
+            eq(resumeVersions.userId, userId),
+          ),
+        )
         .orderBy(desc(resumeVersions.createdAt))
         .limit(1);
 
       const now = Date.now();
       const fifteenMinutes = 15 * 60 * 1000;
       const canSnapshot =
-        !lastVersion || now - new Date(lastVersion.createdAt).getTime() >= fifteenMinutes;
+        !lastVersion ||
+        now - new Date(lastVersion.createdAt).getTime() >= fifteenMinutes;
 
       if (canSnapshot) {
         await db.insert(resumeVersions).values({
@@ -186,19 +192,18 @@ export async function updateResume(
         });
       }
     } catch (error) {
-      console.warn("Skipping resume version autosnapshot due to DB error", error);
+      console.warn(
+        "Skipping resume version autosnapshot due to DB error",
+        error,
+      );
     }
   }
-
-  const sanitizedPayload = {
-    ...data,
-    ...(data.data ? { data: sanitizeResumeData(data.data) } : {}),
-  };
 
   const [updated] = await db
     .update(resumes)
     .set({
-      ...sanitizedPayload,
+      ...update,
+      ...(update.data ? { data: sanitizeResumeData(update.data) } : {}),
       updatedAt: new Date(),
     })
     .where(and(eq(resumes.id, resumeId), eq(resumes.userId, userId)))
