@@ -691,7 +691,7 @@ export function PersonalInfoForm() {
   return (
     <div className="max-w-3xl space-y-6">
       <div>
-        <span className="label-mono block mb-4">SECTION_01 // PERSONAL</span>
+        <span className="label-mono block mb-4">Section 1</span>
         <h2 className="text-3xl font-black tracking-tight mb-2">
           Personal Information
         </h2>
@@ -713,12 +713,12 @@ export function PersonalInfoForm() {
           {/* LinkedIn ZIP */}
           <div className="flex items-center gap-3">
             <span className="label-mono w-20 shrink-0 text-[11px]">
-              LINKEDIN
+              LinkedIn
             </span>
             <button
               onClick={() => linkedinZipRef.current?.click()}
               disabled={isParsingLinkedinZip}
-              className="border border-gray-400 px-3 py-1.5 text-xs font-bold uppercase tracking-wider hover:border-black hover:bg-black hover:text-white transition-all duration-150 disabled:opacity-40"
+              className="border border-gray-400 px-3 py-1.5 text-xs font-bold hover:border-black hover:bg-note transition-all duration-150 disabled:opacity-40"
             >
               {isParsingLinkedinZip
                 ? t("linkedinZipParsing")
@@ -739,7 +739,7 @@ export function PersonalInfoForm() {
 
           {/* GitHub */}
           <div className="flex items-center gap-3">
-            <span className="label-mono w-20 shrink-0 text-[11px]">GITHUB</span>
+            <span className="label-mono w-20 shrink-0 text-[11px]">GitHub</span>
             <input
               type="text"
               value={githubInput}
@@ -750,7 +750,7 @@ export function PersonalInfoForm() {
             <button
               onClick={handleImportGithub}
               disabled={isImportingGithub}
-              className="shrink-0 border border-gray-400 px-3 py-1.5 text-xs font-bold uppercase tracking-wider hover:border-black hover:bg-black hover:text-white transition-all duration-150 disabled:opacity-40"
+              className="shrink-0 border border-gray-400 px-3 py-1.5 text-xs font-bold hover:border-black hover:bg-note transition-all duration-150 disabled:opacity-40"
             >
               {isImportingGithub ? t("importing") : t("previewImport")}
             </button>
@@ -759,7 +759,7 @@ export function PersonalInfoForm() {
           {/* Behance */}
           <div className="flex items-center gap-3">
             <span className="label-mono w-20 shrink-0 text-[11px]">
-              BEHANCE
+              Behance
             </span>
             <input
               type="text"
@@ -771,7 +771,7 @@ export function PersonalInfoForm() {
             <button
               onClick={handleImportBehance}
               disabled={isImportingBehance}
-              className="shrink-0 border border-gray-400 px-3 py-1.5 text-xs font-bold uppercase tracking-wider hover:border-black hover:bg-black hover:text-white transition-all duration-150 disabled:opacity-40"
+              className="shrink-0 border border-gray-400 px-3 py-1.5 text-xs font-bold hover:border-black hover:bg-note transition-all duration-150 disabled:opacity-40"
             >
               {isImportingBehance ? t("importing") : t("previewImport")}
             </button>
@@ -779,7 +779,7 @@ export function PersonalInfoForm() {
 
           {/* Forg */}
           <div className="flex items-center gap-3">
-            <span className="label-mono w-20 shrink-0 text-[11px]">FORG</span>
+            <span className="label-mono w-20 shrink-0 text-[11px]">Forg</span>
             <input
               type="text"
               value={forgInput}
@@ -796,7 +796,7 @@ export function PersonalInfoForm() {
             <button
               onClick={handleImportForg}
               disabled={isImportingForg}
-              className="shrink-0 border border-gray-400 px-3 py-1.5 text-xs font-bold uppercase tracking-wider hover:border-black hover:bg-black hover:text-white transition-all duration-150 disabled:opacity-40"
+              className="shrink-0 border border-gray-400 px-3 py-1.5 text-xs font-bold hover:border-black hover:bg-note transition-all duration-150 disabled:opacity-40"
             >
               {isImportingForg ? t("importing") : t("previewImport")}
             </button>
@@ -806,7 +806,7 @@ export function PersonalInfoForm() {
 
           {forgOptions.length > 1 && (
             <div className="flex flex-col gap-2 border border-gray-300 p-3 bg-gray-50">
-              <p className="text-xs font-bold uppercase tracking-wider text-gray-600">
+              <p className="text-xs font-bold text-gray-600">
                 {t("forgPickerTitle")}
               </p>
               <div className="flex items-center gap-2">
@@ -825,7 +825,7 @@ export function PersonalInfoForm() {
                 <button
                   onClick={handleImportSelectedForgProduct}
                   disabled={isImportingForg || !selectedForgProductId}
-                  className="shrink-0 border border-black px-3 py-1.5 text-xs font-bold uppercase tracking-wider hover:bg-black hover:text-white transition-all duration-150 disabled:opacity-40"
+                  className="shrink-0 border border-black px-3 py-1.5 text-xs font-bold hover:bg-note transition-all duration-150 disabled:opacity-40"
                 >
                   {isImportingForg ? t("importing") : t("forgUseSelected")}
                 </button>
@@ -841,7 +841,7 @@ export function PersonalInfoForm() {
 
         {/* Avatar Upload */}
         <div>
-          <label className="label-mono block mb-3">AVATAR_PHOTO</label>
+          <label className="label-mono block mb-3">Avatar photo</label>
           <p className="text-xs text-gray-500 mb-3">
             Optional — used in the Creative / Portfolio template
           </p>
@@ -871,7 +871,7 @@ export function PersonalInfoForm() {
                 </div>
               ) : isUploading ? (
                 <div className="w-20 h-20 rounded-full border-2 border-black flex items-center justify-center text-xs font-bold animate-pulse bg-gray-100">
-                  UPLOADING
+                  Uploading
                 </div>
               ) : (
                 <div className="w-20 h-20 rounded-full border-2 border-dashed border-gray-400 flex items-center justify-center text-gray-400 text-xs">
@@ -882,10 +882,10 @@ export function PersonalInfoForm() {
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   disabled={isUploading}
-                  className={`border border-black px-4 py-2 text-xs font-bold uppercase tracking-wider transition-colors duration-150 ${
+                  className={`border border-black px-4 py-2 text-xs font-bold transition-colors duration-150 ${
                     isUploading
                       ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                      : "hover:bg-black hover:text-white"
+                      : "hover:bg-note"
                   }`}
                 >
                   {isUploading
@@ -912,7 +912,7 @@ export function PersonalInfoForm() {
 
         {/* Full Name */}
         <div>
-          <label className="label-mono block mb-2">FULL_NAME *</label>
+          <label className="label-mono block mb-2">Full name *</label>
           <input
             type="text"
             value={personalInfo.fullName}
@@ -938,7 +938,7 @@ export function PersonalInfoForm() {
 
         {/* Email */}
         <div>
-          <label className="label-mono block mb-2">EMAIL *</label>
+          <label className="label-mono block mb-2">Email *</label>
           <input
             type="email"
             value={personalInfo.email}
@@ -956,7 +956,7 @@ export function PersonalInfoForm() {
 
         {/* Phone */}
         <div>
-          <label className="label-mono block mb-2">PHONE</label>
+          <label className="label-mono block mb-2">Phone</label>
           <input
             type="tel"
             value={personalInfo.phone || ""}
@@ -984,7 +984,7 @@ export function PersonalInfoForm() {
 
         {/* Location */}
         <div>
-          <label className="label-mono block mb-2">LOCATION</label>
+          <label className="label-mono block mb-2">Location</label>
           <input
             type="text"
             value={personalInfo.location || ""}
@@ -997,7 +997,7 @@ export function PersonalInfoForm() {
 
         {/* Website */}
         <div>
-          <label className="label-mono block mb-2">WEBSITE</label>
+          <label className="label-mono block mb-2">Website</label>
           <input
             type="url"
             value={personalInfo.website || ""}
@@ -1028,7 +1028,7 @@ export function PersonalInfoForm() {
         {/* GitHub */}
         {/* GitHub URL — shown in CV header */}
         <div>
-          <label className="label-mono block mb-1">GITHUB URL</label>
+          <label className="label-mono block mb-1">GitHub URL</label>
           <p className="text-[10px] text-gray-400 mb-2">{t("githubHint")}</p>
           <input
             type="text"
@@ -1042,13 +1042,13 @@ export function PersonalInfoForm() {
         {/* Summary */}
         <div>
           <div className="flex items-center justify-between mb-2">
-            <label className="label-mono">PROFESSIONAL_SUMMARY</label>
+            <label className="label-mono">Professional summary</label>
             <button
               onClick={handleGenerateSummary}
               disabled={isGeneratingSummary}
-              className="border border-gray-400 px-3 py-1 text-xs font-bold uppercase tracking-wider hover:border-black hover:bg-black hover:text-white transition-all duration-150 disabled:opacity-40"
+              className="border border-gray-400 px-3 py-1 text-xs font-bold hover:border-black hover:bg-note transition-all duration-150 disabled:opacity-40"
             >
-              {isGeneratingSummary ? "GENERATING..." : "✦ GENERATE WITH AI"}
+              {isGeneratingSummary ? "Generating..." : "✦ Generate with AI"}
             </button>
           </div>
           <textarea
@@ -1070,7 +1070,7 @@ export function PersonalInfoForm() {
         </div>
 
         <div>
-          <label className="label-mono block mb-2">BULLET_SYMBOL</label>
+          <label className="label-mono block mb-2">Bullet symbol</label>
           <input
             type="text"
             value={personalInfo.bulletSymbol || "•"}

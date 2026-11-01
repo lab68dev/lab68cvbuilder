@@ -12,12 +12,15 @@ export default function BuilderError({
   return (
     <div className="min-h-screen bg-white flex items-center justify-center p-6">
       <div className="max-w-lg w-full border-2 border-black p-8 text-center">
-        <span className="label-mono block mb-4 text-red-600">ERROR // BUILDER</span>
+        <span className="label-mono block mb-4 text-red-600">
+          Builder error
+        </span>
         <h2 className="text-3xl font-black tracking-tight mb-4">
           Builder Crashed
         </h2>
         <p className="text-sm text-gray-600 mb-6">
-          {error.message || "An unexpected error occurred in the resume builder."}
+          {error.message ||
+            "An unexpected error occurred in the resume builder."}
         </p>
         <div className="flex gap-3 justify-center">
           <button

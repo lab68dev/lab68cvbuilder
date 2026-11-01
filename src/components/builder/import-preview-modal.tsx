@@ -68,12 +68,15 @@ export function ImportPreviewModal({
   const personalEntries = useMemo(
     () =>
       Object.entries(draft.personalInfo)
-        .filter(([key, value]) => key !== "" && Boolean((value ?? "").toString().trim()))
+        .filter(
+          ([key, value]) =>
+            key !== "" && Boolean((value ?? "").toString().trim()),
+        )
         .map(([key, value]) => ({
           key: key as ImportPersonalFieldKey,
           value: (value ?? "").toString(),
         })),
-    [draft.personalInfo]
+    [draft.personalInfo],
   );
 
   const handleOverlayClick = (e: React.MouseEvent) => {
@@ -98,7 +101,9 @@ export function ImportPreviewModal({
     selection.certifications;
 
   const confidenceLabel = (confidence: ImportConfidence) =>
-    confidence === "confirmed" ? t("confidenceConfirmed") : t("confidenceInferred");
+    confidence === "confirmed"
+      ? t("confidenceConfirmed")
+      : t("confidenceInferred");
 
   const confidenceClass = (confidence: ImportConfidence) =>
     confidence === "confirmed"
@@ -114,14 +119,16 @@ export function ImportPreviewModal({
       <div className="w-[min(760px,94vw)] max-h-[90vh] bg-white border border-black flex flex-col">
         <div className="flex items-center justify-between border-b border-black px-4 py-3">
           <div>
-            <span className="label-mono block text-xs">{t("previewLabel")}</span>
+            <span className="label-mono block text-xs">
+              {t("previewLabel")}
+            </span>
             <h3 className="text-lg font-black tracking-tight">
               {`${draft.source.toUpperCase()} @${draft.username}`}
             </h3>
           </div>
           <button
             onClick={onClose}
-            className="border border-black px-3 py-2 text-xs font-bold uppercase tracking-wider hover:bg-black hover:text-white transition-colors duration-150"
+            className="border border-black px-3 py-2 text-xs font-bold hover:bg-note transition-colors duration-150"
           >
             {t("close")}
           </button>
@@ -149,18 +156,22 @@ export function ImportPreviewModal({
                     />
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
-                        <div className="text-xs uppercase font-bold tracking-wider text-gray-600">
+                        <div className="text-xs font-bold text-gray-600">
                           {t(PERSONAL_FIELD_LABEL_KEYS[entry.key])}
                         </div>
                         <span
-                          className={`text-[10px] px-2 py-0.5 border uppercase tracking-wider ${confidenceClass(
-                            draft.confidence.personal[entry.key] ?? "inferred"
+                          className={`text-[10px] px-2 py-0.5 border ${confidenceClass(
+                            draft.confidence.personal[entry.key] ?? "inferred",
                           )}`}
                         >
-                          {confidenceLabel(draft.confidence.personal[entry.key] ?? "inferred")}
+                          {confidenceLabel(
+                            draft.confidence.personal[entry.key] ?? "inferred",
+                          )}
                         </span>
                       </div>
-                      <div className="text-sm wrap-break-word mt-1">{entry.value}</div>
+                      <div className="text-sm wrap-break-word mt-1">
+                        {entry.value}
+                      </div>
                     </div>
                   </label>
                 ))
@@ -175,15 +186,22 @@ export function ImportPreviewModal({
                 <input
                   type="checkbox"
                   checked={selection.skills}
-                  onChange={() => onChangeSelection({ ...selection, skills: !selection.skills })}
+                  onChange={() =>
+                    onChangeSelection({
+                      ...selection,
+                      skills: !selection.skills,
+                    })
+                  }
                   className="mt-1"
                 />
                 <div>
                   <div className="flex items-center gap-2">
-                    <div className="text-xs uppercase font-bold tracking-wider text-gray-600">{t("skills")}</div>
+                    <div className="text-xs font-bold text-gray-600">
+                      {t("skills")}
+                    </div>
                     <span
-                      className={`text-[10px] px-2 py-0.5 border uppercase tracking-wider ${confidenceClass(
-                        draft.confidence.skills
+                      className={`text-[10px] px-2 py-0.5 border ${confidenceClass(
+                        draft.confidence.skills,
                       )}`}
                     >
                       {confidenceLabel(draft.confidence.skills)}
@@ -203,7 +221,9 @@ export function ImportPreviewModal({
                       type="radio"
                       name="skills-mode"
                       checked={selection.skillsMode === "merge"}
-                      onChange={() => onChangeSelection({ ...selection, skillsMode: "merge" })}
+                      onChange={() =>
+                        onChangeSelection({ ...selection, skillsMode: "merge" })
+                      }
                     />
                     <span>{t("mergeMode")}</span>
                   </label>
@@ -212,7 +232,12 @@ export function ImportPreviewModal({
                       type="radio"
                       name="skills-mode"
                       checked={selection.skillsMode === "replace"}
-                      onChange={() => onChangeSelection({ ...selection, skillsMode: "replace" })}
+                      onChange={() =>
+                        onChangeSelection({
+                          ...selection,
+                          skillsMode: "replace",
+                        })
+                      }
                     />
                     <span>{t("replaceMode")}</span>
                   </label>
@@ -225,15 +250,22 @@ export function ImportPreviewModal({
                 <input
                   type="checkbox"
                   checked={selection.projects}
-                  onChange={() => onChangeSelection({ ...selection, projects: !selection.projects })}
+                  onChange={() =>
+                    onChangeSelection({
+                      ...selection,
+                      projects: !selection.projects,
+                    })
+                  }
                   className="mt-1"
                 />
                 <div>
                   <div className="flex items-center gap-2">
-                    <div className="text-xs uppercase font-bold tracking-wider text-gray-600">{t("projects")}</div>
+                    <div className="text-xs font-bold text-gray-600">
+                      {t("projects")}
+                    </div>
                     <span
-                      className={`text-[10px] px-2 py-0.5 border uppercase tracking-wider ${confidenceClass(
-                        draft.confidence.projects
+                      className={`text-[10px] px-2 py-0.5 border ${confidenceClass(
+                        draft.confidence.projects,
                       )}`}
                     >
                       {confidenceLabel(draft.confidence.projects)}
@@ -253,7 +285,12 @@ export function ImportPreviewModal({
                       type="radio"
                       name="projects-mode"
                       checked={selection.projectsMode === "merge"}
-                      onChange={() => onChangeSelection({ ...selection, projectsMode: "merge" })}
+                      onChange={() =>
+                        onChangeSelection({
+                          ...selection,
+                          projectsMode: "merge",
+                        })
+                      }
                     />
                     <span>{t("mergeMode")}</span>
                   </label>
@@ -262,7 +299,12 @@ export function ImportPreviewModal({
                       type="radio"
                       name="projects-mode"
                       checked={selection.projectsMode === "replace"}
-                      onChange={() => onChangeSelection({ ...selection, projectsMode: "replace" })}
+                      onChange={() =>
+                        onChangeSelection({
+                          ...selection,
+                          projectsMode: "replace",
+                        })
+                      }
                     />
                     <span>{t("replaceMode")}</span>
                   </label>
@@ -275,15 +317,22 @@ export function ImportPreviewModal({
                 <input
                   type="checkbox"
                   checked={selection.experience}
-                  onChange={() => onChangeSelection({ ...selection, experience: !selection.experience })}
+                  onChange={() =>
+                    onChangeSelection({
+                      ...selection,
+                      experience: !selection.experience,
+                    })
+                  }
                   className="mt-1"
                 />
                 <div>
                   <div className="flex items-center gap-2">
-                    <div className="text-xs uppercase font-bold tracking-wider text-gray-600">{t("experience")}</div>
+                    <div className="text-xs font-bold text-gray-600">
+                      {t("experience")}
+                    </div>
                     <span
-                      className={`text-[10px] px-2 py-0.5 border uppercase tracking-wider ${confidenceClass(
-                        draft.confidence.experience
+                      className={`text-[10px] px-2 py-0.5 border ${confidenceClass(
+                        draft.confidence.experience,
                       )}`}
                     >
                       {confidenceLabel(draft.confidence.experience)}
@@ -303,7 +352,12 @@ export function ImportPreviewModal({
                       type="radio"
                       name="experience-mode"
                       checked={selection.experienceMode === "merge"}
-                      onChange={() => onChangeSelection({ ...selection, experienceMode: "merge" })}
+                      onChange={() =>
+                        onChangeSelection({
+                          ...selection,
+                          experienceMode: "merge",
+                        })
+                      }
                     />
                     <span>{t("mergeMode")}</span>
                   </label>
@@ -312,7 +366,12 @@ export function ImportPreviewModal({
                       type="radio"
                       name="experience-mode"
                       checked={selection.experienceMode === "replace"}
-                      onChange={() => onChangeSelection({ ...selection, experienceMode: "replace" })}
+                      onChange={() =>
+                        onChangeSelection({
+                          ...selection,
+                          experienceMode: "replace",
+                        })
+                      }
                     />
                     <span>{t("replaceMode")}</span>
                   </label>
@@ -326,16 +385,21 @@ export function ImportPreviewModal({
                   type="checkbox"
                   checked={selection.certifications}
                   onChange={() =>
-                    onChangeSelection({ ...selection, certifications: !selection.certifications })
+                    onChangeSelection({
+                      ...selection,
+                      certifications: !selection.certifications,
+                    })
                   }
                   className="mt-1"
                 />
                 <div>
                   <div className="flex items-center gap-2">
-                    <div className="text-xs uppercase font-bold tracking-wider text-gray-600">{t("certifications")}</div>
+                    <div className="text-xs font-bold text-gray-600">
+                      {t("certifications")}
+                    </div>
                     <span
-                      className={`text-[10px] px-2 py-0.5 border uppercase tracking-wider ${confidenceClass(
-                        draft.confidence.certifications
+                      className={`text-[10px] px-2 py-0.5 border ${confidenceClass(
+                        draft.confidence.certifications,
                       )}`}
                     >
                       {confidenceLabel(draft.confidence.certifications)}
@@ -343,7 +407,9 @@ export function ImportPreviewModal({
                   </div>
                   <div className="text-sm">
                     {draft.certifications.length > 0
-                      ? t("certificationsFound", { count: draft.certifications.length })
+                      ? t("certificationsFound", {
+                          count: draft.certifications.length,
+                        })
                       : t("noCertifications")}
                   </div>
                 </div>
@@ -356,7 +422,10 @@ export function ImportPreviewModal({
                       name="certifications-mode"
                       checked={selection.certificationsMode === "merge"}
                       onChange={() =>
-                        onChangeSelection({ ...selection, certificationsMode: "merge" })
+                        onChangeSelection({
+                          ...selection,
+                          certificationsMode: "merge",
+                        })
                       }
                     />
                     <span>{t("mergeMode")}</span>
@@ -367,7 +436,10 @@ export function ImportPreviewModal({
                       name="certifications-mode"
                       checked={selection.certificationsMode === "replace"}
                       onChange={() =>
-                        onChangeSelection({ ...selection, certificationsMode: "replace" })
+                        onChangeSelection({
+                          ...selection,
+                          certificationsMode: "replace",
+                        })
                       }
                     />
                     <span>{t("replaceMode")}</span>
@@ -383,7 +455,7 @@ export function ImportPreviewModal({
           <button
             onClick={onApply}
             disabled={!canApply || isApplying}
-            className="border border-black px-4 py-2 text-xs font-bold uppercase tracking-wider bg-black text-white hover:bg-white hover:text-black transition-colors duration-150 disabled:opacity-40"
+            className="border border-black px-4 py-2 text-xs font-bold bg-black text-white hover:bg-white hover:text-black transition-colors duration-150 disabled:opacity-40"
           >
             {isApplying ? t("applying") : t("applySelected")}
           </button>

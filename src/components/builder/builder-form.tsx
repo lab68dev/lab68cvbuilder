@@ -182,11 +182,11 @@ export function BuilderForm() {
           data.personalInfo.fullName.trim() && data.personalInfo.email.trim(),
         );
         return hasContact ? (
-          <span className="text-[9px] font-bold px-1.5 py-0.5 uppercase tracking-wider bg-green-100 text-green-800 border border-green-200">
+          <span className="text-[9px] font-bold px-1.5 py-0.5 bg-green-100 text-green-800 border border-green-200">
             OK
           </span>
         ) : (
-          <span className="text-[9px] font-bold px-1.5 py-0.5 uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-200">
+          <span className="text-[9px] font-bold px-1.5 py-0.5 bg-amber-100 text-amber-800 border border-amber-200">
             Required
           </span>
         );
@@ -263,7 +263,7 @@ export function BuilderForm() {
         <div className="p-4 border-b border-gray-300 sticky top-0 bg-gray-50 z-10">
           <div className="flex items-center justify-between gap-2">
             <div>
-              <p className="label-mono text-gray-500">NAVIGATION</p>
+              <p className="label-mono text-gray-500">Navigation</p>
               <p className="text-[10px] text-gray-600 mt-0.5">
                 Section {Math.max(activeIndex + 1, 1)} of{" "}
                 {visibleSections.length}
@@ -274,10 +274,10 @@ export function BuilderForm() {
               <button
                 type="button"
                 onClick={() => setShowSectionManager(!showSectionManager)}
-                className={`border px-2 py-1.5 text-[9px] font-bold uppercase tracking-wider transition-colors duration-150 ${
+                className={`border px-2 py-1.5 text-[9px] font-bold transition-colors duration-150 ${
                   showSectionManager
                     ? "bg-black text-white border-black"
-                    : "border-gray-400 text-gray-600 hover:bg-black hover:text-white"
+                    : "border-gray-400 text-gray-600 hover:bg-note"
                 }`}
                 title="Show or hide sections"
               >
@@ -288,7 +288,7 @@ export function BuilderForm() {
                 <div className="absolute left-0 top-full mt-2 z-55 border border-black bg-white shadow-lg w-56">
                   <div className="px-3 py-2 border-b border-gray-200 bg-gray-50">
                     <p className="label-mono text-gray-500 text-[10px]">
-                      TOGGLE SECTIONS
+                      Toggle sections
                     </p>
                     <p className="text-[10px] text-gray-400 mt-0.5">
                       Click to show/hide
@@ -327,7 +327,7 @@ export function BuilderForm() {
                             {section.label}
                           </span>
                           {isPersonal && (
-                            <span className="ml-auto text-[9px] text-gray-400 uppercase">
+                            <span className="ml-auto text-[9px] text-gray-400 ">
                               Required
                             </span>
                           )}
@@ -349,7 +349,7 @@ export function BuilderForm() {
               <button
                 key={section.id}
                 onClick={() => setActiveSection(section.id)}
-                className={`w-full flex items-center justify-between gap-2 px-3 py-2.5 text-left text-xs font-bold uppercase tracking-wider transition-all duration-150 border ${
+                className={`w-full flex items-center justify-between gap-2 px-3 py-2.5 text-left text-xs font-bold transition-all duration-150 border ${
                   isJustMoved
                     ? "bg-yellow-400 text-black border-yellow-500 ring-2 ring-yellow-300"
                     : isActive
@@ -376,7 +376,7 @@ export function BuilderForm() {
               type="button"
               onClick={() => moveActiveSection("left")}
               disabled={activeIndex <= 0}
-              className="flex-1 border border-gray-400 px-2 py-1.5 text-[9px] font-bold uppercase tracking-wider hover:bg-black hover:text-white transition-colors duration-150 disabled:opacity-30 flex items-center justify-center gap-1"
+              className="flex-1 border border-gray-400 px-2 py-1.5 text-[9px] font-bold hover:bg-note transition-colors duration-150 disabled:opacity-30 flex items-center justify-center gap-1"
               title={`Move "${activeSectionLabel}" up`}
             >
               <span>↑ Move Up</span>
@@ -387,13 +387,13 @@ export function BuilderForm() {
               disabled={
                 activeIndex < 0 || activeIndex >= visibleSections.length - 1
               }
-              className="flex-1 border border-gray-400 px-2 py-1.5 text-[9px] font-bold uppercase tracking-wider hover:bg-black hover:text-white transition-colors duration-150 disabled:opacity-30 flex items-center justify-center gap-1"
+              className="flex-1 border border-gray-400 px-2 py-1.5 text-[9px] font-bold hover:bg-note transition-colors duration-150 disabled:opacity-30 flex items-center justify-center gap-1"
               title={`Move "${activeSectionLabel}" down`}
             >
               <span>↓ Move Down</span>
             </button>
           </div>
-          <div className="text-[9px] text-center text-gray-400 font-bold uppercase truncate px-1">
+          <div className="text-[9px] text-center text-gray-400 font-bold truncate px-1">
             Reordering: {activeSectionLabel}
           </div>
         </div>
@@ -404,7 +404,7 @@ export function BuilderForm() {
         <div className="border-b border-gray-200 px-4 py-3">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="label-mono text-gray-500">SECTION NAVIGATION</p>
+              <p className="label-mono text-gray-500">Section navigation</p>
               <p className="text-xs text-gray-600 mt-1">
                 Section {Math.max(activeIndex + 1, 1)} of{" "}
                 {visibleSections.length}
@@ -418,7 +418,7 @@ export function BuilderForm() {
                 type="button"
                 onClick={() => goToAdjacentSection("prev")}
                 disabled={!hasPrev}
-                className="border border-gray-400 px-3 py-2 text-[10px] font-bold uppercase tracking-wider hover:bg-black hover:text-white transition-colors duration-150 disabled:opacity-30"
+                className="border border-gray-400 px-3 py-2 text-[10px] font-bold hover:bg-note transition-colors duration-150 disabled:opacity-30"
                 title="Previous section"
               >
                 Prev
@@ -427,7 +427,7 @@ export function BuilderForm() {
                 type="button"
                 onClick={() => goToAdjacentSection("next")}
                 disabled={!hasNext}
-                className="border border-gray-400 px-3 py-2 text-[10px] font-bold uppercase tracking-wider hover:bg-black hover:text-white transition-colors duration-150 disabled:opacity-30"
+                className="border border-gray-400 px-3 py-2 text-[10px] font-bold hover:bg-note transition-colors duration-150 disabled:opacity-30"
                 title="Next section"
               >
                 Next
@@ -449,7 +449,7 @@ export function BuilderForm() {
                     key={section.id}
                     data-section-id={section.id}
                     onClick={() => setActiveSection(section.id)}
-                    className={`snap-start px-3 py-2 text-[11px] sm:text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-all duration-300 border flex items-center gap-1.5 ${
+                    className={`snap-start px-3 py-2 text-[11px] sm:text-xs font-bold whitespace-nowrap transition-all duration-300 border flex items-center gap-1.5 ${
                       isJustMoved
                         ? "bg-yellow-400 text-black border-yellow-500 ring-2 ring-yellow-300 scale-105"
                         : activeSection === section.id
@@ -476,10 +476,10 @@ export function BuilderForm() {
             <button
               type="button"
               onClick={() => setShowSectionManager(!showSectionManager)}
-              className={`border px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider transition-colors duration-150 ${
+              className={`border px-3 py-1.5 text-[10px] font-bold transition-colors duration-150 ${
                 showSectionManager
                   ? "bg-black text-white border-black"
-                  : "border-gray-400 text-gray-600 hover:bg-black hover:text-white"
+                  : "border-gray-400 text-gray-600 hover:bg-note"
               }`}
               title="Show or hide sections"
             >
@@ -490,7 +490,7 @@ export function BuilderForm() {
               <div className="absolute right-4 top-full mt-2 z-50 border border-black bg-white shadow-lg w-56">
                 <div className="px-3 py-2 border-b border-gray-200 bg-gray-50">
                   <p className="label-mono text-gray-500 text-[10px]">
-                    TOGGLE SECTIONS
+                    Toggle sections
                   </p>
                   <p className="text-[10px] text-gray-400 mt-0.5">
                     Click to show/hide
@@ -529,7 +529,7 @@ export function BuilderForm() {
                           {section.label}
                         </span>
                         {isPersonal && (
-                          <span className="ml-auto text-[9px] text-gray-400 uppercase">
+                          <span className="ml-auto text-[9px] text-gray-400 ">
                             Required
                           </span>
                         )}

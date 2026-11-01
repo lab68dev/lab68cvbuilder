@@ -1,6 +1,6 @@
 # LAB68DEV CV Builder
 
-> A brutalist SaaS resume builder — engineered for speed, clarity, and pixel-perfect PDF output.
+> A hand-drawn, doodle-style resume builder — engineered for speed, clarity, and pixel-perfect PDF output.
 
 <a href="https://unikorn.vn/p/lab68dev-cv-builder?ref=embed" target="_blank">
   <img src="https://unikorn.vn/api/widgets/badge/lab68dev-cv-builder?theme=light" alt="lab68dev CV Builder trên Unikorn.vn" width="250" height="64" />
@@ -39,12 +39,12 @@
 
 ### Templates
 
-| Template                   | Style                                                                 |
-| -------------------------- | --------------------------------------------------------------------- |
-| **Harvard Style**          | Classic academic — left date column with structured content blocks    |
-| **Creative / Portfolio**   | Brutalist sidebar — black 2.5-inch sidebar with optional avatar photo |
-| **ATS-Optimized**          | Two-column clean layout optimized for Applicant Tracking Systems      |
-| **Executive / Leadership** | Traditional top-down with professional summary header                 |
+| Template                   | Style                                                              |
+| -------------------------- | ------------------------------------------------------------------ |
+| **Harvard Style**          | Classic academic — left date column with structured content blocks |
+| **Creative / Portfolio**   | Bold sidebar — black 2.5-inch sidebar with optional avatar photo   |
+| **ATS-Optimized**          | Two-column clean layout optimized for Applicant Tracking Systems   |
+| **Executive / Leadership** | Traditional top-down with professional summary header              |
 
 ### PDF Export
 
@@ -63,33 +63,32 @@
 
 ## Design Philosophy
 
-Built on a **brutalist aesthetic** — raw, functional, and intentional:
+The app looks like a **sketchbook**, while the CV stays clean and professional:
 
-- Zero border radius — square corners everywhere
-- Monochrome palette — black and white only
-- Visible 1px borders on all interactive elements
-- Inverted focus states — black background, white text on focus
-- Monospace labels in uppercase with wide letter-spacing
+- Wobbly hand-drawn borders with hard offset shadows
+- Warm paper and ink colors, with blue pen and yellow sticky notes
+- Shantell Sans for headings and buttons, IBM Plex Sans for body text
+- Buttons that press down over their shadow when clicked
 
-No smooth gradients. No rounded pills. Pure function.
+CV templates and PDFs are kept plain for recruiters and ATS software. Anything inside `.cv-sheet` stays out of the doodle theme.
 
 ---
 
 ## Tech Stack
 
-| Layer        | Technology                                   |
-| ------------ | -------------------------------------------- |
-| Framework    | Next.js 16 (App Router, React 19, Turbopack) |
-| Language     | TypeScript (strict)                          |
-| Database     | Neon (Serverless Postgres)                   |
-| ORM          | Drizzle ORM                                  |
-| Auth         | Auth.js v5 — Google sign-in                  |
-| Styling      | Tailwind CSS 4                               |
-| State        | Zustand                                      |
-| PDF          | @react-pdf/renderer                          |
-| Image Upload | Cloudinary                                   |
-| i18n         | next-intl (EN / VI)                          |
-| Font         | IBM Plex Sans (UI) + 11 Google Fonts (CV)    |
+| Layer        | Technology                                               |
+| ------------ | -------------------------------------------------------- |
+| Framework    | Next.js 16 (App Router, React 19, Turbopack)             |
+| Language     | TypeScript (strict)                                      |
+| Database     | Neon (Serverless Postgres)                               |
+| ORM          | Drizzle ORM                                              |
+| Auth         | Auth.js v5 — Google sign-in                              |
+| Styling      | Tailwind CSS 4                                           |
+| State        | Zustand                                                  |
+| PDF          | @react-pdf/renderer                                      |
+| Image Upload | Cloudinary                                               |
+| i18n         | next-intl (EN / VI)                                      |
+| Font         | Shantell Sans + IBM Plex Sans (UI), 11 Google Fonts (CV) |
 
 ---
 
@@ -134,4 +133,4 @@ Licensed under the [Apache License 2.0](LICENSE).
 
 ---
 
-<sub>Built with brutalist design principles by <a href="https://www.youtube.com/@lab68dev">lab68dev</a>.</sub>
+<sub>Built by <a href="https://www.youtube.com/@lab68dev">lab68dev</a>.</sub>

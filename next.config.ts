@@ -1,5 +1,5 @@
 import type { NextConfig } from "next";
-import createNextIntlPlugin from 'next-intl/plugin';
+import createNextIntlPlugin from "next-intl/plugin";
 
 const withNextIntl = createNextIntlPlugin();
 
@@ -23,16 +23,6 @@ const nextConfig: NextConfig = {
   },
   async headers() {
     return [
-      // Immutable cache for versioned static assets (JS/CSS/fonts)
-      {
-        source: "/_next/static/(.*)",
-        headers: [
-          {
-            key: "Cache-Control",
-            value: "public, max-age=31536000, immutable",
-          },
-        ],
-      },
       // Long-lived cache for public assets (logo, favicon, etc.)
       {
         source: "/design-mode/(.*)",
@@ -46,9 +36,7 @@ const nextConfig: NextConfig = {
       // DNS prefetch for external services
       {
         source: "/(.*)",
-        headers: [
-          { key: "X-DNS-Prefetch-Control", value: "on" },
-        ],
+        headers: [{ key: "X-DNS-Prefetch-Control", value: "on" }],
       },
     ];
   },

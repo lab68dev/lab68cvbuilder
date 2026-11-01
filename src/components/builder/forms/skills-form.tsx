@@ -96,7 +96,7 @@ export function SkillsForm() {
   return (
     <div className="max-w-3xl space-y-8">
       <div>
-        <span className="label-mono block mb-4">SECTION_04 // SKILLS</span>
+        <span className="label-mono block mb-4">Section 4</span>
         <h2 className="text-3xl font-black tracking-tight mb-2">
           Technical Skills
         </h2>
@@ -107,7 +107,7 @@ export function SkillsForm() {
 
       <div className="space-y-6">
         {skills.map((category, index) => (
-          <div key={category.id} className="border border-black p-6">
+          <div key={category.id} className="sketch-card p-6">
             <div className="flex items-center justify-between mb-4">
               <span className="label-mono">
                 CATEGORY_{String(index + 1).padStart(2, "0")}
@@ -116,7 +116,7 @@ export function SkillsForm() {
                 <button
                   onClick={() => moveSkillCategory(index, "up")}
                   disabled={index === 0}
-                  className="border border-gray-400 px-2 py-1 text-xs font-bold hover:bg-black hover:text-white transition-colors duration-150 disabled:opacity-30"
+                  className="border border-gray-400 px-2 py-1 text-xs font-bold hover:bg-note transition-colors duration-150 disabled:opacity-30"
                   aria-label="Move up"
                 >
                   ↑
@@ -124,14 +124,14 @@ export function SkillsForm() {
                 <button
                   onClick={() => moveSkillCategory(index, "down")}
                   disabled={index === skills.length - 1}
-                  className="border border-gray-400 px-2 py-1 text-xs font-bold hover:bg-black hover:text-white transition-colors duration-150 disabled:opacity-30"
+                  className="border border-gray-400 px-2 py-1 text-xs font-bold hover:bg-note transition-colors duration-150 disabled:opacity-30"
                   aria-label="Move down"
                 >
                   ↓
                 </button>
                 <button
                   onClick={() => removeSkillCategory(category.id)}
-                  className="border border-red-600 text-red-600 px-3 py-1 text-xs font-bold uppercase tracking-wider hover:bg-red-600 hover:text-white transition-colors duration-150"
+                  className="border border-red-600 text-red-600 px-3 py-1 text-xs font-bold hover:bg-red-600 hover:text-white transition-colors duration-150"
                 >
                   Remove
                 </button>
@@ -140,7 +140,7 @@ export function SkillsForm() {
 
             <div className="space-y-4">
               <div>
-                <label className="label-mono block mb-2">CATEGORY_NAME *</label>
+                <label className="label-mono block mb-2">Category name *</label>
                 <input
                   type="text"
                   value={category.category}
@@ -153,7 +153,7 @@ export function SkillsForm() {
               </div>
 
               <div>
-                <label className="label-mono block mb-2">SKILLS *</label>
+                <label className="label-mono block mb-2">Skills *</label>
                 <div className="border border-gray-400 bg-transparent focus-within:border-black transition-all duration-150">
                   <div className="flex flex-wrap gap-2 p-2">
                     {category.items.map((item, idx) => (
@@ -187,7 +187,7 @@ export function SkillsForm() {
                   </div>
                 </div>
                 <span className="label-mono text-gray-500 text-xs block mt-2">
-                  Press ENTER or comma to add • Backspace to remove
+                  Press Enter or comma to add • Backspace to remove
                 </span>
               </div>
             </div>
@@ -196,7 +196,7 @@ export function SkillsForm() {
 
         <button
           onClick={addSkillCategory}
-          className="w-full border-2 border-dashed border-gray-400 px-6 py-4 text-sm font-bold uppercase tracking-wider hover:border-black hover:bg-black hover:text-white transition-all duration-150"
+          className="w-full border-2 border-dashed border-gray-400 px-6 py-4 text-sm font-bold hover:border-black hover:bg-note transition-all duration-150"
         >
           + Add Skill Category
         </button>

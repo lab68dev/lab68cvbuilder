@@ -135,9 +135,7 @@ export function CompetitionsForm() {
   return (
     <div className="max-w-3xl space-y-8">
       <div>
-        <span className="label-mono block mb-4">
-          SECTION_OPT // COMPETITIONS
-        </span>
+        <span className="label-mono block mb-4">Optional section</span>
         <h2 className="text-3xl font-black tracking-tight mb-2">
           Competitions
         </h2>
@@ -148,7 +146,7 @@ export function CompetitionsForm() {
 
       <div className="space-y-8">
         {competitions.map((comp, index) => (
-          <div key={comp.id} className="border border-black p-6">
+          <div key={comp.id} className="sketch-card p-6">
             <div className="flex items-center justify-between mb-6">
               <span className="label-mono">
                 COMP_{String(index + 1).padStart(2, "0")}
@@ -157,7 +155,7 @@ export function CompetitionsForm() {
                 <button
                   onClick={() => moveCompetition(index, "up")}
                   disabled={index === 0}
-                  className="border border-gray-400 px-2 py-1 text-xs font-bold hover:bg-black hover:text-white transition-colors duration-150 disabled:opacity-30"
+                  className="border border-gray-400 px-2 py-1 text-xs font-bold hover:bg-note transition-colors duration-150 disabled:opacity-30"
                   aria-label="Move up"
                 >
                   ↑
@@ -165,14 +163,14 @@ export function CompetitionsForm() {
                 <button
                   onClick={() => moveCompetition(index, "down")}
                   disabled={index === competitions.length - 1}
-                  className="border border-gray-400 px-2 py-1 text-xs font-bold hover:bg-black hover:text-white transition-colors duration-150 disabled:opacity-30"
+                  className="border border-gray-400 px-2 py-1 text-xs font-bold hover:bg-note transition-colors duration-150 disabled:opacity-30"
                   aria-label="Move down"
                 >
                   ↓
                 </button>
                 <button
                   onClick={() => removeCompetition(comp.id)}
-                  className="border border-red-600 text-red-600 px-3 py-1 text-xs font-bold uppercase tracking-wider hover:bg-red-600 hover:text-white transition-colors duration-150"
+                  className="border border-red-600 text-red-600 px-3 py-1 text-xs font-bold hover:bg-red-600 hover:text-white transition-colors duration-150"
                 >
                   Remove
                 </button>
@@ -183,7 +181,7 @@ export function CompetitionsForm() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="label-mono block mb-2">
-                    COMPETITION_NAME *
+                    Competition name *
                   </label>
                   <input
                     type="text"
@@ -196,7 +194,7 @@ export function CompetitionsForm() {
                   />
                 </div>
                 <div>
-                  <label className="label-mono block mb-2">ROLE / AWARD</label>
+                  <label className="label-mono block mb-2">Role / award</label>
                   <input
                     type="text"
                     value={comp.role || ""}
@@ -211,7 +209,7 @@ export function CompetitionsForm() {
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label className="label-mono block mb-2">DATE *</label>
+                  <label className="label-mono block mb-2">Date *</label>
                   <MonthInput
                     key={`comp-date-${comp.id}-${comp.date || "empty"}`}
                     value={comp.date}
@@ -223,7 +221,7 @@ export function CompetitionsForm() {
                   />
                 </div>
                 <div>
-                  <label className="label-mono block mb-2">LOCATION</label>
+                  <label className="label-mono block mb-2">Location</label>
                   <input
                     type="text"
                     value={comp.location || ""}
@@ -250,7 +248,7 @@ export function CompetitionsForm() {
 
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="label-mono">DESCRIPTION *</label>
+                  <label className="label-mono">Description *</label>
                   <button
                     type="button"
                     onClick={() =>
@@ -264,7 +262,7 @@ export function CompetitionsForm() {
                     disabled={
                       !comp.description.trim() || !!improvingDescription
                     }
-                    className="label-mono text-[10px] border border-black px-2 py-0.5 hover:bg-black hover:text-white transition-colors duration-150 disabled:opacity-30 disabled:cursor-not-allowed"
+                    className="label-mono text-[10px] border border-black px-2 py-0.5 hover:bg-note transition-colors duration-150 disabled:opacity-30 disabled:cursor-not-allowed"
                   >
                     {improvingDescription === comp.id ? "..." : "✦"}
                   </button>
@@ -289,7 +287,7 @@ export function CompetitionsForm() {
               </div>
 
               <div>
-                <label className="label-mono block mb-2">KEY_HIGHLIGHTS</label>
+                <label className="label-mono block mb-2">Key highlights</label>
                 <div className="space-y-2 mb-3">
                   {comp.highlights.map((highlight, idx) => {
                     const key = `${comp.id}-${idx}`;
@@ -317,7 +315,7 @@ export function CompetitionsForm() {
                           }
                           disabled={isImproving || !highlight.trim()}
                           title="Improve with AI"
-                          className="border border-gray-400 px-3 py-2 text-xs font-bold hover:border-black hover:bg-black hover:text-white transition-all duration-150 disabled:opacity-30"
+                          className="border border-gray-400 px-3 py-2 text-xs font-bold hover:border-black hover:bg-note transition-all duration-150 disabled:opacity-30"
                         >
                           {isImproving ? "..." : "✦"}
                         </button>
@@ -333,7 +331,7 @@ export function CompetitionsForm() {
                 </div>
                 <button
                   onClick={() => addHighlight(comp.id)}
-                  className="border border-gray-400 px-4 py-2 text-xs font-bold uppercase tracking-wider hover:border-black hover:bg-black hover:text-white transition-all duration-150"
+                  className="border border-gray-400 px-4 py-2 text-xs font-bold hover:border-black hover:bg-note transition-all duration-150"
                 >
                   + Add Highlight
                 </button>
@@ -344,7 +342,7 @@ export function CompetitionsForm() {
 
         <button
           onClick={addCompetition}
-          className="w-full border-2 border-dashed border-gray-400 px-6 py-4 text-sm font-bold uppercase tracking-wider hover:border-black hover:bg-black hover:text-white transition-all duration-150"
+          className="w-full border-2 border-dashed border-gray-400 px-6 py-4 text-sm font-bold hover:border-black hover:bg-note transition-all duration-150"
         >
           + Add Competition
         </button>

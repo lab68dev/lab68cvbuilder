@@ -1,8 +1,9 @@
 @import "tailwindcss";
 
-@theme inline {
-  --color-black: #000000;
-  --color-white: #ffffff;
+/* static: .cv-sheet overrides these, so they must exist as runtime variables */
+@theme static {
+  --color-black: #2d2d2d; /* ink */
+  --color-white: #fdfbf7; /* paper */
   --color-gray-100: #f5f5f5;
   --color-gray-200: #e5e5e5;
   --color-gray-300: #d4d4d4;
@@ -12,270 +13,327 @@
   --color-gray-700: #404040;
   --color-gray-800: #262626;
   --color-gray-900: #171717;
+  --color-pen: #2d5da1;
+  --color-note: #fff9c4;
+  --color-marker: #ff4d4d; /* marks only: about 3:1 on paper, too low for text */
+  --color-notebook-line: #dfe6ee;
   --font-sans: var(--font-ibm-plex-sans);
   --font-mono: var(--font-ibm-plex-sans);
+  --font-hand: var(--font-shantell-sans);
+  --radius-wobble: 255px 15px 225px 15px / 15px 225px 15px 255px;
 }
 
-/* ===== UTILITY CLASSES ===== */
+/* ===== DOODLE BASE ===== */
 
-.grid-overlay {
-  background-image:
-    linear-gradient(#000 1px, transparent 1px),
-    linear-gradient(90deg, #000 1px, transparent 1px);
-  background-size: 40px 40px;
+@layer base {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html {
+    background-color: var(--color-white);
+    color: var(--color-black);
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    font-feature-settings:
+      "kern" 1,
+      "liga" 1;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    font-family: var(--font-sans), system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: var(--color-white);
+    color: var(--color-black);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  label,
+  button {
+    font-family: var(--font-hand), system-ui, sans-serif;
+  }
+
+  ::selection {
+    background-color: var(--color-note);
+    color: var(--color-black);
+  }
+
+  *:focus-visible {
+    outline: 2px dashed var(--color-pen);
+    outline-offset: 3px;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--color-white);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-black);
+    border: 2px solid var(--color-white);
+    border-radius: 6px;
+  }
+
+  input,
+  textarea,
+  select {
+    border: 2px solid var(--color-black);
+    border-radius: var(--radius-wobble);
+    background: transparent;
+    color: var(--color-black);
+    font-family: var(--font-sans), system-ui, sans-serif;
+    padding: 0.75rem 1rem;
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease;
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus {
+    border-color: var(--color-pen);
+    box-shadow: 3px 3px 0 var(--color-pen);
+    outline: none;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--color-gray-500);
+    font-size: 0.875rem;
+  }
+
+  /* Keep date/month picker icon visible on macOS WebKit browsers */
+  input[type="date"],
+  input[type="month"] {
+    color-scheme: light;
+    padding-right: 2rem;
+  }
+
+  input[type="date"]::-webkit-calendar-picker-indicator,
+  input[type="month"]::-webkit-calendar-picker-indicator {
+    opacity: 1;
+    cursor: pointer;
+  }
+
+  /* macOS/Safari: keep select controls visually consistent with custom theme */
+  select {
+    -webkit-appearance: none;
+    appearance: none;
+    background-image:
+      linear-gradient(45deg, transparent 50%, var(--color-black) 50%),
+      linear-gradient(135deg, var(--color-black) 50%, transparent 50%);
+    background-position:
+      calc(100% - 16px) calc(50% - 2px),
+      calc(100% - 10px) calc(50% - 2px);
+    background-size:
+      6px 6px,
+      6px 6px;
+    background-repeat: no-repeat;
+    padding-right: 2.25rem;
+  }
+
+  /* macOS/Safari: custom checkbox styling (Safari ignores border-radius without appearance reset) */
+  input[type="checkbox"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 1.125rem;
+    height: 1.125rem;
+    background: transparent;
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+    padding: 0;
+    vertical-align: middle;
+  }
+
+  input[type="checkbox"]:checked {
+    background-color: var(--color-note);
+  }
+
+  input[type="checkbox"]:checked::after {
+    content: "";
+    position: absolute;
+    left: 4px;
+    top: 0;
+    width: 6px;
+    height: 11px;
+    border: 2px solid var(--color-black);
+    border-top: none;
+    border-left: none;
+    transform: rotate(40deg);
+  }
+
+  button {
+    cursor: pointer;
+    border: 2px solid var(--color-black);
+    border-radius: var(--radius-wobble);
+    background: transparent;
+    color: var(--color-black);
+    font-size: 0.875rem;
+    font-weight: 600;
+    padding: 0.625rem 1.25rem;
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease,
+      transform 0.1s ease,
+      box-shadow 0.1s ease;
+  }
+
+  button:hover {
+    background-color: var(--color-note);
+  }
+
+  .border,
+  .border-2 {
+    border-radius: var(--radius-wobble);
+  }
+
+  /*
+   * CVs stay plain: recruiters and ATS software read them, and the preview must
+   * match the PDF. This restores the ink and paper colors to pure black and white.
+   */
+  .cv-sheet {
+    --color-black: #000000;
+    --color-white: #ffffff;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+
+  /* important: Tailwind's rounded-* utilities sit in a later layer */
+  .cv-sheet * {
+    border-radius: 0 !important;
+  }
+
+  .cv-sheet h1,
+  .cv-sheet h2,
+  .cv-sheet h3,
+  .cv-sheet h4 {
+    font-family: inherit;
+  }
+
+  @media print {
+    html,
+    body {
+      background: #ffffff;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      transition: none !important;
+      animation: none !important;
+    }
+  }
 }
 
-/* ===== LAB68DEV BRUTALIST RESET ===== */
+/* ===== DOODLE COMPONENTS ===== */
 
-* {
-  border-radius: 0 !important;
-  -webkit-tap-highlight-color: transparent;
+@layer components {
+  .label-mono {
+    font-family: var(--font-hand), system-ui, sans-serif;
+    font-size: 0.8125rem;
+    color: var(--color-gray-600);
+  }
+
+  .sketch-card {
+    background-color: var(--color-white);
+    border: 2px solid var(--color-black);
+    border-radius: var(--radius-wobble);
+    box-shadow: 4px 4px 0 var(--color-black);
+  }
+
+  /* Buttons press down over their shadow, like a sticker pushed onto paper */
+  .sketch-btn,
+  :is(a, button).border-black:not(.cv-sheet *) {
+    box-shadow: 2px 2px 0 var(--color-black);
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease,
+      transform 0.1s ease,
+      box-shadow 0.1s ease;
+  }
+
+  .sketch-btn:hover:not(:disabled),
+  :is(a, button).border-black:not(.cv-sheet *):hover:not(:disabled) {
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0 var(--color-black);
+  }
+
+  .sketch-btn:active:not(:disabled),
+  :is(a, button).border-black:not(.cv-sheet *):active:not(:disabled) {
+    transform: translate(2px, 2px);
+    box-shadow: none;
+  }
+
+  .sketch-note {
+    position: relative;
+    background-color: var(--color-note);
+    box-shadow: 2px 3px 0 rgb(45 45 45 / 0.15);
+    transform: rotate(-1.5deg);
+  }
+
+  /* Strip of tape holding the note to the page */
+  .sketch-note::before {
+    content: "";
+    position: absolute;
+    top: -0.625rem;
+    left: 50%;
+    width: 5rem;
+    height: 1.25rem;
+    background-color: rgb(45 93 161 / 0.2);
+    transform: translateX(-50%) rotate(2deg);
+  }
+
+  .notebook-paper {
+    background-color: var(--color-white);
+    background-image:
+      linear-gradient(
+        90deg,
+        transparent 3rem,
+        rgb(255 77 77 / 0.35) 3rem,
+        rgb(255 77 77 / 0.35) calc(3rem + 1px),
+        transparent calc(3rem + 1px)
+      ),
+      repeating-linear-gradient(
+        transparent,
+        transparent 1.9375rem,
+        var(--color-notebook-line) 1.9375rem,
+        var(--color-notebook-line) 2rem
+      );
+  }
+
+  /* scrollbar-none hides scrollbars while preserving scroll on macOS overlay-scrollbar mode */
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
+
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
 }
 
-html {
-  background-color: #ffffff;
-  color: #000000;
-  scroll-behavior: smooth;
-  -webkit-text-size-adjust: 100%;
-  text-size-adjust: 100%;
-  font-feature-settings:
-    "kern" 1,
-    "liga" 1;
-  text-rendering: optimizeLegibility;
-}
+/* Later in the utilities layer than Tailwind's own .border, so the stroke wins */
+@layer utilities {
+  .border {
+    border-width: 2px;
+  }
 
-body {
-  font-family: var(--font-sans), system-ui, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: #ffffff;
-  color: #000000;
-}
-
-/* Brutalist selection */
-::selection {
-  background-color: #000000;
-  color: #ffffff;
-}
-
-/* Brutalist focus states */
-*:focus-visible {
-  outline: 2px solid #000000;
-  outline-offset: 2px;
-}
-
-/* Brutalist scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #ffffff;
-  border-left: 1px solid #000000;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #000000;
-}
-
-/* Brutalist input reset */
-input,
-textarea,
-select {
-  border: 1px solid #000000;
-  background: transparent;
-  color: #000000;
-  font-family: var(--font-sans), system-ui, sans-serif;
-  padding: 0.75rem 1rem;
-  transition: all 0.15s ease;
-}
-
-input:focus,
-textarea:focus,
-select:focus {
-  background-color: #ffffff;
-  color: #000000;
-  border-color: #000000;
-  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
-  outline: none;
-}
-
-input::placeholder,
-textarea::placeholder {
-  color: #737373;
-  text-transform: uppercase;
-  font-size: 0.75rem;
-  letter-spacing: 0.05em;
-}
-
-/* Keep selection clearly visible inside form fields, especially on black focus state */
-input[type="text"]::selection,
-input[type="email"]::selection,
-input[type="url"]::selection,
-input[type="tel"]::selection,
-input[type="search"]::selection,
-input[type="password"]::selection,
-textarea::selection {
-  background-color: #facc15 !important;
-  color: #000000 !important;
-}
-
-input[type="text"]::-moz-selection,
-input[type="email"]::-moz-selection,
-input[type="url"]::-moz-selection,
-input[type="tel"]::-moz-selection,
-input[type="search"]::-moz-selection,
-input[type="password"]::-moz-selection,
-textarea::-moz-selection {
-  background-color: #facc15 !important;
-  color: #000000 !important;
-}
-
-input:focus::placeholder,
-textarea:focus::placeholder {
-  color: #a3a3a3;
-}
-
-input[type="text"]:focus::selection,
-input[type="email"]:focus::selection,
-input[type="url"]:focus::selection,
-input[type="tel"]:focus::selection,
-input[type="search"]:focus::selection,
-input[type="password"]:focus::selection,
-textarea:focus::selection {
-  background-color: #22d3ee !important;
-  color: #000000 !important;
-}
-
-input[type="text"]:focus::-moz-selection,
-input[type="email"]:focus::-moz-selection,
-input[type="url"]:focus::-moz-selection,
-input[type="tel"]:focus::-moz-selection,
-input[type="search"]:focus::-moz-selection,
-input[type="password"]:focus::-moz-selection,
-textarea:focus::-moz-selection {
-  background-color: #22d3ee !important;
-  color: #000000 !important;
-}
-
-/* Keep date/month picker icon visible on macOS WebKit browsers */
-input[type="date"],
-input[type="month"] {
-  color-scheme: light;
-  padding-right: 2rem;
-}
-
-input[type="date"]::-webkit-calendar-picker-indicator,
-input[type="month"]::-webkit-calendar-picker-indicator {
-  opacity: 1;
-  cursor: pointer;
-}
-
-input[type="date"]:focus::-webkit-calendar-picker-indicator,
-input[type="month"]:focus::-webkit-calendar-picker-indicator {
-  filter: invert(1);
-}
-
-/* macOS/Safari: keep select controls visually consistent with custom theme */
-select {
-  -webkit-appearance: none;
-  appearance: none;
-  background-image:
-    linear-gradient(45deg, transparent 50%, #000000 50%),
-    linear-gradient(135deg, #000000 50%, transparent 50%);
-  background-position:
-    calc(100% - 16px) calc(50% - 2px),
-    calc(100% - 10px) calc(50% - 2px);
-  background-size:
-    6px 6px,
-    6px 6px;
-  background-repeat: no-repeat;
-  padding-right: 2.25rem;
-}
-
-select:focus {
-  background-image:
-    linear-gradient(45deg, transparent 50%, #ffffff 50%),
-    linear-gradient(135deg, #ffffff 50%, transparent 50%);
-}
-
-/* macOS/Safari: custom checkbox styling (Safari ignores border-radius without appearance reset) */
-input[type="checkbox"] {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 1rem;
-  height: 1rem;
-  border: 1px solid #000000;
-  background: transparent;
-  cursor: pointer;
-  position: relative;
-  flex-shrink: 0;
-  padding: 0;
-  vertical-align: middle;
-}
-
-input[type="checkbox"]:checked {
-  background-color: #000000;
-}
-
-input[type="checkbox"]:checked::after {
-  content: "";
-  position: absolute;
-  left: 3px;
-  top: 0px;
-  width: 5px;
-  height: 9px;
-  border: 2px solid #ffffff;
-  border-top: none;
-  border-left: none;
-  transform: rotate(45deg);
-}
-
-input[type="checkbox"]:focus-visible {
-  outline: 2px solid #000000;
-  outline-offset: 2px;
-}
-
-/* scrollbar-none utility — hides scrollbars while preserving scroll on macOS overlay-scrollbar mode */
-.scrollbar-none {
-  scrollbar-width: none;
-}
-.scrollbar-none::-webkit-scrollbar {
-  display: none;
-}
-
-/* Brutalist button base */
-button {
-  cursor: pointer;
-  border: 1px solid #000000;
-  background: transparent;
-  color: #000000;
-  font-family: var(--font-sans), system-ui, sans-serif;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-size: 0.75rem;
-  font-weight: 700;
-  padding: 0.75rem 1.5rem;
-  transition: all 0.15s ease;
-}
-
-button:hover {
-  background-color: #000000;
-  color: #ffffff;
-}
-
-/* Monospace label utility */
-.label-mono {
-  font-family: var(--font-mono), monospace;
-  font-size: 0.625rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: #737373;
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  .cv-sheet .border {
+    border-width: 1px;
+  }
 }

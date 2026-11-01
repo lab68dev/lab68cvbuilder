@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Sans } from "next/font/google";
+import { IBM_Plex_Sans, Shantell_Sans } from "next/font/google";
 import "../globals.css";
-import { NextIntlClientProvider } from 'next-intl';
-import { getMessages } from 'next-intl/server';
-import { Analytics } from '@vercel/analytics/next';
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages } from "next-intl/server";
+import { Analytics } from "@vercel/analytics/next";
 
 const ibmPlexSans = IBM_Plex_Sans({
   variable: "--font-ibm-plex-sans",
@@ -12,7 +12,15 @@ const ibmPlexSans = IBM_Plex_Sans({
   weight: ["100", "200", "300", "400", "500", "600", "700"],
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://lab68cvbuilder.vercel.app/';
+// Hand-drawn look with Vietnamese letters, which Kalam and Caveat do not have
+const shantellSans = Shantell_Sans({
+  variable: "--font-shantell-sans",
+  subsets: ["latin", "vietnamese"],
+  display: "swap",
+});
+
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://lab68cvbuilder.vercel.app/";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -21,10 +29,15 @@ export const metadata: Metadata = {
     template: "%s | lab68cv.builder",
   },
   description:
-    "Raw. Structured. ATS-optimized brutalist resumes engineered for developers and designers. Export pixel-perfect PDFs for free.",
+    "Friendly, ATS-optimized resumes made for developers and designers. Export pixel-perfect PDFs for free.",
   keywords: [
-    "CV builder", "resume builder", "ATS resume", "free resume",
-    "PDF resume", "developer resume", "brutalist design", "lab68cv.builder",
+    "CV builder",
+    "resume builder",
+    "ATS resume",
+    "free resume",
+    "PDF resume",
+    "developer resume",
+    "lab68cv.builder",
   ],
   authors: [{ name: "lab68cv.builder" }],
   creator: "lab68cv.builder",
@@ -33,7 +46,7 @@ export const metadata: Metadata = {
     siteName: "lab68cv.builder",
     title: "lab68cv.builder — Build Your Resume",
     description:
-      "Raw. Structured. ATS-optimized brutalist resumes engineered for developers and designers.",
+      "Friendly, ATS-optimized resumes made for developers and designers.",
     locale: "en_US",
     alternateLocale: ["vi_VN"],
     url: siteUrl,
@@ -42,7 +55,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "lab68cv.builder — Build Your Resume",
     description:
-      "Raw. Structured. ATS-optimized brutalist resumes engineered for developers and designers.",
+      "Friendly, ATS-optimized resumes made for developers and designers.",
     creator: "@lab68dev",
   },
   verification: {
@@ -77,7 +90,7 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({
   children,
-  params
+  params,
 }: Readonly<{
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
@@ -86,10 +99,11 @@ export default async function RootLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale}>
-      <body
-        className={`${ibmPlexSans.variable} antialiased font-sans`}
-      >
+    <html
+      lang={locale}
+      className={`${ibmPlexSans.variable} ${shantellSans.variable}`}
+    >
+      <body className="antialiased font-sans">
         <NextIntlClientProvider messages={messages}>
           {children}
         </NextIntlClientProvider>

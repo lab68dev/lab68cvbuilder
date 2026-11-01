@@ -91,14 +91,12 @@ export default async function ApplicationsPage({
       <header className="border-b border-black p-6">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           <div>
-            <span className="label-mono block mb-1">
-              APPLICATIONS // TRACKER
-            </span>
+            <span className="label-mono block mb-1">Applications tracker</span>
             <h1 className="text-3xl font-black tracking-tight">Job Pipeline</h1>
           </div>
           <Link
             href="/dashboard"
-            className="border border-black px-4 py-2 text-xs font-bold uppercase tracking-wider hover:bg-black hover:text-white transition-colors duration-150"
+            className="border border-black px-4 py-2 text-xs font-bold hover:bg-note transition-colors duration-150"
           >
             Back to Dashboard
           </Link>
@@ -106,7 +104,7 @@ export default async function ApplicationsPage({
       </header>
 
       <main className="max-w-7xl mx-auto p-6 grid gap-6 lg:grid-cols-2">
-        <section className="border border-black p-6">
+        <section className="sketch-card p-6">
           <h2 className="text-xl font-black mb-4">Create Job</h2>
           <form
             action={async (formData) => {
@@ -154,17 +152,17 @@ export default async function ApplicationsPage({
             />
             <button
               type="submit"
-              className="border border-black bg-black text-white px-4 py-2 text-xs font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-colors duration-150"
+              className="border border-black bg-black text-white px-4 py-2 text-xs font-bold hover:bg-white hover:text-black transition-colors duration-150"
             >
               Save Job
             </button>
           </form>
         </section>
 
-        <section className="border border-black p-6">
+        <section className="sketch-card p-6">
           <h2 className="text-xl font-black mb-4">Create Application</h2>
           {createError ? (
-            <p className="mb-3 border border-red-600 bg-red-50 px-3 py-2 text-xs font-bold uppercase tracking-wider text-red-700">
+            <p className="mb-3 border border-red-600 bg-red-50 px-3 py-2 text-xs font-bold text-red-700">
               {createError}
             </p>
           ) : null}
@@ -231,7 +229,7 @@ export default async function ApplicationsPage({
             >
               {APPLICATION_STATUSES.map((status) => (
                 <option key={status} value={status}>
-                  {status.toUpperCase()}
+                  {status.charAt(0).toUpperCase() + status.slice(1)}
                 </option>
               ))}
             </select>
@@ -244,7 +242,7 @@ export default async function ApplicationsPage({
             />
             <button
               type="submit"
-              className="border border-black bg-black text-white px-4 py-2 text-xs font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-colors duration-150"
+              className="border border-black bg-black text-white px-4 py-2 text-xs font-bold hover:bg-white hover:text-black transition-colors duration-150"
             >
               Add Application
             </button>
@@ -257,7 +255,7 @@ export default async function ApplicationsPage({
             <span className="label-mono">{applications.length} records</span>
           </div>
           {coverError ? (
-            <p className="border-b border-black bg-red-50 px-6 py-3 text-xs font-bold uppercase tracking-wider text-red-700">
+            <p className="border-b border-black bg-red-50 px-6 py-3 text-xs font-bold text-red-700">
               {coverError}
             </p>
           ) : null}
@@ -291,7 +289,7 @@ export default async function ApplicationsPage({
                 <option value="">All statuses</option>
                 {APPLICATION_STATUSES.map((status) => (
                   <option key={status} value={status}>
-                    {status.toUpperCase()}
+                    {status.charAt(0).toUpperCase() + status.slice(1)}
                   </option>
                 ))}
               </select>
@@ -316,13 +314,13 @@ export default async function ApplicationsPage({
             <div className="flex gap-2">
               <button
                 type="submit"
-                className="border border-black bg-black text-white px-4 py-2 text-xs font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-colors duration-150"
+                className="border border-black bg-black text-white px-4 py-2 text-xs font-bold hover:bg-white hover:text-black transition-colors duration-150"
               >
                 Apply
               </button>
               <Link
                 href="/applications"
-                className="border border-black px-4 py-2 text-xs font-bold uppercase tracking-wider hover:bg-black hover:text-white transition-colors duration-150"
+                className="border border-black px-4 py-2 text-xs font-bold hover:bg-note transition-colors duration-150"
               >
                 Clear
               </Link>
@@ -364,7 +362,7 @@ export default async function ApplicationsPage({
                     ) : null}
 
                     <div className="mt-4 border border-gray-300 p-3">
-                      <p className="label-mono mb-2">ATS RECOMMENDATIONS</p>
+                      <p className="label-mono mb-2">ATS recommendations</p>
                       {(() => {
                         const ats = getAtsRecommendations(
                           item.resumeData,
@@ -402,7 +400,7 @@ export default async function ApplicationsPage({
                     </div>
 
                     <div className="mt-4 border border-gray-300 p-3 space-y-3">
-                      <p className="label-mono">COVER LETTER STUDIO</p>
+                      <p className="label-mono">Cover letter studio</p>
                       <form
                         action={async (formData) => {
                           "use server";
@@ -445,7 +443,7 @@ export default async function ApplicationsPage({
                         </select>
                         <button
                           type="submit"
-                          className="border border-black px-3 py-1 text-xs font-bold uppercase tracking-wider hover:bg-black hover:text-white transition-colors duration-150"
+                          className="border border-black px-3 py-1 text-xs font-bold hover:bg-note transition-colors duration-150"
                         >
                           Generate
                         </button>
@@ -514,14 +512,14 @@ export default async function ApplicationsPage({
                             <div className="flex gap-2">
                               <button
                                 type="submit"
-                                className="border border-black px-3 py-1 text-xs font-bold uppercase tracking-wider hover:bg-black hover:text-white transition-colors duration-150"
+                                className="border border-black px-3 py-1 text-xs font-bold hover:bg-note transition-colors duration-150"
                               >
                                 Save Letter
                               </button>
                               <button
                                 type="button"
                                 form={`delete-letter-${letter.id}`}
-                                className="border border-red-600 text-red-600 px-3 py-1 text-xs font-bold uppercase tracking-wider hover:bg-red-600 hover:text-white transition-colors duration-150"
+                                className="border border-red-600 text-red-600 px-3 py-1 text-xs font-bold hover:bg-red-600 hover:text-white transition-colors duration-150"
                               >
                                 Delete
                               </button>
@@ -583,20 +581,20 @@ export default async function ApplicationsPage({
                       >
                         {APPLICATION_STATUSES.map((status) => (
                           <option key={status} value={status}>
-                            {status.toUpperCase()}
+                            {status.charAt(0).toUpperCase() + status.slice(1)}
                           </option>
                         ))}
                       </select>
                       <button
                         type="submit"
-                        className="border border-black px-3 py-1 text-xs font-bold uppercase tracking-wider hover:bg-black hover:text-white transition-colors duration-150"
+                        className="border border-black px-3 py-1 text-xs font-bold hover:bg-note transition-colors duration-150"
                       >
                         Save
                       </button>
                     </form>
                     <Link
                       href={`/applications/${item.applicationId}/interview`}
-                      className="border border-blue-600 bg-blue-50 text-blue-800 text-center px-3 py-2 text-xs font-bold uppercase tracking-wider hover:bg-blue-600 hover:text-white transition-colors duration-150"
+                      className="border border-blue-600 bg-blue-50 text-blue-800 text-center px-3 py-2 text-xs font-bold hover:bg-blue-600 hover:text-white transition-colors duration-150"
                     >
                       Practice Interview
                     </Link>
@@ -614,7 +612,7 @@ export default async function ApplicationsPage({
                       />
                       <button
                         type="submit"
-                        className="border border-red-600 text-red-600 px-3 py-1 text-xs font-bold uppercase tracking-wider hover:bg-red-600 hover:text-white transition-colors duration-150 w-full"
+                        className="border border-red-600 text-red-600 px-3 py-1 text-xs font-bold hover:bg-red-600 hover:text-white transition-colors duration-150 w-full"
                       >
                         Delete
                       </button>

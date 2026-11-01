@@ -40,9 +40,7 @@ export function CertificationsForm() {
   return (
     <div className="max-w-3xl space-y-8">
       <div>
-        <span className="label-mono block mb-4">
-          SECTION_06 // CERTIFICATIONS
-        </span>
+        <span className="label-mono block mb-4">Section 6</span>
         <h2 className="text-3xl font-black tracking-tight mb-2">
           Certifications
         </h2>
@@ -53,14 +51,14 @@ export function CertificationsForm() {
 
       <div className="space-y-8">
         {certifications.map((cert, index) => (
-          <div key={cert.id} className="border border-black p-6">
+          <div key={cert.id} className="sketch-card p-6">
             <div className="flex items-center justify-between mb-6">
               <span className="label-mono">
                 CERT_{String(index + 1).padStart(2, "0")}
               </span>
               <button
                 onClick={() => removeCertification(cert.id)}
-                className="border border-red-600 text-red-600 px-3 py-1 text-xs font-bold uppercase tracking-wider hover:bg-red-600 hover:text-white transition-colors duration-150"
+                className="border border-red-600 text-red-600 px-3 py-1 text-xs font-bold hover:bg-red-600 hover:text-white transition-colors duration-150"
               >
                 Remove
               </button>
@@ -68,7 +66,7 @@ export function CertificationsForm() {
 
             <div className="space-y-4">
               <div>
-                <label className="label-mono block mb-2">CERT_NAME *</label>
+                <label className="label-mono block mb-2">Cert name *</label>
                 <input
                   type="text"
                   value={cert.name}
@@ -82,7 +80,7 @@ export function CertificationsForm() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="label-mono block mb-2">ISSUER *</label>
+                  <label className="label-mono block mb-2">Issuer *</label>
                   <input
                     type="text"
                     value={cert.issuer}
@@ -94,7 +92,7 @@ export function CertificationsForm() {
                   />
                 </div>
                 <div>
-                  <label className="label-mono block mb-2">DATE</label>
+                  <label className="label-mono block mb-2">Date</label>
                   <MonthInput
                     key={`cert-date-${cert.id}-${cert.date || "empty"}`}
                     value={cert.date}
@@ -108,7 +106,7 @@ export function CertificationsForm() {
               </div>
 
               <div>
-                <label className="label-mono block mb-2">CREDENTIAL_URL</label>
+                <label className="label-mono block mb-2">Credential URL</label>
                 <input
                   type="url"
                   value={cert.url || ""}
@@ -125,7 +123,7 @@ export function CertificationsForm() {
 
         <button
           onClick={addCertification}
-          className="w-full border-2 border-dashed border-gray-400 px-6 py-4 text-sm font-bold uppercase tracking-wider hover:border-black hover:bg-black hover:text-white transition-all duration-150"
+          className="w-full border-2 border-dashed border-gray-400 px-6 py-4 text-sm font-bold hover:border-black hover:bg-note transition-all duration-150"
         >
           + Add Certification
         </button>
