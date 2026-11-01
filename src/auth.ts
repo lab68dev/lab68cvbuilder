@@ -1,6 +1,6 @@
 import NextAuth from "next-auth";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
-import Resend from "next-auth/providers/resend";
+import Google from "next-auth/providers/google";
 import { db } from "@/db";
 import { users, accounts, sessions, verificationTokens } from "@/db/schema";
 
@@ -21,10 +21,20 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
   // ── Providers ────────────────────────────────────────────
   providers: [
-    // Magic link: the emailed link is what proves the user owns the address.
-    Resend({
-      apiKey: process.env.RESEND_API_KEY,
-      from: process.env.AUTH_EMAIL_FROM,
+    // Reads AUTH_GOOGLE_ID and AUTH_GOOGLE_SECRET from the environment.
+    Google({
+      // Older accounts have no Google link yet, so they are matched by email.
+      // This is safe only because the signIn callback requires a verified address.
+      allowDangerousEmailAccountLinking: true,
+      // Older accounts store lowercase emails, so the match must be lowercase too.
+      profile(profile) {
+        return {
+          id: profile.sub,
+          name: profile.name,
+          email: profile.email.toLowerCase(),
+          image: profile.picture,
+        };
+      },
     }),
   ],
 
@@ -36,6 +46,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
   // ── Callbacks ────────────────────────────────────────────
   callbacks: {
+    /**
+     * Sign-in callback — only accept addresses Google has verified, so
+     * nobody can reach an older account with an unconfirmed email.
+     */
+    signIn({ profile }) {
+      return profile?.email_verified === true;
+    },
+
     /**
      * JWT callback — attach user ID to the token so we can
      * use it in session and Server Actions for RLS checks.

@@ -7,7 +7,7 @@ import { GUEST_MIGRATION_META_KEY, GUEST_STORAGE_KEY } from "@/lib/constants";
 import { USAGE_EVENTS } from "@/lib/usage-events";
 
 /**
- * Imports the draft a guest made on /try after their sign-in link is opened.
+ * Imports the draft a guest made on /try after they sign in.
  * The draft is removed from the browser only after the server has saved it.
  */
 export function GuestDraftMigration() {

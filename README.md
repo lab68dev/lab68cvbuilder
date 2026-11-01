@@ -23,7 +23,7 @@
 
 ### Authentication
 
-- Passwordless sign-in — a one-time link sent by email, with auto-registration
+- Google sign-in with auto-registration — no password required
 - JWT-based sessions with protected routes via middleware
 
 ### Resume Builder
@@ -83,7 +83,7 @@ No smooth gradients. No rounded pills. Pure function.
 | Language     | TypeScript (strict)                          |
 | Database     | Neon (Serverless Postgres)                   |
 | ORM          | Drizzle ORM                                  |
-| Auth         | Auth.js v5 — Resend magic link               |
+| Auth         | Auth.js v5 — Google sign-in                  |
 | Styling      | Tailwind CSS 4                               |
 | State        | Zustand                                      |
 | PDF          | @react-pdf/renderer                          |
